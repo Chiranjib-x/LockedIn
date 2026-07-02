@@ -47,3 +47,11 @@ export async function createPost(formData: FormData) {
   revalidatePath("/board");
   redirect("/board");
 }
+
+export async function resolvePost(id: string, resolved: boolean) {
+  const supabase = await createClient();
+  // RLS restricts updates to the author.
+  await supabase.from("posts").update({ status: resolved ? "resolved" : "open" }).eq("id", id);
+  revalidatePath("/board");
+  revalidatePath(`/board/${id}`);
+}
