@@ -57,7 +57,7 @@ Tokens live in `app/globals.css` `@theme` — **never hardcode hex in components
 - [x] Phase 4 — Marketplace: browse grid, URL-synced search/filter/sort, detail, contact reveal
 - [x] Phase 5 — Lost & Found + Notices: schema + create post (run migration 0003)
 - [x] Phase 6 — Board feed + filters + resolve
-- [ ] Phase 6.5 — **Spaces: Girls' Closet** (user idea, designed 2026-07-02): members-only space per college for sharing/lending wearables. Security model: `spaces` + `space_members` tables, listings gain nullable `space_id`, RLS makes space-scoped rows unreachable to non-members (not UI hiding). Entry by member vouch/approval (bootstrap: founder designates a first member per college); **no gender field stored anywhere** — social verification like the WhatsApp groups it replaces. Lend/return mechanics arrive with Phase 32 rent/lend; v1 = space-scoped listings + join requests + member approval.
+- [x] Phase 6.5 — **Spaces: Girls' Closet** (migration 0004): members-only spaces, vouch-based entry, no gender stored, space listings RLS-unreachable to non-members. Member removal (beyond self-leave) deferred to Phase 17 moderation; lend/return mechanics land with Phase 32.
 - [ ] Phases 7–14 — see Part 1 doc
 - [ ] Phase 14.5 — Capacitor Android wrap (APK/AAB + Play Store)
 - [ ] Phases 15–40 — see Part 2 doc

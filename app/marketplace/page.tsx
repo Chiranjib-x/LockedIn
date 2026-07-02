@@ -15,7 +15,8 @@ export default async function MarketplacePage({
   let query = supabase
     .from("listings")
     .select("id, title, price, category, images, status")
-    .eq("status", "available");
+    .eq("status", "available")
+    .is("space_id", null); // space listings live only inside their space
 
   if (category) query = query.eq("category", category);
   if (q) query = query.or(`title.ilike.%${q}%,description.ilike.%${q}%`);

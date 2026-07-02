@@ -16,13 +16,55 @@ type Listing = {
   images: string[];
 };
 
-export default function ListingForm({ listing, error }: { listing?: Listing; error?: string }) {
+export default function ListingForm({
+  listing,
+  error,
+  spaces = [],
+  defaultSpaceId,
+}: {
+  listing?: Listing;
+  error?: string;
+  spaces?: { id: string; name: string; emoji: string }[];
+  defaultSpaceId?: string;
+}) {
   const [images, setImages] = useState<string[]>(listing?.images ?? []);
+  const [spaceId, setSpaceId] = useState(defaultSpaceId ?? "");
 
   return (
     <form action={saveListing} className="flex flex-col gap-4">
       {listing?.id && <input type="hidden" name="id" value={listing.id} />}
       <input type="hidden" name="images" value={JSON.stringify(images)} />
+      {!listing?.id && <input type="hidden" name="space_id" value={spaceId} />}
+
+      {!listing?.id && spaces.length > 0 && (
+        <div className="flex flex-col gap-1 text-sm font-medium">
+          Post to
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => setSpaceId("")}
+              className={`press flex-1 rounded-2xl border px-3 py-2.5 font-medium ${!spaceId ? "border-primary bg-primary/10 text-primary" : "border-border bg-card"}`}
+            >
+              🛍️ Marketplace
+            </button>
+            {spaces.map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => setSpaceId(s.id)}
+                className={`press flex-1 rounded-2xl border px-3 py-2.5 font-medium ${spaceId === s.id ? "border-primary bg-primary/10 text-primary" : "border-border bg-card"}`}
+              >
+                {s.emoji} {s.name}
+              </button>
+            ))}
+          </div>
+          {spaceId && (
+            <p className="text-xs font-normal text-muted-foreground">
+              Only members of this space will see it.
+            </p>
+          )}
+        </div>
+      )}
 
       {error && (
         <p className="rounded-xl border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">

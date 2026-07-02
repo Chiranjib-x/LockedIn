@@ -26,6 +26,8 @@ export async function saveListing(formData: FormData) {
     redirect("/marketplace/new?error=" + encodeURIComponent("Title, category, and a valid price are required."));
   }
 
+  const spaceId = String(formData.get("space_id") ?? "").trim() || null;
+
   const payload = {
     title,
     description: String(formData.get("description") ?? "").trim() || null,
@@ -41,11 +43,16 @@ export async function saveListing(formData: FormData) {
     if (error) redirect("/marketplace/" + id + "/edit?error=" + encodeURIComponent(error.message));
   } else {
     const collegeId = await myCollegeId(supabase, user.id);
-    // college_id stamped server-side; the RLS WITH CHECK enforces it too.
+    // college_id stamped server-side; RLS WITH CHECK enforces it AND space
+    // membership when space_id is set.
     const { error } = await supabase
       .from("listings")
-      .insert({ ...payload, seller_id: user.id, college_id: collegeId });
+      .insert({ ...payload, seller_id: user.id, college_id: collegeId, space_id: spaceId });
     if (error) redirect("/marketplace/new?error=" + encodeURIComponent(error.message));
+    if (spaceId) {
+      revalidatePath(`/spaces/${spaceId}`);
+      redirect(`/spaces/${spaceId}`);
+    }
   }
 
   revalidatePath("/marketplace");

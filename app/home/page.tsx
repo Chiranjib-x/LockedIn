@@ -31,11 +31,16 @@ function greeting() {
 
 export default async function HomePage() {
   const { supabase, user } = await requireUser();
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("name, colleges(name)")
-    .eq("id", user.id)
-    .single<{ name: string; colleges: { name: string } | null }>();
+  const [{ data: profile }, { data: mySpaces }] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("name, colleges(name)")
+      .eq("id", user.id)
+      .single<{ name: string; colleges: { name: string } | null }>(),
+    // RLS: only spaces the user is a member of come back. Everyone else
+    // never sees this section exists.
+    supabase.from("spaces").select("id, name, emoji"),
+  ]);
 
   const firstName = profile?.name?.split(" ")[0] ?? "";
 
@@ -70,6 +75,26 @@ export default async function HomePage() {
           </span>
         ))}
       </div>
+
+      {(mySpaces?.length ?? 0) > 0 && (
+        <div className="flex flex-col gap-3">
+          {mySpaces!.map((s) => (
+            <Link key={s.id} href={`/spaces/${s.id}`} className="animate-fade-up press">
+              <Card className="border-primary/30 bg-gradient-to-r from-primary/10 to-accent/5 transition-all duration-150 hover:-translate-y-0.5 hover:border-primary hover:shadow-md">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="font-semibold">
+                      {s.emoji} {s.name}
+                    </h2>
+                    <p className="text-sm text-muted-foreground">Members-only space</p>
+                  </div>
+                  <span className="text-primary">→</span>
+                </div>
+              </Card>
+            </Link>
+          ))}
+        </div>
+      )}
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         {MODULES.map((m, i) =>

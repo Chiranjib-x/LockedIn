@@ -4,15 +4,22 @@ import ListingForm from "@/modules/marketplace/listing-form";
 export default async function NewListingPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; space?: string }>;
 }) {
-  await requireUser();
-  const { error } = await searchParams;
+  const { supabase } = await requireUser();
+  const { error, space } = await searchParams;
+
+  // RLS returns only spaces the user belongs to.
+  const { data: spaces } = await supabase.from("spaces").select("id, name, emoji");
 
   return (
     <main className="animate-fade-up mx-auto flex w-full max-w-lg flex-1 flex-col gap-5 px-4 py-6">
       <h1 className="text-2xl font-bold">Post a listing</h1>
-      <ListingForm error={error} />
+      <ListingForm
+        error={error}
+        spaces={spaces ?? []}
+        defaultSpaceId={space && spaces?.some((s) => s.id === space) ? space : undefined}
+      />
     </main>
   );
 }

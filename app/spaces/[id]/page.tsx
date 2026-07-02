@@ -1,0 +1,67 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { requireUser } from "@/lib/auth";
+import { Card } from "@/components/ui";
+import ListingCard from "@/modules/marketplace/listing-card";
+import AddMember from "@/modules/spaces/add-member";
+
+export default async function SpacePage({ params }: { params: Promise<{ id: string }> }) {
+  const { supabase } = await requireUser();
+  const { id } = await params;
+
+  // RLS: non-members get null here — the space is unreachable, not just hidden.
+  const { data: space } = await supabase.from("spaces").select("*").eq("id", id).single();
+  if (!space) notFound();
+
+  const [{ data: members }, { data: listings }] = await Promise.all([
+    supabase
+      .from("space_members")
+      .select("user_id, profile:profiles!space_members_user_id_fkey(name)")
+      .eq("space_id", id),
+    supabase
+      .from("listings")
+      .select("id, title, price, category, images, status")
+      .eq("space_id", id)
+      .order("created_at", { ascending: false }),
+  ]);
+
+  return (
+    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 px-4 py-6">
+      <div className="animate-fade-up">
+        <h1 className="text-2xl font-bold">
+          {space.emoji} {space.name}
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          {members?.length ?? 0} member{(members?.length ?? 0) === 1 ? "" : "s"} · members-only —
+          invisible to everyone else
+        </p>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-2">
+        <AddMember spaceId={id} memberIds={(members ?? []).map((m) => m.user_id)} />
+        <Link
+          href={`/marketplace/new?space=${id}`}
+          className="press rounded-full bg-primary px-4 py-2 text-sm font-semibold text-on-primary hover:bg-primary-strong"
+        >
+          ＋ Share an item
+        </Link>
+      </div>
+
+      {!listings?.length ? (
+        <Card className="mt-2 flex flex-col items-center gap-2 py-10 text-center">
+          <span className="text-3xl">{space.emoji}</span>
+          <p className="font-medium">Nothing shared yet</p>
+          <p className="text-sm text-muted-foreground">
+            Lehengas, jackets, heels, jewellery — post what you’re happy to lend or sell.
+          </p>
+        </Card>
+      ) : (
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+          {listings.map((l, i) => (
+            <ListingCard key={l.id} listing={l} index={i} />
+          ))}
+        </div>
+      )}
+    </main>
+  );
+}
