@@ -64,7 +64,7 @@ Tokens live in `app/globals.css` `@theme` — **never hardcode hex in components
 - [x] Phase 10+11 — Matcher: prefs questionnaire + weighted scoring + connect (mutual reveals contact) — run migration 0008
 - [x] Phase 12 — Notifications: DB-trigger emission (0010), bell + unread badge, auto-mark-read page
 - [x] Phase 13 — Polish: route skeletons, error/404 pages, global focus-visible, theme-color
-- [ ] Phase 14 — Production deploy (Vercel) — needs user's Vercel account
+- [x] Phase 14 — Deploy setup: Vercel linked, env vars set, preview verified; production launch pending user's go-live checklist (see DEPLOY.md)
 
 - [ ] Phase 14.5 — Capacitor Android wrap (APK/AAB + Play Store)
 - [ ] Phases 15–40 — see Part 2 doc
