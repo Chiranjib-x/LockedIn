@@ -33,7 +33,7 @@ export function Button({
   }[variant];
   return (
     <button
-      className={`min-h-11 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${styles} ${className}`}
+      className={`min-h-11 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-150 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${styles} ${className}`}
       {...props}
     >
       {children}

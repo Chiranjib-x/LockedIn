@@ -34,6 +34,8 @@ Ship Android via a **Capacitor wrapper** around this same Next.js app — no sep
 
 Tokens live in `app/globals.css` `@theme` — **never hardcode hex in components**. Palette: "Marketplace P2P" trust purple (`primary #7c3aed`) + transaction green (`accent #16a34a`), WCAG-adjusted. Fonts: Outfit (headings) / Work Sans (body) via `next/font`. Use `Card`/`Button`/`Section`/`inputClass` from `components/ui.tsx`. Touch targets ≥44px (`min-h-11`), ≥8px gaps between tappables, mobile-first breakpoints. For new UI decisions (charts, new page patterns), query the local skill: `python ~/.claude/skills/ui-ux-pro-max/src/ui-ux-pro-max/scripts/search.py "<query>" --domain <style|color|typography|ux|chart>`.
 
+**Aesthetic direction (committed):** playful-minimal with editorial punch — oversized Outfit display headings, deep-ink purple on warm light field, global grain overlay (`body::after` in globals.css), staggered `.animate-fade-up` page-load reveals, sticker-style hard-shadow card hovers. No glassmorphism, no generic SaaS blue, no purple-gradient-on-white clichés (per `bencium-impact-designer` skill). Typography rules from the `typography` skill are ENFORCED: real curly quotes/apostrophes (’ not &apos;), em dashes for breaks, en dashes for ranges, one exclamation point budget, no emoji in formal copy (module cards are informal — emoji OK there).
+
 ## Conventions
 
 - Supabase clients: `lib/supabase/client.ts` (browser), `lib/supabase/server.ts` (server). Migrations as SQL files in `supabase/migrations/` — numbered, never edited after commit.

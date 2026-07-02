@@ -33,24 +33,35 @@ export default async function HomePage() {
         <p className="text-sm text-muted-foreground">{profile?.colleges?.name}</p>
       </div>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        {MODULES.map((m) =>
+        {MODULES.map((m, i) =>
           m.live ? (
-            <Link key={m.name} href={m.href}>
-              <Card className="h-full transition-all duration-150 hover:-translate-y-0.5 hover:border-primary hover:shadow-md">
+            <Link
+              key={m.name}
+              href={m.href}
+              className="animate-fade-up"
+              style={{ animationDelay: `${i * 60}ms` }}
+            >
+              <Card className="h-full transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:border-primary hover:shadow-[4px_4px_0_theme(--color-primary)]">
                 <span className="text-2xl">{m.emoji}</span>
                 <h2 className="mt-1 font-semibold">{m.name}</h2>
                 <p className="text-sm text-muted-foreground">{m.desc}</p>
               </Card>
             </Link>
           ) : (
-            <Card key={m.name} className="h-full opacity-70">
-              <span className="text-2xl grayscale">{m.emoji}</span>
-              <h2 className="mt-1 font-semibold">{m.name}</h2>
-              <p className="text-sm text-muted-foreground">{m.desc}</p>
-              <span className="mt-2 inline-block rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
-                Coming soon
-              </span>
-            </Card>
+            <div
+              key={m.name}
+              className="animate-fade-up"
+              style={{ animationDelay: `${i * 60}ms` }}
+            >
+              <Card className="h-full border-dashed bg-transparent">
+                <span className="text-2xl opacity-60 grayscale">{m.emoji}</span>
+                <h2 className="mt-1 font-semibold text-muted-foreground">{m.name}</h2>
+                <p className="text-sm text-muted-foreground/70">{m.desc}</p>
+                <span className="mt-2 inline-block rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+                  Coming soon
+                </span>
+              </Card>
+            </div>
           )
         )}
       </div>

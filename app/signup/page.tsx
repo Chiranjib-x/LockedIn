@@ -13,7 +13,7 @@ export default async function SignupPage({
     <main className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center gap-4 px-6 py-12">
       <h1 className="text-3xl font-bold">Sign up</h1>
       <p className="text-sm text-muted-foreground">
-        Only registered college email domains can join — that&apos;s what keeps
+        Only registered college email domains can join — that’s what keeps
         every buyer, roommate, and organizer a verified student.
       </p>
       {error && (
