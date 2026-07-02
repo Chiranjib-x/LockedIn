@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { Button, inputClass } from "@/components/ui";
 import { RatingBadge, Stars } from "@/modules/ratings/stars";
 import { getRating } from "@/modules/ratings/get-rating";
+import { KarmaBadge } from "@/modules/karma/badge";
+import { KarmaProgress } from "@/modules/karma/progress";
 
 async function updateProfile(formData: FormData) {
   "use server";
@@ -65,12 +67,11 @@ export default async function ProfilePage({
       <p className="text-sm text-muted-foreground">
         {user.email} · {profile.colleges?.name}
       </p>
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
+        <KarmaBadge karma={profile.karma ?? 0} showPoints />
         <RatingBadge avg={rating.avg} count={rating.count} />
-        {(ratedComments?.length ?? 0) > 0 && (
-          <span className="text-xs text-muted-foreground">· recent feedback below</span>
-        )}
       </div>
+      <KarmaProgress karma={profile.karma ?? 0} />
       {saved && (
         <p className="rounded-lg border border-accent/30 bg-accent/10 p-3 text-sm text-accent">Saved.</p>
       )}

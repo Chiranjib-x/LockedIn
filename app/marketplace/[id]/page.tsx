@@ -6,6 +6,7 @@ import ContactSeller from "@/modules/marketplace/contact-seller";
 import { rupees } from "@/modules/marketplace/format";
 import { RatingBadge } from "@/modules/ratings/stars";
 import { getRating } from "@/modules/ratings/get-rating";
+import { KarmaBadge } from "@/modules/karma/badge";
 
 export default async function ListingDetailPage({
   params,
@@ -17,7 +18,7 @@ export default async function ListingDetailPage({
 
   const { data: listing } = await supabase
     .from("listings")
-    .select("*, seller:profiles!listings_seller_id_fkey(id, name, hostel_block, contact_pref)")
+    .select("*, seller:profiles!listings_seller_id_fkey(id, name, hostel_block, contact_pref, karma)")
     .eq("id", id)
     .single();
 
@@ -27,6 +28,7 @@ export default async function ListingDetailPage({
     name: string;
     hostel_block: string | null;
     contact_pref: string | null;
+    karma: number;
   };
   const isMine = seller.id === user.id;
   const sellerRating = await getRating(seller.id);
@@ -63,7 +65,10 @@ export default async function ListingDetailPage({
           {seller.name?.[0]?.toUpperCase() ?? "?"}
         </div>
         <div className="min-w-0">
-          <p className="truncate font-medium">{seller.name || "Student"}</p>
+          <div className="flex items-center gap-2">
+            <p className="truncate font-medium">{seller.name || "Student"}</p>
+            <KarmaBadge karma={seller.karma ?? 0} />
+          </div>
           <RatingBadge avg={sellerRating.avg} count={sellerRating.count} />
         </div>
       </div>

@@ -3,6 +3,7 @@ import { requireUser } from "@/lib/auth";
 import { Card } from "@/components/ui";
 import { scoreMatch, lookingForCompatible, type Prefs } from "@/modules/matcher/score";
 import ConnectButton from "@/modules/matcher/connect-button";
+import { KarmaBadge } from "@/modules/karma/badge";
 
 export default async function MatchesPage({
   searchParams,
@@ -37,7 +38,7 @@ export default async function MatchesPage({
   const [{ data: others }, { data: requests }] = await Promise.all([
     supabase
       .from("match_prefs")
-      .select("*, profile:profiles!match_prefs_user_id_fkey(id, name, hostel_block, batch, contact_pref)")
+      .select("*, profile:profiles!match_prefs_user_id_fkey(id, name, hostel_block, batch, contact_pref, karma)")
       .eq("is_opted_in", true)
       .neq("user_id", user.id),
     supabase.from("match_requests").select("*"),
@@ -95,7 +96,7 @@ export default async function MatchesPage({
       ) : (
         <div className="flex flex-col gap-3">
           {ranked.map((m, i) => {
-            const p = m.profile as { id: string; name: string; hostel_block: string | null; batch: string | null; contact_pref: string | null };
+            const p = m.profile as { id: string; name: string; hostel_block: string | null; batch: string | null; contact_pref: string | null; karma: number };
             const state = reqState(p.id);
             return (
               <Card key={p.id} className="animate-fade-up" style={{ animationDelay: `${Math.min(i, 8) * 45}ms` }}>
@@ -105,7 +106,10 @@ export default async function MatchesPage({
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-2">
-                      <p className="truncate font-semibold">{p.name}</p>
+                      <div className="flex min-w-0 items-center gap-2">
+                        <p className="truncate font-semibold">{p.name}</p>
+                        <KarmaBadge karma={p.karma ?? 0} />
+                      </div>
                       <span className="shrink-0 font-heading text-lg font-bold text-primary">{m.score}%</span>
                     </div>
                     <p className="text-xs text-muted-foreground">

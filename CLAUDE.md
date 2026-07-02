@@ -76,6 +76,7 @@ Tokens live in `app/globals.css` `@theme` — **never hardcode hex in components
 5. [ ] **Personalized home feed** (Phase 26 pulled forward) — surfaces next class, attendance warnings, closing group-buys, club events, deals, cab pools. The daily surface everything above feeds.
 
 - [x] Phase 15 — Transactions + ratings (0011): sold-to-buyer flow, mutual rate-nudge via trigger, stars on profiles/listings, RLS-guarded (party-only, one-per-txn)
-- [ ] Phases 16–40 — see Part 2 doc (Wave A trust: 16 karma → 17 moderation → 18–19 chat)
+- [x] Phase 16 — Karma & badges (0012): append-only karma_events + sync trigger, awards (+10 txn/+5 good rating/+15 found-resolved/+3 group-buy), tiers New/Active/Trusted/Campus Legend, tier-up notify, badges on profile/listing/match
+- [ ] Phases 17–40 — see Part 2 doc (Wave A trust: 17 moderation → 18–19 chat)
 
 Update this tracker when a phase is committed.
