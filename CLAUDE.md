@@ -79,6 +79,8 @@ Tokens live in `app/globals.css` `@theme` — **never hardcode hex in components
 - [x] Phase 16 — Karma & badges (0012): append-only karma_events + sync trigger, awards (+10 txn/+5 good rating/+15 found-resolved/+3 group-buy), tiers New/Active/Trusted/Campus Legend, tier-up notify, badges on profile/listing/match
 - [x] Phase 15.5 — Blind ratings (0013): ratee can't read own feedback rows, only aggregate (anti-grudge)
 - [x] Phase 17 — Report/block/moderation (0014): is_moderator + is_banned flags, soft-delete, report sheet + block filter, banned banner, /admin/moderation console. Founder (test acct) flagged moderator.
-- [ ] Phases 18–40 — see Part 2 doc (Wave A trust: 18–19 chat → then user's clubs/deals/cabs)
+- [x] Phase 18 — Chat core (0015): Realtime 1:1 conversations, find-or-create DM RPC (block/ban enforced), /chats list + thread (optimistic send, openers, share-contact), Chat-with-seller replaces contact reveal, Chats tab live
+- [ ] Phase 19 — Chat everywhere: matcher/group-buy/subscription contexts, unread nav badge, notify on new message
+- [ ] Phases 20–40 — see Part 2 doc → then user's clubs/deals/cabs
 
 Update this tracker when a phase is committed.
