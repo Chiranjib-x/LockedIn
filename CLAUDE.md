@@ -63,7 +63,9 @@ Tokens live in `app/globals.css` `@theme` — **never hardcode hex in components
 - [x] Phase 9.5 — **Gate Runner** (user idea, designed 2026-07-02): food/parcel deliveries stop at the main gate; students already walking there collect others' parcels for a small reward. `pickup_requests` (college_id TENANCY, requester_id, runner_id, platform, item_desc, gate, expected_at, reward, status open→claimed→delivered/cancelled). Runner claims an open request; **requester confirms receipt with one tap** (no OTP codes — requester-side confirmation is the honest party's button); reward settles via the Phase 8 UPI helper on confirmation. Later: Phase 15 transaction on delivery → ratings; Phase 16 karma for runners; Phase 18 chat (context=pickup); Phase 21 push on claim/arrival.
 - [x] Phase 10+11 — Matcher: prefs questionnaire + weighted scoring + connect (mutual reveals contact) — run migration 0008
 - [x] Phase 12 — Notifications: DB-trigger emission (0010), bell + unread badge, auto-mark-read page
-- [ ] Phases 13–14 — see Part 1 doc
+- [x] Phase 13 — Polish: route skeletons, error/404 pages, global focus-visible, theme-color
+- [ ] Phase 14 — Production deploy (Vercel) — needs user's Vercel account
+
 - [ ] Phase 14.5 — Capacitor Android wrap (APK/AAB + Play Store)
 - [ ] Phases 15–40 — see Part 2 doc
 

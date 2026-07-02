@@ -19,6 +19,10 @@ export const metadata: Metadata = {
   description: "Your campus, one app.",
 };
 
+export const viewport = {
+  themeColor: "#f6f5f1",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
