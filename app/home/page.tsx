@@ -22,6 +22,7 @@ const MODULES: {
   { name: "Communities", short: "Groups", desc: "Clubs & interest groups — find your people", href: "/communities", emoji: "🫂", live: true },
   { name: "Toolbox", short: "Toolbox", desc: "Apps & sites worth knowing about", href: "/toolbox", emoji: "🧰", live: true },
   { name: "Deals", short: "Deals", desc: "Local offers for students", href: "/deals", emoji: "🏷️", live: true },
+  { name: "Cab Pooling", short: "Cabs", desc: "Split fares with people headed your way", href: "/cabs", emoji: "🚕", live: true },
 ];
 
 function greeting() {
