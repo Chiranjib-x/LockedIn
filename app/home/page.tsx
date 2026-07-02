@@ -20,6 +20,8 @@ const MODULES: {
   { name: "Roommate Match", short: "Match", desc: "Find your people", href: "/matches", emoji: "🎯", live: true },
   { name: "Gate Runner", short: "Gate", desc: "Deliveries fetched to your hostel", href: "/gate", emoji: "🏃", live: true },
   { name: "Communities", short: "Groups", desc: "Clubs & interest groups — find your people", href: "/communities", emoji: "🫂", live: true },
+  { name: "Toolbox", short: "Toolbox", desc: "Apps & sites worth knowing about", href: "/toolbox", emoji: "🧰", live: true },
+  { name: "Deals", short: "Deals", desc: "Local offers for students", href: "/deals", emoji: "🏷️", live: true },
 ];
 
 function greeting() {

@@ -58,9 +58,14 @@ export default async function Header() {
       {user ? (
         <nav className="flex items-center gap-1">
           {prof?.is_moderator && (
-            <Link href="/admin/moderation" aria-label="Moderation" className="press flex min-h-11 min-w-11 items-center justify-center text-lg">
-              🛡️
-            </Link>
+            <>
+              <Link href="/admin/moderation" aria-label="Moderation" className="press flex min-h-11 min-w-11 items-center justify-center text-lg">
+                🛡️
+              </Link>
+              <Link href="/admin/showcase" aria-label="Toolbox and Deals admin" className="press flex min-h-11 min-w-11 items-center justify-center text-lg">
+                🧰
+              </Link>
+            </>
           )}
           <NotificationBell supabase={supabase} userId={user.id} />
           <form action={logout}>
