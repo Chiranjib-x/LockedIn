@@ -25,12 +25,13 @@ export default async function BottomNav() {
         Explore
       </span>
       <span className="flex items-center justify-center">
-        <span
-          className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-2xl leading-none text-on-primary opacity-40"
-          title="Coming soon"
+        <Link
+          href="/marketplace/new"
+          className="press flex h-12 w-12 items-center justify-center rounded-full bg-primary text-2xl leading-none text-on-primary shadow-lg shadow-primary/30"
+          aria-label="Post a listing"
         >
           +
-        </span>
+        </Link>
       </span>
       <span className={dead} title="Coming soon">
         <span className="text-xl leading-none grayscale opacity-50">💬</span>

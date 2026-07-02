@@ -7,12 +7,14 @@ import Link from "next/link";
 export function Card({
   children,
   className = "",
+  style,
 }: {
   children: React.ReactNode;
   className?: string;
+  style?: React.CSSProperties;
 }) {
   return (
-    <div className={`rounded-2xl border border-border bg-card p-4 ${className}`}>
+    <div style={style} className={`rounded-2xl border border-border bg-card p-4 ${className}`}>
       {children}
     </div>
   );
