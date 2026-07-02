@@ -21,6 +21,15 @@ The app serves multiple colleges from one deployment. Every content table must h
 
 Users belong to a college via their email domain: the `colleges` table maps `email_domain -> college` and signup resolves it there. Owner-only tables (e.g. per-user settings) still carry `college_id` for scoping where content is browsed.
 
+## Android-first (decided)
+
+Ship Android via a **Capacitor wrapper** around this same Next.js app — no separate codebase. Implications:
+
+- After Phase 14 (deploy), add **Phase 14.5: Capacitor Android wrap** — APK/AAB pointing at the deployed site, app icon/splash, Play Store listing.
+- Phase 20 (PWA) still happens — it serves web users and the wrapper reuses the manifest/icons.
+- Phase 21 (push): inside the Android app use **native FCM via @capacitor/push-notifications**, web push only as the browser fallback. Keep the push-send helper transport-agnostic (one `push_subscriptions` table with a `kind` column: webpush | fcm).
+- Keep everything mobile-web compatible: no desktop-only interactions, camera/QR features must work in a webview.
+
 ## Conventions
 
 - Supabase clients: `lib/supabase/client.ts` (browser), `lib/supabase/server.ts` (server). Migrations as SQL files in `supabase/migrations/` — numbered, never edited after commit.
@@ -33,6 +42,7 @@ Users belong to a college via their email domain: the `colleges` table maps `ema
 - [ ] Phase 1 — Campus-email auth + profiles (+ `colleges` table, domain→college mapping)
 - [ ] Phase 2 — App shell + home hub
 - [ ] Phases 3–14 — see Part 1 doc
+- [ ] Phase 14.5 — Capacitor Android wrap (APK/AAB + Play Store)
 - [ ] Phases 15–40 — see Part 2 doc
 
 Update this tracker when a phase is committed.
