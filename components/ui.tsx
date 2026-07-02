@@ -29,9 +29,9 @@ export function Button({
   variant?: "primary" | "secondary" | "accent";
 }) {
   const styles = {
-    primary: "bg-primary text-on-primary hover:bg-primary-strong",
+    primary: "shine bg-primary text-on-primary hover:bg-primary-strong",
     secondary: "border border-border bg-card text-foreground hover:bg-muted",
-    accent: "bg-accent text-on-accent hover:opacity-90",
+    accent: "shine bg-accent text-on-accent hover:opacity-90",
   }[variant];
   return (
     <button

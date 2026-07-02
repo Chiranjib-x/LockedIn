@@ -1,5 +1,6 @@
 import { requireUser } from "@/lib/auth";
 import { Button, inputClass } from "@/components/ui";
+import { Toggle } from "@/components/toggle";
 import { savePrefs } from "@/modules/matcher/actions";
 
 export default async function PrefsPage({
@@ -74,20 +75,21 @@ export default async function PrefsPage({
           </div>
         </fieldset>
 
-        <label className="flex items-center gap-3 text-sm font-medium">
-          <input type="checkbox" name="smoking" defaultChecked={prefs?.smoking ?? false} className="h-5 w-5 accent-(--color-primary)" />
-          I smoke
-        </label>
+        <Toggle name="smoking" defaultChecked={prefs?.smoking ?? false} label="I smoke" />
 
         <label className="flex flex-col gap-1 text-sm font-semibold">
           Short bio
           <textarea name="bio" rows={3} defaultValue={prefs?.bio ?? ""} placeholder="Branch, hobbies, what you're like at 2 a.m…." className={inputClass} />
         </label>
 
-        <label className="flex items-center gap-3 rounded-2xl border border-primary/30 bg-primary/5 p-3 text-sm font-medium">
-          <input type="checkbox" name="is_opted_in" defaultChecked={prefs?.is_opted_in ?? true} className="h-5 w-5 accent-(--color-primary)" />
-          Show me in matching — only opted-in students appear
-        </label>
+        <div className="rounded-2xl border border-primary/30 bg-primary/5 p-3">
+          <Toggle
+            name="is_opted_in"
+            defaultChecked={prefs?.is_opted_in ?? true}
+            label="Show me in matching"
+            hint="Only opted-in students appear to each other"
+          />
+        </div>
 
         <Button type="submit">Save & see matches</Button>
       </form>

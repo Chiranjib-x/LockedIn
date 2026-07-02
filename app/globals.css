@@ -143,6 +143,22 @@ h4 {
 .press { transition: transform 0.12s var(--ease-out-quint); }
 .press:active { transform: scale(0.97); }
 
+/* Light sweep on hover (uiverse-style), on-brand. Applied to primary buttons. */
+.shine { position: relative; overflow: hidden; isolation: isolate; }
+.shine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(110deg, transparent 35%, rgb(255 255 255 / 0.28) 50%, transparent 65%);
+  transform: translateX(-120%);
+  transition: transform 0.6s var(--ease-out-quint);
+}
+.shine:hover::after { transform: translateX(120%); }
+@media (prefers-reduced-motion: reduce) {
+  .shine::after { display: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
