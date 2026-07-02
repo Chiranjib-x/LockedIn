@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { Button, inputClass } from "@/components/ui";
-import { RatingBadge, Stars } from "@/modules/ratings/stars";
+import { RatingBadge } from "@/modules/ratings/stars";
 import { getRating } from "@/modules/ratings/get-rating";
 import { KarmaBadge } from "@/modules/karma/badge";
 import { KarmaProgress } from "@/modules/karma/progress";
@@ -51,14 +51,6 @@ export default async function ProfilePage({
   if (!profile) redirect("/login");
 
   const rating = await getRating(user.id);
-  const { data: ratedComments } = await supabase
-    .from("ratings")
-    .select("stars, comment, created_at")
-    .eq("ratee_id", user.id)
-    .not("comment", "is", null)
-    .order("created_at", { ascending: false })
-    .limit(5);
-
   const field = inputClass;
 
   return (
@@ -104,16 +96,11 @@ export default async function ProfilePage({
         </Button>
       </form>
 
-      {(ratedComments?.length ?? 0) > 0 && (
-        <section className="mt-4 flex flex-col gap-2">
-          <h2 className="text-lg font-semibold">Recent feedback</h2>
-          {ratedComments!.map((r, i) => (
-            <div key={i} className="rounded-2xl border border-border bg-card p-3">
-              <Stars value={r.stars} />
-              {r.comment && <p className="mt-1 text-sm text-foreground/85">{r.comment}</p>}
-            </div>
-          ))}
-        </section>
+      {rating.count > 0 && (
+        <p className="rounded-2xl border border-border bg-card p-3 text-xs text-muted-foreground">
+          Your rating is the average of {rating.count} deal{rating.count === 1 ? "" : "s"}.
+          Individual feedback is kept private — you see the score, not who said what.
+        </p>
       )}
     </main>
   );
