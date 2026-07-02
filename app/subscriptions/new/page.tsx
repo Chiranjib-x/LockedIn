@@ -1,5 +1,6 @@
 import { requireUser } from "@/lib/auth";
-import { Button, inputClass } from "@/components/ui";
+import { inputClass } from "@/components/ui";
+import { SubmitButton } from "@/components/submit-button";
 import { createSubscription } from "@/modules/subscriptions/actions";
 
 export default async function NewSubscriptionPage({
@@ -48,7 +49,7 @@ export default async function NewSubscriptionPage({
           Your UPI ID <span className="font-normal text-muted-foreground">(members pay you here)</span>
           <input name="upi_id" placeholder="you@upi" className={inputClass} />
         </label>
-        <Button type="submit">Create pool</Button>
+        <SubmitButton pendingLabel="Creating…">Create pool</SubmitButton>
       </form>
     </main>
   );

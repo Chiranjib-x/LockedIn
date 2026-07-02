@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Button, inputClass } from "@/components/ui";
+import { inputClass } from "@/components/ui";
+import { SubmitButton } from "@/components/submit-button";
 import ImageUpload from "@/components/image-upload";
 import { createPost } from "./actions";
 
@@ -86,7 +87,7 @@ export default function PostForm({ error }: { error?: string }) {
         <ImageUpload bucket="post-images" value={images} onChange={setImages} />
       </label>
 
-      <Button type="submit">Post to the board</Button>
+      <SubmitButton pendingLabel="Posting…">Post to the board</SubmitButton>
     </form>
   );
 }

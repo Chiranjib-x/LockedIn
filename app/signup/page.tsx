@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { signup } from "@/app/auth/actions";
-import { Button, inputClass } from "@/components/ui";
+import { inputClass } from "@/components/ui";
+import { SubmitButton } from "@/components/submit-button";
 
 export default async function SignupPage({
   searchParams,
@@ -22,17 +23,18 @@ export default async function SignupPage({
         </p>
       )}
       <form action={signup} className="flex flex-col gap-3">
-        <input name="name" type="text" required placeholder="Your name" className={inputClass} />
-        <input name="email" type="email" required placeholder="you@vitstudent.ac.in" className={inputClass} />
+        <input name="name" type="text" required autoComplete="name" placeholder="Your name" className={inputClass} />
+        <input name="email" type="email" required autoComplete="email" placeholder="you@vitstudent.ac.in" className={inputClass} />
         <input
           name="password"
           type="password"
           required
           minLength={8}
+          autoComplete="new-password"
           placeholder="Password (min 8 characters)"
           className={inputClass}
         />
-        <Button type="submit">Create account</Button>
+        <SubmitButton pendingLabel="Creating…">Create account</SubmitButton>
       </form>
       <p className="text-sm text-muted-foreground">
         Already have an account?{" "}

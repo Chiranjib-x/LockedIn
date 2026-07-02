@@ -1,5 +1,6 @@
 import { requireUser } from "@/lib/auth";
-import { Button, inputClass } from "@/components/ui";
+import { inputClass } from "@/components/ui";
+import { SubmitButton } from "@/components/submit-button";
 import { createPickup } from "@/modules/gate/actions";
 
 const PLATFORMS = ["Zomato", "Swiggy", "Amazon", "Flipkart", "Blinkit", "Other"];
@@ -53,7 +54,7 @@ export default async function NewPickupPage({
           Bring it to
           <input name="drop_location" required placeholder="e.g. K Block entrance" className={inputClass} />
         </label>
-        <Button type="submit">Post pickup request</Button>
+        <SubmitButton pendingLabel="Posting…">Post pickup request</SubmitButton>
       </form>
     </main>
   );

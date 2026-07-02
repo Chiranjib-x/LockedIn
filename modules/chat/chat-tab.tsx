@@ -8,13 +8,14 @@ import { createClient } from "@/lib/supabase/client";
 // Chats tab with a realtime unread badge. Server seeds the initial count; a
 // message subscription (RLS-filtered to my conversations) bumps it live. Zeroes
 // when I'm on /chats.
-export default function ChatTab({ meId, initialUnread, className }: { meId: string; initialUnread: number; className: string }) {
+export default function ChatTab({ meId, initialUnread }: { meId: string; initialUnread: number }) {
   const [count, setCount] = useState(initialUnread);
   const pathname = usePathname();
+  const active = pathname.startsWith("/chats");
 
   useEffect(() => {
-    if (pathname.startsWith("/chats")) setCount(0);
-  }, [pathname]);
+    if (active) setCount(0);
+  }, [active]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -34,7 +35,13 @@ export default function ChatTab({ meId, initialUnread, className }: { meId: stri
   }, [meId]);
 
   return (
-    <Link href="/chats" className={`${className} relative`}>
+    <Link
+      href="/chats"
+      aria-current={active ? "page" : undefined}
+      className={`press relative flex min-h-11 flex-col items-center justify-center gap-0.5 transition-colors ${
+        active ? "font-semibold text-primary" : "text-muted-foreground"
+      }`}
+    >
       <span className="text-xl leading-none">💬</span>
       Chats
       {count > 0 && (

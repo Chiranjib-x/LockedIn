@@ -1,5 +1,6 @@
 import { requireUser } from "@/lib/auth";
-import { Button, inputClass } from "@/components/ui";
+import { inputClass } from "@/components/ui";
+import { SubmitButton } from "@/components/submit-button";
 import { Toggle } from "@/components/toggle";
 import { savePrefs } from "@/modules/matcher/actions";
 
@@ -91,7 +92,7 @@ export default async function PrefsPage({
           />
         </div>
 
-        <Button type="submit">Save & see matches</Button>
+        <SubmitButton pendingLabel="Saving…">Save &amp; see matches</SubmitButton>
       </form>
     </main>
   );

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Button, inputClass } from "@/components/ui";
+import { inputClass } from "@/components/ui";
+import { SubmitButton } from "@/components/submit-button";
 import ImageUpload from "@/components/image-upload";
 import { CATEGORIES, CONDITIONS } from "./constants";
 import { saveListing } from "./actions";
@@ -113,7 +114,9 @@ export default function ListingForm({
         <textarea name="description" rows={4} defaultValue={listing?.description ?? ""} placeholder="Condition details, why you're selling, meetup spot…" className={inputClass} />
       </label>
 
-      <Button type="submit">{listing?.id ? "Save changes" : "Post listing"}</Button>
+      <SubmitButton pendingLabel={listing?.id ? "Saving…" : "Posting…"}>
+        {listing?.id ? "Save changes" : "Post listing"}
+      </SubmitButton>
     </form>
   );
 }

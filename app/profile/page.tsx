@@ -1,7 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { Button, inputClass } from "@/components/ui";
+import { inputClass } from "@/components/ui";
+import { SubmitButton } from "@/components/submit-button";
 import { RatingBadge } from "@/modules/ratings/stars";
 import { getRating } from "@/modules/ratings/get-rating";
 import { KarmaBadge } from "@/modules/karma/badge";
@@ -91,9 +92,9 @@ export default async function ProfilePage({
           Contact <span className="font-normal text-muted-foreground">(e.g. WhatsApp number — shared only when you choose)</span>
           <input name="contact_pref" defaultValue={profile.contact_pref ?? ""} className={field} />
         </label>
-        <Button type="submit" className="mt-2">
+        <SubmitButton pendingLabel="Saving…" className="mt-2">
           Save
-        </Button>
+        </SubmitButton>
       </form>
 
       {rating.count > 0 && (

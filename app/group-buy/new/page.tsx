@@ -1,5 +1,6 @@
 import { requireUser } from "@/lib/auth";
-import { Button, inputClass } from "@/components/ui";
+import { inputClass } from "@/components/ui";
+import { SubmitButton } from "@/components/submit-button";
 import { createOrder } from "@/modules/groupbuy/actions";
 
 const CATEGORIES = ["Food", "Groceries", "Merch", "Prints", "Other"];
@@ -48,7 +49,7 @@ export default async function NewOrderPage({
           Details
           <textarea name="description" rows={3} placeholder="Cutoffs, delivery point, anything joiners should know…" className={inputClass} />
         </label>
-        <Button type="submit">Open for joining</Button>
+        <SubmitButton pendingLabel="Opening…">Open for joining</SubmitButton>
       </form>
     </main>
   );

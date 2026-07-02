@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { login } from "@/app/auth/actions";
-import { Button, inputClass } from "@/components/ui";
+import { inputClass } from "@/components/ui";
+import { SubmitButton } from "@/components/submit-button";
 
 export default async function LoginPage({
   searchParams,
@@ -23,9 +24,9 @@ export default async function LoginPage({
         </p>
       )}
       <form action={login} className="flex flex-col gap-3">
-        <input name="email" type="email" required placeholder="you@vitstudent.ac.in" className={inputClass} />
-        <input name="password" type="password" required placeholder="Password" className={inputClass} />
-        <Button type="submit">Log in</Button>
+        <input name="email" type="email" required autoComplete="email" placeholder="you@vitstudent.ac.in" className={inputClass} />
+        <input name="password" type="password" required autoComplete="current-password" placeholder="Password" className={inputClass} />
+        <SubmitButton pendingLabel="Logging in…">Log in</SubmitButton>
       </form>
       <p className="text-sm text-muted-foreground">
         New here?{" "}
