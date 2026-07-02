@@ -29,7 +29,7 @@ export default function RootLayout({
       lang="en"
       className={`${bricolage.variable} ${hanken.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col pb-20">
+      <body className="min-h-full flex flex-col pb-24">
         <Header />
         {children}
         <BottomNav />
