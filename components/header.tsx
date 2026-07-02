@@ -9,7 +9,7 @@ export default async function Header() {
   } = await supabase.auth.getUser();
 
   return (
-    <header className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-background/90 px-4 py-2 backdrop-blur">
+    <header className="glass sticky top-0 z-10 flex items-center justify-between rounded-none border-x-0 border-t-0 px-4 py-2">
       <Link
         href="/"
         className="flex min-h-11 items-center font-heading text-lg font-bold tracking-tight"

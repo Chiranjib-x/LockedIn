@@ -12,10 +12,10 @@ export default async function BottomNav() {
   if (!user) return null;
 
   const dead = "flex min-h-11 flex-col items-center justify-center gap-0.5 text-muted-foreground/50";
-  const live = "flex min-h-11 flex-col items-center justify-center gap-0.5 text-foreground";
+  const live = "press flex min-h-11 flex-col items-center justify-center gap-0.5 text-foreground";
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-20 grid grid-cols-5 items-center border-t border-border bg-card/95 px-2 pt-1 pb-2 text-[11px] font-medium backdrop-blur">
+    <nav className="glass fixed inset-x-3 bottom-3 z-20 grid grid-cols-5 items-center rounded-3xl px-2 pt-1 pb-2 text-[11px] font-medium">
       <Link href="/home" className={live}>
         <span className="text-xl leading-none">🏠</span>
         Home

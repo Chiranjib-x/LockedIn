@@ -33,6 +33,22 @@ body {
   font-family: var(--font-sans);
 }
 
+/* Ambient gradient mesh — gives the glass surfaces something to refract.
+   Fixed, slow-drifting cobalt + green blooms behind all content. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: -20%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(40% 40% at 15% 12%, oklch(0.48 0.19 264 / 0.22), transparent 70%),
+    radial-gradient(38% 38% at 88% 20%, oklch(0.7 0.15 160 / 0.18), transparent 70%),
+    radial-gradient(45% 45% at 75% 92%, oklch(0.48 0.19 264 / 0.16), transparent 70%);
+  filter: saturate(1.1);
+  animation: mesh-drift 24s ease-in-out infinite alternate;
+}
+
 /* Film grain over everything — the atmosphere layer. Pure CSS, no asset. */
 body::after {
   content: "";
@@ -42,6 +58,19 @@ body::after {
   pointer-events: none;
   opacity: 0.035;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Glassmorphism surface — translucent, blurred, hairline top highlight.
+   Only reads over the mesh/scrolling content, so reserve for floating layers
+   (header, bottom nav, sheets, hero cards), not every card. */
+.glass {
+  background: color-mix(in oklch, var(--color-card) 62%, transparent);
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  border: 1px solid color-mix(in oklch, #ffffff 55%, transparent);
+  box-shadow:
+    0 8px 32px -12px oklch(0.2 0.05 264 / 0.25),
+    inset 0 1px 0 0 oklch(1 0 0 / 0.4);
 }
 
 h1,
@@ -58,23 +87,61 @@ h4 {
   color: var(--color-on-primary);
 }
 
-@keyframes fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
+/* Motion primitives. Shared easing: --ease-out-quint for entrances,
+   --ease-spring for playful pops. Every animation is guarded by
+   prefers-reduced-motion below. */
+@theme {
+  --ease-out-quint: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.animate-fade-up {
-  animation: fade-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
 }
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes sheet-up {
+  from { transform: translateY(100%); }
+  to { transform: none; }
+}
+@keyframes mesh-drift {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to { transform: translate3d(2%, -2%, 0) scale(1.08); }
+}
+@keyframes shimmer {
+  from { background-position: -150% 0; }
+  to { background-position: 150% 0; }
+}
+
+.animate-fade-up { animation: fade-up 0.55s var(--ease-out-quint) both; }
+.animate-scale-in { animation: scale-in 0.4s var(--ease-spring) both; }
+.animate-sheet-up { animation: sheet-up 0.35s var(--ease-out-quint) both; }
+
+/* Skeleton shimmer for loading states across modules. */
+.shimmer {
+  background: linear-gradient(
+    100deg,
+    var(--color-muted) 30%,
+    color-mix(in oklch, var(--color-muted) 60%, #fff) 50%,
+    var(--color-muted) 70%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+
+/* Press feedback for any tappable — pairs with active:scale on buttons. */
+.press { transition: transform 0.12s var(--ease-out-quint); }
+.press:active { transform: scale(0.97); }
 
 @media (prefers-reduced-motion: reduce) {
-  .animate-fade-up {
-    animation: none;
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
   }
 }
