@@ -58,10 +58,11 @@ Tokens live in `app/globals.css` `@theme` — **never hardcode hex in components
 - [x] Phase 5 — Lost & Found + Notices: schema + create post (run migration 0003)
 - [x] Phase 6 — Board feed + filters + resolve
 - [x] Phase 6.5 — **Spaces: Girls' Closet** (migration 0004): members-only spaces, vouch-based entry, no gender stored, space listings RLS-unreachable to non-members. Member removal (beyond self-leave) deferred to Phase 17 moderation; lend/return mechanics land with Phase 32.
-- [ ] Phase 7+8 — Group-Buy: orders + join + UPI collection (built together; reusable UPI helper)
-- [ ] Phase 9 — Subscription pooling
-- [ ] Phase 9.5 — **Gate Runner** (user idea, designed 2026-07-02): food/parcel deliveries stop at the main gate; students already walking there collect others' parcels for a small reward. `pickup_requests` (college_id TENANCY, requester_id, runner_id, platform, item_desc, gate, expected_at, reward, status open→claimed→delivered/cancelled). Runner claims an open request; **requester confirms receipt with one tap** (no OTP codes — requester-side confirmation is the honest party's button); reward settles via the Phase 8 UPI helper on confirmation. Later: Phase 15 transaction on delivery → ratings; Phase 16 karma for runners; Phase 18 chat (context=pickup); Phase 21 push on claim/arrival.
-- [ ] Phases 10–14 — see Part 1 doc
+- [x] Phase 7+8 — Group-Buy: orders + join + UPI collection (built together; reusable UPI helper)
+- [x] Phase 9 — Subscription pooling
+- [x] Phase 9.5 — **Gate Runner** (user idea, designed 2026-07-02): food/parcel deliveries stop at the main gate; students already walking there collect others' parcels for a small reward. `pickup_requests` (college_id TENANCY, requester_id, runner_id, platform, item_desc, gate, expected_at, reward, status open→claimed→delivered/cancelled). Runner claims an open request; **requester confirms receipt with one tap** (no OTP codes — requester-side confirmation is the honest party's button); reward settles via the Phase 8 UPI helper on confirmation. Later: Phase 15 transaction on delivery → ratings; Phase 16 karma for runners; Phase 18 chat (context=pickup); Phase 21 push on claim/arrival.
+- [x] Phase 10+11 — Matcher: prefs questionnaire + weighted scoring + connect (mutual reveals contact) — run migration 0008
+- [ ] Phases 12–14 — see Part 1 doc
 - [ ] Phase 14.5 — Capacitor Android wrap (APK/AAB + Play Store)
 - [ ] Phases 15–40 — see Part 2 doc
 
