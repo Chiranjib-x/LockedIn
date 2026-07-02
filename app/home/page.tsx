@@ -18,6 +18,7 @@ const MODULES: {
   { name: "Group-Buy", short: "Group-Buy", desc: "Pool orders, split via UPI", href: "/group-buy", emoji: "🤝", live: true },
   { name: "Subscriptions", short: "Pools", desc: "Share OTT & tool costs", href: "/subscriptions", emoji: "📺", live: true },
   { name: "Roommate Match", short: "Match", desc: "Find your people", href: "/matches", emoji: "🎯", live: false },
+  { name: "Gate Runner", short: "Gate", desc: "Deliveries fetched to your hostel", href: "/gate", emoji: "🏃", live: true },
 ];
 
 function greeting() {
