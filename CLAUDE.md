@@ -66,7 +66,7 @@ Tokens live in `app/globals.css` `@theme` — **never hardcode hex in components
 - [x] Phase 13 — Polish: route skeletons, error/404 pages, global focus-visible, theme-color
 - [x] Phase 14 — Deploy setup: Vercel linked, env vars set, preview verified; production launch pending user's go-live checklist (see DEPLOY.md)
 
-- [ ] Phase 14.5 — Capacitor Android wrap (APK/AAB + Play Store)
+- [ ] Phase 14.5 — Capacitor Android wrap (APK/AAB + Play Store). **Use `components/SplashLoader` (recolored uiverse metaball, on-brand cobalt) as the app-launch splash.**
 
 ### User ideas (designed 2026-07-04) — DECIDED: Wave A trust (15–19) builds FIRST, then these; Deals stays unpaid until traffic justifies charging
 1. [ ] **Clubs & Teams** — student proposes club → founder approves (adds `is_moderator` to profiles — thin Phase 17 slice — flag the founder's account); approved club gets page (name/logo/category/description) + `club_members` with role member/admin; admins post updates/events via `posts.club_id` (nullable FK) so club events ride the board rails, share cards (22), and the feed (26). TENANCY RULE on `clubs`.

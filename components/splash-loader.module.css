@@ -1,0 +1,68 @@
+/* Molten metaball loader — adapted from Uiverse (andrew-manzyk), recolored to
+   the Campus cobalt/green palette. Gooey effect: blurred rotating polygons
+   pushed through high contrast form a morphing blob that masks a gradient disc.
+   Home: the app-launch splash. Not for inline loading (skeletons win there). */
+.loader {
+  --color-one: #6b8cff;   /* light cobalt */
+  --color-two: #1e2a78;   /* deep cobalt */
+  --color-three: #6b8cff80;
+  --color-four: #1e2a7880;
+  --color-five: #6b8cff40;
+  --time-animation: 2s;
+  --size: 1;
+  position: relative;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  transform: scale(var(--size));
+  box-shadow: 0 0 25px 0 var(--color-three), 0 20px 50px 0 var(--color-four);
+  animation: colorize calc(var(--time-animation) * 3) ease-in-out infinite;
+}
+
+.loader::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border-top: solid 1px var(--color-one);
+  border-bottom: solid 1px var(--color-two);
+  background: linear-gradient(180deg, var(--color-five), var(--color-four));
+  box-shadow: inset 0 10px 10px 0 var(--color-three), inset 0 -10px 10px 0 var(--color-four);
+}
+
+.box {
+  position: absolute;
+  inset: 0;
+  width: 100px;
+  height: 100px;
+  background: linear-gradient(180deg, var(--color-one) 30%, var(--color-two) 70%);
+  mask: url(#campus-clip);
+  -webkit-mask: url(#campus-clip);
+}
+
+.svg {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+}
+
+.svg :global(#campus-clip) {
+  filter: contrast(15);
+  animation: roundness calc(var(--time-animation) / 2) linear infinite;
+}
+.svg :global(#campus-clip) polygon { filter: blur(7px); }
+.svg :global(#campus-clip) polygon:nth-child(1) { transform-origin: 75% 25%; transform: rotate(90deg); }
+.svg :global(#campus-clip) polygon:nth-child(2) { transform-origin: 50% 50%; animation: rotation var(--time-animation) linear infinite reverse; }
+.svg :global(#campus-clip) polygon:nth-child(3) { transform-origin: 50% 60%; animation: rotation var(--time-animation) linear infinite; animation-delay: calc(var(--time-animation) / -3); }
+.svg :global(#campus-clip) polygon:nth-child(4) { transform-origin: 40% 40%; animation: rotation var(--time-animation) linear infinite reverse; }
+.svg :global(#campus-clip) polygon:nth-child(5) { transform-origin: 40% 40%; animation: rotation var(--time-animation) linear infinite reverse; animation-delay: calc(var(--time-animation) / -2); }
+.svg :global(#campus-clip) polygon:nth-child(6) { transform-origin: 60% 40%; animation: rotation var(--time-animation) linear infinite; }
+.svg :global(#campus-clip) polygon:nth-child(7) { transform-origin: 60% 40%; animation: rotation var(--time-animation) linear infinite; animation-delay: calc(var(--time-animation) / -1.5); }
+
+@keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+@keyframes roundness { 0% { filter: contrast(15); } 20% { filter: contrast(3); } 40% { filter: contrast(3); } 60% { filter: contrast(15); } 100% { filter: contrast(15); } }
+@keyframes colorize { 0% { filter: hue-rotate(0deg); } 20% { filter: hue-rotate(-20deg); } 40% { filter: hue-rotate(-40deg); } 60% { filter: hue-rotate(30deg); } 80% { filter: hue-rotate(15deg); } 100% { filter: hue-rotate(0deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .loader, .svg :global(#campus-clip), .svg :global(#campus-clip) polygon { animation: none !important; }
+}
