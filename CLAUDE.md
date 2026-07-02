@@ -11,6 +11,8 @@ Multi-college campus app: Marketplace, Lost & Found + Notices, Group-Buy, Subscr
 
 **Working rhythm:** one phase per session, read existing code first, build only that phase, end with a manual test checklist, `git commit` after it passes.
 
+**Verification:** after building a phase, drive it with Python Playwright (installed; see `~/.claude/skills/webapp-testing/SKILL.md`) against the dev server at a **390×844 mobile viewport** — click the new flows, screenshot, and look at the screenshots. Dev login: `lockedin.phase1.test@gmail.com` / `testpass1234` (Demo College).
+
 ## THE TENANCY RULE (applies to every table, no exceptions)
 
 The app serves multiple colleges from one deployment. Every content table must have:
