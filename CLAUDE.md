@@ -80,7 +80,7 @@ Tokens live in `app/globals.css` `@theme` — **never hardcode hex in components
 - [x] Phase 15.5 — Blind ratings (0013): ratee can't read own feedback rows, only aggregate (anti-grudge)
 - [x] Phase 17 — Report/block/moderation (0014): is_moderator + is_banned flags, soft-delete, report sheet + block filter, banned banner, /admin/moderation console. Founder (test acct) flagged moderator.
 - [x] Phase 18 — Chat core (0015): Realtime 1:1 conversations, find-or-create DM RPC (block/ban enforced), /chats list + thread (optimistic send, openers, share-contact), Chat-with-seller replaces contact reveal, Chats tab live
-- [ ] Phase 19 — Chat everywhere: matcher/group-buy/subscription contexts, unread nav badge, notify on new message
+- [x] Phase 19 — Chat everywhere (0016): mutual-match auto-chat + icebreaker, Message organizer/owner, realtime unread nav badge, new-message notifications (collapsed per-conversation). **🚢 Wave A "The Trust Update" COMPLETE.**
 - [ ] Phases 20–40 — see Part 2 doc → then user's clubs/deals/cabs
 
 Update this tracker when a phase is committed.
