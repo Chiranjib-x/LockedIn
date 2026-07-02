@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { requireUser } from "@/lib/auth";
 import { Card } from "@/components/ui";
+import { UpNextCard } from "@/modules/timetable/up-next-card";
+import { getNextClass, type TimetableEntry } from "@/modules/timetable/helpers";
 
 // Home feed structure follows docs/design/directions.png. The "Up Next" class
 // card lands with Phase 24–25, "Due soon" with Phase 26, search with Phase 27.
@@ -23,6 +25,7 @@ const MODULES: {
   { name: "Toolbox", short: "Toolbox", desc: "Apps & sites worth knowing about", href: "/toolbox", emoji: "🧰", live: true },
   { name: "Deals", short: "Deals", desc: "Local offers for students", href: "/deals", emoji: "🏷️", live: true },
   { name: "Cab Pooling", short: "Cabs", desc: "Split fares with people headed your way", href: "/cabs", emoji: "🚕", live: true },
+  { name: "Timetable", short: "Timetable", desc: "Your classes + attendance, at a glance", href: "/timetable", emoji: "🗓️", live: true },
 ];
 
 function greeting() {
@@ -36,18 +39,31 @@ function greeting() {
 
 export default async function HomePage() {
   const { supabase, user } = await requireUser();
-  const [{ data: profile }, { data: mySpaces }] = await Promise.all([
+  const [{ data: profile }, { data: mySpaces }, { data: entries }, { data: records }] = await Promise.all([
     supabase
       .from("profiles")
-      .select("name, colleges(name)")
+      .select("name, colleges(name, attendance_threshold)")
       .eq("id", user.id)
-      .single<{ name: string; colleges: { name: string } | null }>(),
+      .single<{ name: string; colleges: { name: string; attendance_threshold: number } | null }>(),
     // RLS: only spaces the user is a member of come back. Everyone else
     // never sees this section exists.
     supabase.from("spaces").select("id, name, emoji"),
+    supabase.from("timetable_entries").select("*"),
+    supabase.from("attendance_records").select("course_code, status"),
   ]);
 
   const firstName = profile?.name?.split(" ")[0] ?? "";
+  const defaultThreshold = profile?.colleges?.attendance_threshold ?? 75;
+  const next = getNextClass((entries ?? []) as TimetableEntry[], new Date());
+  let held = 0, attended = 0;
+  if (next) {
+    for (const r of records ?? []) {
+      if (r.course_code !== next.entry.course_code || r.status === "cancelled") continue;
+      held += 1;
+      if (r.status === "present") attended += 1;
+    }
+  }
+  const nextThreshold = next?.entry.min_attendance ?? defaultThreshold;
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-4 py-6">
@@ -80,6 +96,17 @@ export default async function HomePage() {
           </span>
         ))}
       </div>
+
+      {next && (
+        <UpNextCard
+          entry={next.entry}
+          minutesUntil={next.minutesUntil}
+          ongoing={next.ongoing}
+          attended={attended}
+          held={held}
+          threshold={nextThreshold}
+        />
+      )}
 
       {(mySpaces?.length ?? 0) > 0 && (
         <div className="flex flex-col gap-3">
