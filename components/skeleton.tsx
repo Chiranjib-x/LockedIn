@@ -11,6 +11,17 @@ export function SkeletonList() {
   );
 }
 
+// A single feed section's loading placeholder — used while a /home section
+// streams in behind its own Suspense boundary.
+export function SkeletonSection() {
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="shimmer h-5 w-32 rounded-full" />
+      <div className="shimmer h-20 rounded-2xl" />
+    </div>
+  );
+}
+
 export function SkeletonGrid() {
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 px-4 py-6">

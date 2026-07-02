@@ -1,58 +1,11 @@
 import Link from "next/link";
 import { requireUser } from "@/lib/auth";
 import { Card } from "@/components/ui";
-
-function ago(iso: string) {
-  const mins = (Date.now() - new Date(iso).getTime()) / 60000;
-  if (mins < 1) return "now";
-  if (mins < 60) return `${Math.round(mins)}m`;
-  if (mins < 1440) return `${Math.round(mins / 60)}h`;
-  return `${Math.round(mins / 1440)}d`;
-}
+import { getChatRows, ago } from "@/modules/chat/recent";
 
 export default async function ChatsPage() {
   const { supabase, user } = await requireUser();
-
-  // Conversations I'm in, with the other participant + last message.
-  const { data: parts } = await supabase
-    .from("conversation_participants")
-    .select("conversation_id, last_read_at, conversations(id, context_type, context_id, created_at)")
-    .eq("user_id", user.id);
-
-  const convIds = (parts ?? []).map((p) => p.conversation_id);
-
-  const [{ data: others }, { data: lastMsgs }] = await Promise.all([
-    supabase
-      .from("conversation_participants")
-      .select("conversation_id, user_id, profiles(name)")
-      .in("conversation_id", convIds.length ? convIds : ["00000000-0000-0000-0000-000000000000"])
-      .neq("user_id", user.id),
-    supabase
-      .from("messages")
-      .select("conversation_id, body, created_at, sender_id")
-      .in("conversation_id", convIds.length ? convIds : ["00000000-0000-0000-0000-000000000000"])
-      .order("created_at", { ascending: false }),
-  ]);
-
-  const otherByConv = new Map((others ?? []).map((o) => [o.conversation_id, o]));
-  const lastByConv = new Map<string, { body: string; created_at: string; sender_id: string }>();
-  for (const m of lastMsgs ?? []) if (!lastByConv.has(m.conversation_id)) lastByConv.set(m.conversation_id, m);
-
-  const rows = (parts ?? [])
-    .map((p) => {
-      const other = otherByConv.get(p.conversation_id) as { user_id: string; profiles: { name: string } } | undefined;
-      const last = lastByConv.get(p.conversation_id);
-      const unread = last ? new Date(last.created_at) > new Date(p.last_read_at) && last.sender_id !== user.id : false;
-      return {
-        id: p.conversation_id,
-        name: other?.profiles?.name ?? "Student",
-        last,
-        unread,
-        sortKey: last ? new Date(last.created_at).getTime() : 0,
-      };
-    })
-    .filter((r) => r.last) // hide empty conversations
-    .sort((a, b) => b.sortKey - a.sortKey);
+  const rows = await getChatRows(supabase, user.id);
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-3 px-4 py-6">
