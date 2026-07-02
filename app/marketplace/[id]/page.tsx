@@ -1,0 +1,80 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { requireUser } from "@/lib/auth";
+import Gallery from "@/modules/marketplace/gallery";
+import ContactSeller from "@/modules/marketplace/contact-seller";
+import { rupees } from "@/modules/marketplace/format";
+
+export default async function ListingDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { supabase, user } = await requireUser();
+  const { id } = await params;
+
+  const { data: listing } = await supabase
+    .from("listings")
+    .select("*, seller:profiles!listings_seller_id_fkey(id, name, hostel_block, contact_pref)")
+    .eq("id", id)
+    .single();
+
+  if (!listing) notFound();
+  const seller = listing.seller as {
+    id: string;
+    name: string;
+    hostel_block: string | null;
+    contact_pref: string | null;
+  };
+  const isMine = seller.id === user.id;
+
+  return (
+    <main className="animate-fade-up mx-auto flex w-full max-w-lg flex-1 flex-col gap-4 px-4 py-6">
+      <Link href="/marketplace" className="text-sm text-muted-foreground hover:text-foreground">
+        ← Marketplace
+      </Link>
+
+      <Gallery images={listing.images ?? []} title={listing.title} />
+
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold">{listing.title}</h1>
+          <p className="mt-1 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+            <span className="rounded-full bg-muted px-2 py-0.5">{listing.category}</span>
+            {listing.condition && <span className="rounded-full bg-muted px-2 py-0.5">{listing.condition}</span>}
+          </p>
+        </div>
+        <p className="font-heading text-2xl font-bold text-primary">{rupees(listing.price)}</p>
+      </div>
+
+      {listing.status === "sold" && (
+        <p className="rounded-2xl bg-muted p-3 text-center text-sm font-medium">This item has been sold.</p>
+      )}
+
+      {listing.description && (
+        <p className="whitespace-pre-wrap text-[15px] leading-relaxed text-foreground/90">{listing.description}</p>
+      )}
+
+      <div className="mt-2 flex items-center gap-3 rounded-2xl border border-border bg-card p-3">
+        <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/10 font-heading font-bold text-primary">
+          {seller.name?.[0]?.toUpperCase() ?? "?"}
+        </div>
+        <div className="min-w-0">
+          <p className="truncate font-medium">{seller.name || "Student"}</p>
+          {seller.hostel_block && <p className="text-xs text-muted-foreground">{seller.hostel_block}</p>}
+        </div>
+      </div>
+
+      {isMine ? (
+        <Link
+          href={`/marketplace/${listing.id}/edit`}
+          className="press flex min-h-12 items-center justify-center rounded-full border border-border bg-card px-6 font-semibold"
+        >
+          Edit your listing
+        </Link>
+      ) : (
+        listing.status === "available" && <ContactSeller contact={seller.contact_pref} />
+      )}
+    </main>
+  );
+}

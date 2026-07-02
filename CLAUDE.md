@@ -53,8 +53,9 @@ Tokens live in `app/globals.css` `@theme` — **never hardcode hex in components
 - [x] Phase 0 — Scaffold & tooling
 - [x] Phase 1 — Campus-email auth + profiles (+ `colleges` table, domain→college mapping)
 - [x] Phase 2 — App shell + home hub
-- [x] Phase 3 — Marketplace: listings schema + reusable image upload + create/manage (browse is Phase 4)
-- [ ] Phases 4–14 — see Part 1 doc
+- [x] Phase 3 — Marketplace: listings schema + reusable image upload + create/manage
+- [x] Phase 4 — Marketplace: browse grid, URL-synced search/filter/sort, detail, contact reveal
+- [ ] Phases 5–14 — see Part 1 doc
 - [ ] Phase 14.5 — Capacitor Android wrap (APK/AAB + Play Store)
 - [ ] Phases 15–40 — see Part 2 doc
 
