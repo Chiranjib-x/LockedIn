@@ -32,4 +32,11 @@ export async function markRead(conversationId: string) {
     .update({ last_read_at: new Date().toISOString() })
     .eq("conversation_id", conversationId)
     .eq("user_id", user.id);
+  // Clear the collapsed chat notification for this conversation.
+  await supabase
+    .from("notifications")
+    .update({ read: true })
+    .eq("user_id", user.id)
+    .eq("link", `/chats/${conversationId}`)
+    .eq("read", false);
 }

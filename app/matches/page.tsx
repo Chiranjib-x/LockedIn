@@ -122,9 +122,6 @@ export default async function MatchesPage({
                     {m.bio && <p className="mt-1 line-clamp-2 text-sm text-foreground/80">{m.bio}</p>}
                     <div className="mt-2 flex items-center gap-2">
                       <ConnectButton targetId={p.id} state={state} />
-                      {state === "mutual" && p.contact_pref && (
-                        <span className="truncate text-sm font-medium">{p.contact_pref}</span>
-                      )}
                     </div>
                   </div>
                 </div>

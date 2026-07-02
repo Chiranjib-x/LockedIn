@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import ChatTab from "@/modules/chat/chat-tab";
+import { unreadChatCount } from "@/modules/chat/unread";
 
 // Bottom tab bar per docs/design/directions.png: Home · Explore · [+] · Chats ·
 // Profile. Explore lights up with global search (Phase 27), [+] with the first
@@ -10,6 +12,8 @@ export default async function BottomNav() {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return null;
+
+  const unread = await unreadChatCount(supabase, user.id);
 
   const dead = "flex min-h-11 flex-col items-center justify-center gap-0.5 text-muted-foreground/50";
   const live = "press flex min-h-11 flex-col items-center justify-center gap-0.5 text-foreground";
@@ -33,10 +37,7 @@ export default async function BottomNav() {
           +
         </Link>
       </span>
-      <Link href="/chats" className={`${live} relative`}>
-        <span className="text-xl leading-none">💬</span>
-        Chats
-      </Link>
+      <ChatTab meId={user.id} initialUnread={unread} className={live} />
       <Link href="/profile" className={live}>
         <span className="text-xl leading-none">👤</span>
         Profile

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { rupees } from "@/modules/marketplace/format";
 import { AddPoolMember, MemberRow, SplitEvenlyButton } from "@/modules/subscriptions/client";
+import { openChat } from "@/modules/chat/actions";
 
 export default async function SubscriptionPage({ params }: { params: Promise<{ id: string }> }) {
   const { supabase, user } = await requireUser();
@@ -23,6 +24,11 @@ export default async function SubscriptionPage({ params }: { params: Promise<{ i
 
   const owner = sub.owner as { id: string; name: string };
   const isOwner = owner.id === user.id;
+
+  async function messageOwner() {
+    "use server";
+    await openChat(owner.id, "subscription", sub.id);
+  }
   const list = (members ?? []).map((m) => ({
     id: m.id,
     user_id: m.user_id,
@@ -52,11 +58,19 @@ export default async function SubscriptionPage({ params }: { params: Promise<{ i
         {unpaid.length > 0 && <> · {unpaid.length} member{unpaid.length === 1 ? "" : "s"} still owe{unpaid.length === 1 ? "s" : ""}</>}
       </div>
 
-      {isOwner && (
+      {isOwner ? (
         <div className="flex flex-wrap gap-2">
           <AddPoolMember subId={sub.id} defaultShare={defaultShare} memberIds={[...list.map((m) => m.user_id), owner.id]} />
           {list.length > 0 && <SplitEvenlyButton subId={sub.id} />}
         </div>
+      ) : (
+        list.some((m) => m.user_id === user.id) && (
+          <form action={messageOwner}>
+            <button type="submit" className="press rounded-full border border-border bg-card px-4 py-2 text-sm font-semibold hover:bg-muted">
+              Message owner 💬
+            </button>
+          </form>
+        )
       )}
 
       <section className="flex flex-col gap-2">

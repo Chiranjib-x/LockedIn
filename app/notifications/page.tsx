@@ -10,6 +10,7 @@ const TYPE_EMOJI: Record<string, string> = {
   subscription: "📺",
   rating: "⭐",
   karma: "🏅",
+  chat: "💬",
 };
 
 function ago(ts: string) {

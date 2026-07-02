@@ -1,6 +1,6 @@
 "use client";
 
-import { connect } from "./actions";
+import { connect, messageMatch } from "./actions";
 import { useState } from "react";
 
 export default function ConnectButton({
@@ -13,7 +13,14 @@ export default function ConnectButton({
   const [busy, setBusy] = useState(false);
 
   if (state === "mutual") {
-    return <span className="rounded-full bg-accent/10 px-3 py-1.5 text-sm font-semibold text-accent">Connected ✓</span>;
+    return (
+      <button
+        onClick={() => messageMatch(targetId)}
+        className="press rounded-full bg-accent px-4 py-1.5 text-sm font-semibold text-on-accent"
+      >
+        Message 💬
+      </button>
+    );
   }
   if (state === "sent") {
     return <span className="rounded-full bg-muted px-3 py-1.5 text-sm font-medium text-muted-foreground">Requested</span>;
@@ -28,7 +35,7 @@ export default function ConnectButton({
       }}
       className="press rounded-full bg-primary px-4 py-1.5 text-sm font-semibold text-on-primary hover:bg-primary-strong disabled:opacity-50"
     >
-      {state === "incoming" ? "Accept ✓" : "Connect"}
+      {state === "incoming" ? "Accept & chat ✓" : "Connect"}
     </button>
   );
 }

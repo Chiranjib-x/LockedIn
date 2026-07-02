@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { scoreMatch, type Prefs } from "./score";
 
 export async function savePrefs(formData: FormData) {
   const supabase = await createClient();
@@ -61,6 +62,19 @@ export async function connect(targetId: string) {
       college_id: profile?.college_id,
       status: "mutual",
     });
+    // Mutual → open a chat with a preference-based icebreaker and route in.
+    const [{ data: mine }, { data: theirs }] = await Promise.all([
+      supabase.from("match_prefs").select("*").eq("user_id", user.id).single(),
+      supabase.from("match_prefs").select("*").eq("user_id", targetId).single(),
+    ]);
+    let icebreaker = "You matched — say hi! 👋";
+    if (mine && theirs) {
+      const { why } = scoreMatch(mine as Prefs, theirs as Prefs);
+      if (why.length) icebreaker = `You ${why.join(" and ")} — say hi! 👋`;
+    }
+    const { data: conv } = await supabase.rpc("start_match_chat", { other: targetId, icebreaker });
+    revalidatePath("/matches");
+    if (conv) redirect(`/chats/${conv}`);
   } else {
     await supabase.from("match_requests").insert({
       requester_id: user.id,
@@ -69,4 +83,16 @@ export async function connect(targetId: string) {
     });
   }
   revalidatePath("/matches");
+}
+
+// Open (or find) the match chat — used by the "Message" action once mutual.
+export async function messageMatch(targetId: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+  const { data: conv } = await supabase.rpc("start_match_chat", { other: targetId, icebreaker: null });
+  if (conv) redirect(`/chats/${conv}`);
+  redirect("/matches");
 }

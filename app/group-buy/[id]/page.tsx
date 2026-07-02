@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { rupees } from "@/modules/marketplace/format";
+import { openChat } from "@/modules/chat/actions";
 import {
   JoinForm,
   LeaveButton,
@@ -38,6 +39,11 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
   const organizer = order.organizer as { id: string; name: string };
   const isOrganizer = organizer.id === user.id;
   const mine = items?.find((it) => it.user_id === user.id);
+
+  async function messageOrganizer() {
+    "use server";
+    await openChat(organizer.id, "group_order", order.id);
+  }
   const total = (items ?? []).reduce((s, it) => s + Number(it.amount_owed), 0);
   const collected = (items ?? []).filter((it) => it.paid_confirmed).reduce((s, it) => s + Number(it.amount_owed), 0);
   const stepIdx = STATUS_STEPS.indexOf(order.status);
@@ -74,7 +80,17 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
         </p>
       )}
 
-      {isOrganizer && <OrganizerControls orderId={order.id} status={order.status} />}
+      {isOrganizer ? (
+        <OrganizerControls orderId={order.id} status={order.status} />
+      ) : (
+        mine && (
+          <form action={messageOrganizer}>
+            <button type="submit" className="press rounded-full border border-border bg-card px-4 py-2 text-sm font-semibold hover:bg-muted">
+              Message organizer 💬
+            </button>
+          </form>
+        )
+      )}
 
       {!mine && order.status === "open" && !isOrganizer && (
         <JoinForm orderId={order.id} unitPrice={order.unit_price != null ? Number(order.unit_price) : null} />
