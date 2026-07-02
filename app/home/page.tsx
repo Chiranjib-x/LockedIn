@@ -16,7 +16,7 @@ const MODULES: {
   { name: "Marketplace", short: "Market", desc: "Buy & sell within campus", href: "/marketplace", emoji: "🛍️", live: true },
   { name: "Lost & Found + Notices", short: "Board", desc: "The campus board", href: "/board", emoji: "📌", live: true },
   { name: "Group-Buy", short: "Group-Buy", desc: "Pool orders, split via UPI", href: "/group-buy", emoji: "🤝", live: true },
-  { name: "Subscriptions", short: "Pools", desc: "Share OTT & tool costs", href: "/subscriptions", emoji: "📺", live: false },
+  { name: "Subscriptions", short: "Pools", desc: "Share OTT & tool costs", href: "/subscriptions", emoji: "📺", live: true },
   { name: "Roommate Match", short: "Match", desc: "Find your people", href: "/matches", emoji: "🎯", live: false },
 ];
 
