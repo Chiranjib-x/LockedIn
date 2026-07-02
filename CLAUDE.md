@@ -38,6 +38,8 @@ Ship Android via a **Capacitor wrapper** around this same Next.js app — no sep
 
 Tokens live in `app/globals.css` `@theme` — **never hardcode hex in components**. Palette: warm cream paper (`#f6f5f1`) + near-black ink (`#0b0b0d`) + saturated cobalt (`oklch(0.48 0.19 264)`, hover `-strong`) + transaction green (`accent #16a34a`) for money/success. Fonts: Bricolage Grotesque (display) / Hanken Grotesk (body) via `next/font`. Shapes: pill buttons (`rounded-full`), chunky cards (`rounded-2xl`), squircle chips. Bottom tab bar (`components/bottom-nav.tsx`) is the primary authed nav — light up its dead tabs as phases land. Use `Card`/`Button`/`Section`/`inputClass` from `components/ui.tsx`. Touch targets ≥44px (`min-h-11`), ≥8px gaps, mobile-first. For net-new UI decisions, query: `python ~/.claude/skills/ui-ux-pro-max/src/ui-ux-pro-max/scripts/search.py "<query>" --domain <style|color|typography|ux|chart>`.
 
+**Gap-filler authority:** for decisions the Campus system doesn't specify (WCAG contrast, 4-point spacing, focus/hover state contracts), `~/.claude/skills/typeui-fundamentals/` decides — but the design system always wins for concrete token values. Lean on its `accessibility.md` for the Phase 13 / Phase 29 a11y passes.
+
 **Aesthetic details (committed):** global grain overlay (`body::after`), staggered `.animate-fade-up` reveals, oversized display headings. No glassmorphism, no purple gradients (per `bencium-impact-designer`). Typography rules from the `typography` skill ENFORCED: real curly apostrophes (’), em dashes, one-exclamation budget; emoji OK in informal UI (chips/cards), not in formal copy.
 
 ## Conventions
