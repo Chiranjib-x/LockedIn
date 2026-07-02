@@ -15,6 +15,9 @@ export default async function Header() {
       </Link>
       {user ? (
         <nav className="flex items-center gap-4 text-sm">
+          <Link href="/home" className="font-medium hover:underline">
+            Home
+          </Link>
           <Link href="/profile" className="font-medium hover:underline">
             Profile
           </Link>

@@ -49,7 +49,7 @@ export async function login(formData: FormData) {
     redirect("/login?error=" + encodeURIComponent(error.message));
   }
 
-  redirect("/profile");
+  redirect("/home");
 }
 
 export async function logout() {

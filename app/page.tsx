@@ -1,6 +1,14 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
 
-export default function Home() {
+export default async function Home() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (user) redirect("/home");
+
   return (
     <main className="flex flex-1 flex-col items-center justify-center gap-4 px-6">
       <h1 className="text-4xl font-bold tracking-tight">LockedIn</h1>

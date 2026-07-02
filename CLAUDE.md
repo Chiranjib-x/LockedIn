@@ -40,7 +40,7 @@ Ship Android via a **Capacitor wrapper** around this same Next.js app — no sep
 
 - [x] Phase 0 — Scaffold & tooling
 - [x] Phase 1 — Campus-email auth + profiles (+ `colleges` table, domain→college mapping)
-- [ ] Phase 2 — App shell + home hub
+- [x] Phase 2 — App shell + home hub
 - [ ] Phases 3–14 — see Part 1 doc
 - [ ] Phase 14.5 — Capacitor Android wrap (APK/AAB + Play Store)
 - [ ] Phases 15–40 — see Part 2 doc
