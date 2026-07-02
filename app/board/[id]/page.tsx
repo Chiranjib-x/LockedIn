@@ -4,6 +4,7 @@ import { requireUser } from "@/lib/auth";
 import Gallery from "@/modules/marketplace/gallery";
 import TypeBadge from "@/modules/board/badge";
 import ResolveButton from "@/modules/board/resolve-button";
+import ReportSheet from "@/modules/moderation/report-sheet";
 
 export default async function PostDetailPage({
   params,
@@ -31,9 +32,12 @@ export default async function PostDetailPage({
 
   return (
     <main className="animate-fade-up mx-auto flex w-full max-w-lg flex-1 flex-col gap-4 px-4 py-6">
-      <Link href="/board" className="text-sm text-muted-foreground hover:text-foreground">
-        ← Board
-      </Link>
+      <div className="flex items-center justify-between">
+        <Link href="/board" className="text-sm text-muted-foreground hover:text-foreground">
+          ← Board
+        </Link>
+        {!isMine && <ReportSheet targetType="post" targetId={post.id} authorId={author.id} />}
+      </div>
 
       {post.images?.length > 0 && <Gallery images={post.images} title={post.title} />}
 

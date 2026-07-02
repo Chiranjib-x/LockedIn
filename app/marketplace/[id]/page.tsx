@@ -7,6 +7,7 @@ import { rupees } from "@/modules/marketplace/format";
 import { RatingBadge } from "@/modules/ratings/stars";
 import { getRating } from "@/modules/ratings/get-rating";
 import { KarmaBadge } from "@/modules/karma/badge";
+import ReportSheet from "@/modules/moderation/report-sheet";
 
 export default async function ListingDetailPage({
   params,
@@ -35,9 +36,12 @@ export default async function ListingDetailPage({
 
   return (
     <main className="animate-fade-up mx-auto flex w-full max-w-lg flex-1 flex-col gap-4 px-4 py-6">
-      <Link href="/marketplace" className="text-sm text-muted-foreground hover:text-foreground">
-        ← Marketplace
-      </Link>
+      <div className="flex items-center justify-between">
+        <Link href="/marketplace" className="text-sm text-muted-foreground hover:text-foreground">
+          ← Marketplace
+        </Link>
+        {!isMine && <ReportSheet targetType="listing" targetId={listing.id} authorId={seller.id} />}
+      </div>
 
       <Gallery images={listing.images ?? []} title={listing.title} />
 

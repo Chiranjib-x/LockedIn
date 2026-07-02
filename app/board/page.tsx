@@ -3,6 +3,7 @@ import { requireUser } from "@/lib/auth";
 import { Card } from "@/components/ui";
 import BoardFilter from "@/modules/board/board-filter";
 import TypeBadge from "@/modules/board/badge";
+import { blockedIds, notInList } from "@/modules/moderation/blocks";
 
 function when(post: { type: string; event_date: string | null; created_at: string }) {
   if (post.type === "event" && post.event_date) {
@@ -24,12 +25,15 @@ export default async function BoardPage({
 }: {
   searchParams: Promise<{ q?: string; type?: string }>;
 }) {
-  const { supabase } = await requireUser();
+  const { supabase, user } = await requireUser();
   const { q, type } = await searchParams;
+
+  const blocked = await blockedIds(supabase, user.id);
 
   let query = supabase
     .from("posts")
     .select("id, type, title, images, location, event_date, status, created_at")
+    .not("author_id", "in", notInList(blocked))
     .order("created_at", { ascending: false });
 
   if (type) query = query.eq("type", type);

@@ -37,7 +37,17 @@ export default async function Header() {
     data: { user },
   } = await supabase.auth.getUser();
 
+  const { data: prof } = user
+    ? await supabase.from("profiles").select("is_moderator, is_banned").eq("id", user.id).single()
+    : { data: null };
+
   return (
+    <>
+    {prof?.is_banned && (
+      <div className="bg-destructive px-4 py-2 text-center text-sm font-medium text-on-destructive">
+        Your account is restricted — you can browse but can’t post or message. Contact an admin if this is a mistake.
+      </div>
+    )}
     <header className="glass sticky top-0 z-10 flex items-center justify-between rounded-none border-x-0 border-t-0 px-4 py-2">
       <Link
         href="/"
@@ -47,6 +57,11 @@ export default async function Header() {
       </Link>
       {user ? (
         <nav className="flex items-center gap-1">
+          {prof?.is_moderator && (
+            <Link href="/admin/moderation" aria-label="Moderation" className="press flex min-h-11 min-w-11 items-center justify-center text-lg">
+              🛡️
+            </Link>
+          )}
           <NotificationBell supabase={supabase} userId={user.id} />
           <form action={logout}>
             <button
@@ -71,5 +86,6 @@ export default async function Header() {
         </nav>
       )}
     </header>
+    </>
   );
 }

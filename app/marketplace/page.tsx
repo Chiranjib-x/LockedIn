@@ -3,20 +3,24 @@ import { requireUser } from "@/lib/auth";
 import { Card } from "@/components/ui";
 import FilterBar from "@/modules/marketplace/filter-bar";
 import ListingCard from "@/modules/marketplace/listing-card";
+import { blockedIds, notInList } from "@/modules/moderation/blocks";
 
 export default async function MarketplacePage({
   searchParams,
 }: {
   searchParams: Promise<{ q?: string; category?: string; sort?: string }>;
 }) {
-  const { supabase } = await requireUser();
+  const { supabase, user } = await requireUser();
   const { q, category, sort } = await searchParams;
+
+  const blocked = await blockedIds(supabase, user.id);
 
   let query = supabase
     .from("listings")
     .select("id, title, price, category, images, status")
     .eq("status", "available")
-    .is("space_id", null); // space listings live only inside their space
+    .is("space_id", null) // space listings live only inside their space
+    .not("seller_id", "in", notInList(blocked));
 
   if (category) query = query.eq("category", category);
   if (q) query = query.or(`title.ilike.%${q}%,description.ilike.%${q}%`);
