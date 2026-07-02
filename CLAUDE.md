@@ -77,6 +77,8 @@ Tokens live in `app/globals.css` `@theme` — **never hardcode hex in components
 
 - [x] Phase 15 — Transactions + ratings (0011): sold-to-buyer flow, mutual rate-nudge via trigger, stars on profiles/listings, RLS-guarded (party-only, one-per-txn)
 - [x] Phase 16 — Karma & badges (0012): append-only karma_events + sync trigger, awards (+10 txn/+5 good rating/+15 found-resolved/+3 group-buy), tiers New/Active/Trusted/Campus Legend, tier-up notify, badges on profile/listing/match
-- [ ] Phases 17–40 — see Part 2 doc (Wave A trust: 17 moderation → 18–19 chat)
+- [x] Phase 15.5 — Blind ratings (0013): ratee can't read own feedback rows, only aggregate (anti-grudge)
+- [x] Phase 17 — Report/block/moderation (0014): is_moderator + is_banned flags, soft-delete, report sheet + block filter, banned banner, /admin/moderation console. Founder (test acct) flagged moderator.
+- [ ] Phases 18–40 — see Part 2 doc (Wave A trust: 18–19 chat → then user's clubs/deals/cabs)
 
 Update this tracker when a phase is committed.
