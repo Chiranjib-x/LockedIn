@@ -41,10 +41,10 @@ export default async function Home() {
       </p>
       <Link
         href="/signup"
-        className="animate-fade-up mt-8 flex min-h-12 items-center rounded-lg bg-primary px-7 font-medium text-on-primary shadow-lg shadow-primary/25 transition-all duration-150 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-primary/30 active:translate-y-0"
+        className="animate-fade-up mt-8 flex min-h-13 items-center rounded-full bg-primary px-8 font-semibold text-on-primary shadow-lg shadow-primary/25 transition-all duration-150 hover:-translate-y-0.5 hover:bg-primary-strong hover:shadow-xl hover:shadow-primary/30 active:translate-y-0"
         style={{ animationDelay: "240ms" }}
       >
-        Join with your college email
+        Get started
       </Link>
       <p
         className="animate-fade-up mt-4 text-sm text-muted-foreground"

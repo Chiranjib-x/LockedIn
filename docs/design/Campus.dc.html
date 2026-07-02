@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Space+Mono:wght@400;700&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  [data-screen], [data-ob], .noscroll { scrollbar-width: none; -ms-overflow-style: none; }
+  [data-screen]::-webkit-scrollbar, [data-ob]::-webkit-scrollbar, .noscroll::-webkit-scrollbar { width:0; height:0; display:none; }
+  .ms { font-family:'Material Symbols Rounded'; font-weight:400; font-style:normal; line-height:1; letter-spacing:normal; text-transform:none; white-space:nowrap; direction:ltr; -webkit-font-feature-settings:'liga'; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(9px); } to { opacity:1; transform:none; } }
+  @keyframes pop { 0%{transform:scale(1);} 45%{transform:scale(1.28);} 100%{transform:scale(1);} }
+  @keyframes ring { from { stroke-dashoffset: var(--c); } }
+</style>
+</helmet>
+
+<section style="min-height:100vh; display:flex; align-items:center; justify-content:center; padding:40px; background:#E7E5DF; background-image:radial-gradient(#d6d3ca 1px, transparent 1px); background-size:24px 24px; font-family:'Hanken Grotesk',system-ui,sans-serif;">
+  <div style="width:414px; height:868px; border-radius:52px; background:#0b0b0d; padding:10px; box-shadow:0 50px 90px -28px rgba(40,35,60,.5), 0 0 0 1px rgba(0,0,0,.06); flex:none;">
+    <div style="width:100%; height:100%; border-radius:42px; overflow:hidden; background:#F6F5F1; position:relative; display:flex; flex-direction:column; color:#1A1B1E;">
+
+      <!-- STATUS BAR (global) -->
+      <div style="height:46px; flex:none; position:relative; z-index:60; display:flex; align-items:center; justify-content:space-between; padding:0 28px 0 32px; font-size:15px; font-weight:700; background:transparent;">
+        <span style="font-variant-numeric:tabular-nums;">2:14</span>
+        <div style="display:flex; gap:6px; align-items:center;"><span class="ms" style="font-size:17px;">signal_cellular_alt</span><span class="ms" style="font-size:17px;">wifi</span><span class="ms" style="font-size:18px;">battery_full</span></div>
+      </div>
+
+      <!-- STAGE -->
+      <div ref="{{ setStage }}" style="position:relative; flex:1; overflow:hidden; z-index:0;">
+
+        <!-- ============ HOME (tab) ============ -->
+        <div data-screen="home" style="position:absolute; inset:0; overflow-y:auto; background:#F6F5F1;">
+          <div style="padding:6px 18px 112px;">
+            <div style="display:flex; align-items:flex-start; justify-content:space-between; margin:8px 0 16px;">
+              <div>
+                <div style="font-family:'Space Mono',monospace; font-size:11px; letter-spacing:1.5px; color:#9A9DA6;">SAT · 2 JUL</div>
+                <div style="font-family:'Bricolage Grotesque',sans-serif; font-size:27px; font-weight:800; letter-spacing:-0.02em; margin:2px 0 8px;">Hey, Aarav 👋</div>
+                <div style="display:inline-flex; align-items:center; gap:5px; background:#fff; padding:5px 11px; border-radius:20px; font-size:12px; font-weight:700; color:#6B6E76; box-shadow:0 1px 2px rgba(20,20,40,.05);"><span class="ms" style="font-size:14px; color:oklch(0.48 0.19 264);">location_on</span>Riverside University</div>
+              </div>
+              <div onClick="{{ goProfile }}" style="position:relative; cursor:pointer; transition:transform .12s;" style-active="transform:scale(.93)">
+                <div style="width:48px;height:48px;border-radius:16px;background:oklch(0.48 0.19 264 / 0.12);color:oklch(0.42 0.19 264);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;font-family:'Bricolage Grotesque',sans-serif;">AM</div>
+                <div style="position:absolute;bottom:-7px;right:-7px;background:oklch(0.48 0.19 264);color:#fff;font-size:10.5px;font-weight:800;padding:2px 6px;border-radius:8px;box-shadow:0 0 0 2.5px #F6F5F1;font-variant-numeric:tabular-nums;">142</div>
+              </div>
+            </div>
+            <div onClick="{{ goMarket }}" style="display:flex;align-items:center;gap:9px;height:48px;background:#fff;border-radius:15px;padding:0 14px;margin-bottom:18px;box-shadow:0 1px 2px rgba(20,20,40,.05);cursor:pointer;transition:transform .12s;" style-active="transform:scale(.99)">
+              <span class="ms" style="font-size:20px;color:#9A9DA6;">search</span>
+              <span style="font-size:14.5px;color:#9A9DA6;">Search listings, people, courses</span>
+            </div>
+            <div style="display:flex;gap:14px;overflow-x:auto;margin:0 -18px 22px;padding:0 18px;" class="noscroll">
+              <sc-for list="{{ moduleTiles }}" as="m" hint-placeholder-count="6">
+                <div onClick="{{ m.onClick }}" style="display:flex;flex-direction:column;align-items:center;gap:7px;flex:none;cursor:pointer;transition:transform .12s;" style-active="transform:scale(.92)">
+                  <div style="width:56px;height:56px;border-radius:18px;background:oklch(0.48 0.19 264 / 0.1);display:flex;align-items:center;justify-content:center;"><span class="ms" style="font-size:26px;color:oklch(0.44 0.19 264);">{{ m.icon }}</span></div>
+                  <span style="font-size:11.5px;font-weight:700;color:#4A4D55;">{{ m.label }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div onClick="{{ openTimetable }}" style="background:oklch(0.48 0.19 264);border-radius:24px;padding:18px;margin-bottom:22px;color:#fff;box-shadow:0 16px 34px -14px oklch(0.48 0.19 264 / 0.7);cursor:pointer;transition:transform .12s;" style-active="transform:scale(.99)">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                <span style="font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:1.5px;opacity:.85;">UP NEXT</span>
+                <span style="display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.2);font-size:12px;font-weight:700;padding:4px 10px;border-radius:20px;"><span class="ms" style="font-size:14px;">schedule</span>in 45 min</span>
+              </div>
+              <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:23px;font-weight:800;letter-spacing:-0.01em;">DBMS Lab</div>
+              <div style="font-size:13.5px;opacity:.85;margin:3px 0 15px;font-variant-numeric:tabular-nums;">2:00 – 3:40 PM · Room SJT-403</div>
+              <div style="background:rgba(255,255,255,.16);border-radius:16px;padding:12px 14px;display:flex;align-items:center;gap:12px;">
+                <div style="flex:1;"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;opacity:.9;"><span>Attendance</span><span style="font-weight:800;font-variant-numeric:tabular-nums;">78%</span></div><div style="height:7px;background:rgba(255,255,255,.25);border-radius:7px;overflow:hidden;"><div style="width:78%;height:100%;background:#fff;border-radius:7px;"></div></div></div>
+                <span style="font-size:12px;font-weight:800;white-space:nowrap;">skip 2</span>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;"><span style="font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:800;letter-spacing:-0.01em;">Due soon</span></div>
+            <div style="display:flex;flex-direction:column;gap:11px;margin-bottom:24px;">
+              <div onClick="{{ openPools }}" style="display:flex;align-items:center;gap:12px;padding:13px 14px;background:#fff;border-radius:18px;box-shadow:0 1px 2px rgba(20,20,40,.05);cursor:pointer;transition:transform .12s;" style-active="transform:scale(.99)">
+                <div style="width:40px;height:40px;border-radius:13px;background:oklch(0.48 0.19 264 / 0.1);display:flex;align-items:center;justify-content:center;"><span class="ms" style="font-size:21px;color:oklch(0.44 0.19 264);">subscriptions</span></div>
+                <div style="flex:1;"><div style="font-size:14.5px;font-weight:700;">Netflix pool renews</div><div style="font-size:12px;color:#8A8D95;">You owe ₹49</div></div>
+                <span style="font-size:12px;font-weight:800;color:#4A4D55;background:#F0EEE8;padding:4px 10px;border-radius:20px;font-variant-numeric:tabular-nums;">3 days</span>
+              </div>
+              <div onClick="{{ openGroupbuy }}" style="display:flex;align-items:center;gap:12px;padding:13px 14px;background:#fff;border-radius:18px;box-shadow:0 1px 2px rgba(20,20,40,.05);cursor:pointer;transition:transform .12s;" style-active="transform:scale(.99)">
+                <div style="width:40px;height:40px;border-radius:13px;background:oklch(0.66 0.19 42 / 0.13);display:flex;align-items:center;justify-content:center;"><span class="ms" style="font-size:21px;color:oklch(0.56 0.19 40);">local_printshop</span></div>
+                <div style="flex:1;"><div style="font-size:14.5px;font-weight:700;">Group-buy: Hostel prints</div><div style="font-size:12px;color:#8A8D95;">12 joined · closing soon</div></div>
+                <span style="font-size:12px;font-weight:800;color:#fff;background:oklch(0.66 0.19 42);padding:4px 10px;border-radius:20px;font-variant-numeric:tabular-nums;">6h</span>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;"><span style="font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:800;letter-spacing:-0.01em;">Fresh on campus</span><span onClick="{{ goMarket }}" style="font-size:13px;font-weight:700;color:oklch(0.46 0.19 264);cursor:pointer;">Browse all</span></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:13px;">
+              <sc-for list="{{ listings }}" as="it" hint-placeholder-count="4">
+                <div onClick="{{ it.onOpen }}" style="background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 1px 2px rgba(20,20,40,.05);cursor:pointer;transition:transform .12s;" style-active="transform:scale(.98)">
+                  <div style="{{ it.imgStyle }}">
+                    <sc-if value="{{ it.tag }}" hint-placeholder-val="{{ true }}"><span style="{{ it.tagStyle }}">{{ it.tag }}</span></sc-if>
+                    <button onClick="{{ it.onSave }}" style="position:absolute;top:8px;right:8px;width:30px;height:30px;border:none;border-radius:50%;background:rgba(255,255,255,.9);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.12);"><span class="ms" style="{{ it.heartStyle }}">{{ it.heartIcon }}</span></button>
+                    <span style="position:absolute;bottom:8px;left:9px;font-family:'Space Mono',monospace;font-size:10px;color:#B4B0A6;">{{ it.imgLabel }}</span>
+                  </div>
+                  <div style="padding:10px 11px 12px;"><div style="font-size:14px;font-weight:700;line-height:1.2;">{{ it.title }}</div><div style="font-size:15px;font-weight:800;margin:3px 0 5px;font-variant-numeric:tabular-nums;">{{ it.price }}<span style="font-size:11px;color:#8A8D95;font-weight:600;">{{ it.priceSuffix }}</span></div><div style="display:flex;align-items:center;gap:4px;font-size:11.5px;color:#8A8D95;"><span class="ms" style="font-size:13px;color:oklch(0.75 0.16 70);">star</span>{{ it.rating }} · {{ it.seller }}</div></div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ MARKET (tab) ============ -->
+        <div data-screen="market" style="position:absolute; inset:0; overflow-y:auto; background:#F6F5F1;">
+          <div style="padding:6px 18px 112px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin:10px 0 14px;">
+              <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:26px;font-weight:800;letter-spacing:-0.02em;">Marketplace</div>
+              <div style="width:40px;height:40px;border-radius:13px;background:#fff;box-shadow:0 1px 2px rgba(20,20,40,.06);display:flex;align-items:center;justify-content:center;"><span class="ms" style="font-size:22px;color:#4A4D55;">tune</span></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:9px;height:46px;background:#fff;border-radius:14px;padding:0 14px;margin-bottom:14px;box-shadow:0 1px 2px rgba(20,20,40,.05);">
+              <span class="ms" style="font-size:20px;color:#9A9DA6;">search</span><span style="font-size:14.5px;color:#9A9DA6;">Search Marketplace</span>
+            </div>
+            <div style="display:flex;gap:8px;overflow-x:auto;margin:0 -18px 18px;padding:0 18px;" class="noscroll">
+              <span style="flex:none;background:oklch(0.48 0.19 264);color:#fff;font-size:13px;font-weight:700;padding:8px 15px;border-radius:20px;">All</span>
+              <span style="flex:none;background:#fff;color:#4A4D55;font-size:13px;font-weight:600;padding:8px 15px;border-radius:20px;box-shadow:0 1px 2px rgba(20,20,40,.05);">Books</span>
+              <span style="flex:none;background:#fff;color:#4A4D55;font-size:13px;font-weight:600;padding:8px 15px;border-radius:20px;box-shadow:0 1px 2px rgba(20,20,40,.05);">Cycles</span>
+              <span style="flex:none;background:#fff;color:#4A4D55;font-size:13px;font-weight:600;padding:8px 15px;border-radius:20px;box-shadow:0 1px 2px rgba(20,20,40,.05);">Electronics</span>
+              <span style="flex:none;background:#fff;color:#4A4D55;font-size:13px;font-weight:600;padding:8px 15px;border-radius:20px;box-shadow:0 1px 2px rgba(20,20,40,.05);">Rentals</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:13px;">
+              <sc-for list="{{ listings }}" as="it" hint-placeholder-count="6">
+                <div onClick="{{ it.onOpen }}" style="background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 1px 2px rgba(20,20,40,.05);cursor:pointer;transition:transform .12s;" style-active="transform:scale(.98)">
+                  <div style="{{ it.imgStyle }}">
+                    <sc-if value="{{ it.tag }}" hint-placeholder-val="{{ true }}"><span style="{{ it.tagStyle }}">{{ it.tag }}</span></sc-if>
+                    <button onClick="{{ it.onSave }}" style="position:absolute;top:8px;right:8px;width:30px;height:30px;border:none;border-radius:50%;background:rgba(255,255,255,.9);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.12);"><span class="ms" style="{{ it.heartStyle }}">{{ it.heartIcon }}</span></button>
+                    <span style="position:absolute;bottom:8px;left:9px;font-family:'Space Mono',monospace;font-size:10px;color:#B4B0A6;">{{ it.imgLabel }}</span>
+                  </div>
+                  <div style="padding:10px 11px 12px;"><div style="font-size:14px;font-weight:700;line-height:1.2;">{{ it.title }}</div><div style="font-size:15px;font-weight:800;margin:3px 0 5px;font-variant-numeric:tabular-nums;">{{ it.price }}<span style="font-size:11px;color:#8A8D95;font-weight:600;">{{ it.priceSuffix }}</span></div><div style="display:flex;align-items:center;gap:4px;font-size:11.5px;color:#8A8D95;"><span class="ms" style="font-size:13px;color:oklch(0.75 0.16 70);">star</span>{{ it.rating }} · {{ it.seller }}</div></div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ CHATS (tab) ============ -->
+        <div data-screen="chats" style="position:absolute; inset:0; overflow-y:auto; background:#F6F5F1;">
+          <div style="padding:6px 18px 112px;">
+            <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:26px;font-weight:800;letter-spacing:-0.02em;margin:10px 0 16px;">Chats</div>
+            <div style="display:flex;flex-direction:column;gap:2px;background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 1px 2px rgba(20,20,40,.05);">
+              <sc-for list="{{ chatList }}" as="c" hint-placeholder-count="4">
+                <div onClick="{{ c.onOpen }}" style="display:flex;align-items:center;gap:12px;padding:14px;cursor:pointer;border-bottom:1px solid #F1EFEA;transition:background .12s;" style-active="background:#F6F5F1">
+                  <div style="{{ c.avatarStyle }}">{{ c.initials }}</div>
+                  <div style="flex:1;min-width:0;">
+                    <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:15px;font-weight:700;">{{ c.name }}</span><sc-if value="{{ c.badge }}" hint-placeholder-val="{{ true }}"><span style="{{ c.badgeStyle }}">{{ c.badge }}</span></sc-if></div>
+                    <div style="font-size:13px;color:#8A8D95;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;">{{ c.last }}</div>
+                  </div>
+                  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;"><span style="font-size:11px;color:#9A9DA6;font-variant-numeric:tabular-nums;">{{ c.time }}</span><sc-if value="{{ c.unread }}" hint-placeholder-val="{{ true }}"><span style="width:9px;height:9px;border-radius:50%;background:oklch(0.66 0.19 42);"></span></sc-if></div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ PROFILE (tab) ============ -->
+        <div data-screen="profile" style="position:absolute; inset:0; overflow-y:auto; background:#F6F5F1;">
+          <div style="padding:6px 18px 112px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin:10px 0 18px;">
+              <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:26px;font-weight:800;letter-spacing:-0.02em;">Profile</div>
+              <div style="width:40px;height:40px;border-radius:13px;background:#fff;box-shadow:0 1px 2px rgba(20,20,40,.06);display:flex;align-items:center;justify-content:center;"><span class="ms" style="font-size:22px;color:#4A4D55;">settings</span></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:15px;margin-bottom:18px;">
+              <div style="width:72px;height:72px;border-radius:22px;background:oklch(0.48 0.19 264 / 0.12);color:oklch(0.42 0.19 264);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:26px;font-family:'Bricolage Grotesque',sans-serif;">AM</div>
+              <div style="flex:1;">
+                <div style="font-size:20px;font-weight:800;letter-spacing:-0.01em;">Aarav Menon</div>
+                <div style="font-size:13px;color:#8A8D95;margin:1px 0 8px;">CSE · 3rd year · A-Block, 214</div>
+                <div style="display:inline-flex;align-items:center;gap:6px;background:oklch(0.48 0.19 264 / 0.1);color:oklch(0.42 0.19 264);font-size:12px;font-weight:800;padding:4px 10px;border-radius:20px;"><span class="ms" style="font-size:15px;">verified</span>Trusted · 142 karma</div>
+              </div>
+            </div>
+            <div style="background:#fff;border-radius:20px;padding:15px 16px;margin-bottom:16px;box-shadow:0 1px 2px rgba(20,20,40,.05);">
+              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:8px;"><span style="font-weight:700;color:#4A4D55;">Trusted</span><span style="color:#8A8D95;">258 to Campus Legend</span></div>
+              <div style="height:8px;background:#F0EEE8;border-radius:8px;overflow:hidden;"><div style="width:36%;height:100%;background:linear-gradient(90deg,oklch(0.48 0.19 264),oklch(0.66 0.19 42));border-radius:8px;"></div></div>
+            </div>
+            <div style="display:flex;gap:11px;margin-bottom:20px;">
+              <div style="flex:1;background:#fff;border-radius:18px;padding:14px;text-align:center;box-shadow:0 1px 2px rgba(20,20,40,.05);"><div style="font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;">23</div><div style="font-size:11px;color:#8A8D95;font-weight:600;margin-top:2px;">Sold</div></div>
+              <div style="flex:1;background:#fff;border-radius:18px;padding:14px;text-align:center;box-shadow:0 1px 2px rgba(20,20,40,.05);"><div style="font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;">4.9</div><div style="font-size:11px;color:#8A8D95;font-weight:600;margin-top:2px;">Rating</div></div>
+              <div style="flex:1;background:#fff;border-radius:18px;padding:14px;text-align:center;box-shadow:0 1px 2px rgba(20,20,40,.05);"><div style="font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;">61</div><div style="font-size:11px;color:#8A8D95;font-weight:600;margin-top:2px;">Deals</div></div>
+            </div>
+            <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1.2px;color:#9A9DA6;margin-bottom:10px;">RECENT REVIEWS</div>
+            <div style="background:#fff;border-radius:18px;box-shadow:0 1px 2px rgba(20,20,40,.05);overflow:hidden;">
+              <div style="padding:14px;border-bottom:1px solid #F1EFEA;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;"><span style="font-size:14px;font-weight:700;">Riya K.</span><span style="display:flex;gap:1px;color:oklch(0.75 0.16 70);"><span class="ms" style="font-size:14px;">star</span><span class="ms" style="font-size:14px;">star</span><span class="ms" style="font-size:14px;">star</span><span class="ms" style="font-size:14px;">star</span><span class="ms" style="font-size:14px;">star</span></span></div>
+                <div style="font-size:13px;color:#6B6E76;line-height:1.4;">Super smooth handover, calculator was exactly as described. 👍</div>
+              </div>
+              <div style="padding:14px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;"><span style="font-size:14px;font-weight:700;">Karan S.</span><span style="display:flex;gap:1px;color:oklch(0.75 0.16 70);"><span class="ms" style="font-size:14px;">star</span><span class="ms" style="font-size:14px;">star</span><span class="ms" style="font-size:14px;">star</span><span class="ms" style="font-size:14px;">star</span><span class="ms" style="font-size:14px;">star</span></span></div>
+                <div style="font-size:13px;color:#6B6E76;line-height:1.4;">Reliable and on time. Would deal again.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ LISTING DETAIL (overlay) ============ -->
+        <div data-screen="listing" style="position:absolute; inset:0; overflow-y:auto; background:#F6F5F1; transform:translateX(100%);">
+          <div style="position:relative;">
+            <div style="height:340px;background:repeating-linear-gradient(135deg,#EDEBE4 0 12px,#E5E2D9 12px 24px);display:flex;align-items:flex-end;padding:14px;">
+              <span style="font-family:'Space Mono',monospace;font-size:11px;color:#AEA99E;">cycle · 4 photos</span>
+            </div>
+            <div onClick="{{ back }}" style="position:absolute;top:14px;left:16px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.92);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.12);transition:transform .12s;" style-active="transform:scale(.9)"><span class="ms" style="font-size:23px;">arrow_back</span></div>
+            <div style="position:absolute;top:14px;right:16px;display:flex;gap:9px;">
+              <div style="width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.92);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.12);"><span class="ms" style="font-size:22px;">ios_share</span></div>
+              <div style="width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.92);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.12);"><span class="ms" style="font-size:22px;color:oklch(0.66 0.19 42);">favorite</span></div>
+            </div>
+            <span style="position:absolute;top:302px;left:16px;background:oklch(0.6 0.14 158);color:#fff;font-size:11px;font-weight:800;padding:4px 11px;border-radius:20px;">FOR RENT</span>
+          </div>
+          <div style="padding:18px 18px 120px;">
+            <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:24px;font-weight:800;letter-spacing:-0.01em;">Firefox Cycle — 21 gears</div>
+            <div style="display:flex;align-items:baseline;gap:8px;margin:6px 0 4px;"><span style="font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;">₹40<span style="font-size:14px;color:#8A8D95;font-weight:600;">/day</span></span><span style="font-size:13px;color:#8A8D95;">· ₹1,000 deposit</span></div>
+            <div style="display:flex;gap:7px;margin:12px 0 18px;flex-wrap:wrap;">
+              <span style="background:#F0EEE8;color:#4A4D55;font-size:12px;font-weight:600;padding:6px 12px;border-radius:10px;">Cycles</span>
+              <span style="background:#F0EEE8;color:#4A4D55;font-size:12px;font-weight:600;padding:6px 12px;border-radius:10px;">Good condition</span>
+              <span style="background:#F0EEE8;color:#4A4D55;font-size:12px;font-weight:600;padding:6px 12px;border-radius:10px;">A-Block</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;background:#fff;border-radius:18px;padding:13px 14px;box-shadow:0 1px 2px rgba(20,20,40,.05);margin-bottom:18px;">
+              <div style="width:46px;height:46px;border-radius:14px;background:oklch(0.66 0.19 42 / 0.14);color:oklch(0.52 0.19 40);display:flex;align-items:center;justify-content:center;font-weight:800;font-family:'Bricolage Grotesque',sans-serif;">KS</div>
+              <div style="flex:1;"><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:15px;font-weight:700;">Karan S.</span><span style="background:oklch(0.48 0.19 264 / 0.1);color:oklch(0.42 0.19 264);font-size:10px;font-weight:800;padding:2px 7px;border-radius:20px;">TRUSTED</span></div><div style="display:flex;align-items:center;gap:4px;font-size:12.5px;color:#8A8D95;margin-top:2px;"><span class="ms" style="font-size:14px;color:oklch(0.75 0.16 70);">star</span>4.9 · 210 karma</div></div>
+              <span class="ms" style="font-size:22px;color:#C4C0B6;">chevron_right</span>
+            </div>
+            <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1.2px;color:#9A9DA6;margin-bottom:8px;">DESCRIPTION</div>
+            <div style="font-size:14.5px;line-height:1.55;color:#4A4D55;margin-bottom:18px;">Barely used, about a year old. Recently serviced — new brake pads and gears tuned. Great for getting to class on time. Perfect for a semester rental; monthly rates available. Pickup from A-Block.</div>
+            <div style="display:flex;align-items:center;gap:10px;background:oklch(0.6 0.14 158 / 0.1);border-radius:14px;padding:12px 14px;">
+              <span class="ms" style="font-size:20px;color:oklch(0.5 0.14 158);">shield</span>
+              <span style="font-size:12.5px;color:#4A4D55;line-height:1.4;">Verified <b>@riverside.edu</b> student. Meet on campus in daylight.</span>
+            </div>
+          </div>
+          <div style="position:absolute;left:0;right:0;bottom:0;padding:14px 18px 22px;background:linear-gradient(transparent,#F6F5F1 22%);display:flex;gap:11px;">
+            <button onClick="{{ openThread }}" style="flex:none;width:54px;height:54px;border:none;border-radius:17px;background:#fff;box-shadow:0 1px 2px rgba(20,20,40,.08),inset 0 0 0 1px #E9E7E0;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .12s;" style-active="transform:scale(.95)"><span class="ms" style="font-size:24px;color:oklch(0.44 0.19 264);">chat_bubble</span></button>
+            <button onClick="{{ openThread }}" style="flex:1;height:54px;border:none;border-radius:17px;background:oklch(0.48 0.19 264);color:#fff;font-family:'Hanken Grotesk';font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 10px 24px -10px oklch(0.48 0.19 264 / 0.8);transition:transform .12s;" style-active="transform:scale(.98)">Make an offer</button>
+          </div>
+        </div>
+
+        <!-- ============ BOARD (overlay) ============ -->
+        <div data-screen="board" style="position:absolute; inset:0; overflow-y:auto; background:#F6F5F1; transform:translateX(100%);">
+          <div style="padding:6px 18px 40px;">
+            <div style="display:flex;align-items:center;gap:12px;margin:6px 0 16px;">
+              <div onClick="{{ back }}" style="width:40px;height:40px;border-radius:13px;background:#fff;box-shadow:0 1px 2px rgba(20,20,40,.06);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .12s;" style-active="transform:scale(.9)"><span class="ms" style="font-size:23px;">arrow_back</span></div>
+              <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:24px;font-weight:800;letter-spacing:-0.02em;">Campus Board</div>
+            </div>
+            <div style="display:flex;gap:8px;overflow-x:auto;margin:0 -18px 18px;padding:0 18px;" class="noscroll">
+              <span style="flex:none;background:#1A1B1E;color:#fff;font-size:13px;font-weight:700;padding:8px 15px;border-radius:20px;">All</span>
+              <span style="flex:none;background:#fff;color:#4A4D55;font-size:13px;font-weight:600;padding:8px 15px;border-radius:20px;box-shadow:0 1px 2px rgba(20,20,40,.05);">Lost</span>
+              <span style="flex:none;background:#fff;color:#4A4D55;font-size:13px;font-weight:600;padding:8px 15px;border-radius:20px;box-shadow:0 1px 2px rgba(20,20,40,.05);">Found</span>
+              <span style="flex:none;background:#fff;color:#4A4D55;font-size:13px;font-weight:600;padding:8px 15px;border-radius:20px;box-shadow:0 1px 2px rgba(20,20,40,.05);">Notices</span>
+              <span style="flex:none;background:#fff;color:#4A4D55;font-size:13px;font-weight:600;padding:8px 15px;border-radius:20px;box-shadow:0 1px 2px rgba(20,20,40,.05);">Events</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <sc-for list="{{ boardPosts }}" as="p" hint-placeholder-count="5">
+                <div style="{{ p.cardStyle }}">
+                  <div style="display:flex;align-items:center;gap:9px;margin-bottom:9px;"><span style="{{ p.badgeStyle }}">{{ p.type }}</span><span style="font-size:11.5px;color:#9A9DA6;font-family:'Space Mono',monospace;">{{ p.meta }}</span><sc-if value="{{ p.resolved }}" hint-placeholder-val="{{ true }}"><span style="margin-left:auto;display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:800;color:oklch(0.5 0.14 158);"><span class="ms" style="font-size:14px;">check_circle</span>Resolved</span></sc-if></div>
+                  <div style="font-size:16px;font-weight:700;letter-spacing:-0.01em;margin-bottom:3px;">{{ p.title }}</div>
+                  <div style="font-size:13px;color:#8A8D95;line-height:1.4;">{{ p.body }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ GROUP-BUY (overlay) ============ -->
+        <div data-screen="groupbuy" style="position:absolute; inset:0; overflow-y:auto; background:#F6F5F1; transform:translateX(100%);">
+          <div style="padding:6px 18px 130px;">
+            <div style="display:flex;align-items:center;gap:12px;margin:6px 0 16px;">
+              <div onClick="{{ back }}" style="width:40px;height:40px;border-radius:13px;background:#fff;box-shadow:0 1px 2px rgba(20,20,40,.06);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .12s;" style-active="transform:scale(.9)"><span class="ms" style="font-size:23px;">arrow_back</span></div>
+              <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1.2px;color:#9A9DA6;">GROUP-BUY</div>
+            </div>
+            <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:24px;font-weight:800;letter-spacing:-0.01em;">Hostel print-outs — bulk</div>
+            <div style="font-size:13.5px;color:#8A8D95;margin:5px 0 16px;">Bulk lab records & assignments. ₹1.5/page vs ₹3 at the shop.</div>
+            <div style="display:flex;gap:11px;margin-bottom:18px;">
+              <div style="flex:1;background:#fff;border-radius:16px;padding:13px;box-shadow:0 1px 2px rgba(20,20,40,.05);"><div style="font-size:11px;color:#8A8D95;font-weight:600;">Closes in</div><div style="font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;color:oklch(0.56 0.19 40);font-variant-numeric:tabular-nums;">6h 12m</div></div>
+              <div style="flex:1;background:#fff;border-radius:16px;padding:13px;box-shadow:0 1px 2px rgba(20,20,40,.05);"><div style="font-size:11px;color:#8A8D95;font-weight:600;">Per page</div><div style="font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;font-variant-numeric:tabular-nums;">₹1.50</div></div>
+            </div>
+            <div style="background:#fff;border-radius:20px;padding:16px;box-shadow:0 1px 2px rgba(20,20,40,.05);margin-bottom:18px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><span style="font-size:13px;font-weight:700;color:#4A4D55;">{{ joinCount }} joined · goal 15</span><span style="font-size:13px;font-weight:800;color:oklch(0.44 0.19 264);font-variant-numeric:tabular-nums;">{{ joinPct }}%</span></div>
+              <div style="height:9px;background:#F0EEE8;border-radius:9px;overflow:hidden;margin-bottom:14px;"><div style="{{ joinBarStyle }}"></div></div>
+              <div style="display:flex;align-items:center;gap:12px;">
+                <div style="width:46px;height:46px;border-radius:14px;background:oklch(0.66 0.19 42 / 0.14);color:oklch(0.52 0.19 40);display:flex;align-items:center;justify-content:center;font-weight:800;font-family:'Bricolage Grotesque',sans-serif;">MG</div>
+                <div style="flex:1;"><div style="font-size:14px;font-weight:700;">Meera G. is organizing</div><div style="font-size:12px;color:#8A8D95;">UPI · pickup at H-Block 214</div></div>
+              </div>
+            </div>
+            <sc-if value="{{ joined }}" hint-placeholder-val="{{ true }}">
+              <div style="background:oklch(0.48 0.19 264 / 0.06);border:1px solid oklch(0.48 0.19 264 / 0.15);border-radius:20px;padding:16px;margin-bottom:8px;animation:fadeUp .3s ease both;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;"><span style="font-size:14px;font-weight:800;">Your share</span><span style="font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;font-variant-numeric:tabular-nums;">₹49</span></div>
+                <div style="display:flex;gap:12px;align-items:center;">
+                  <div style="width:82px;height:82px;border-radius:14px;background:#fff;box-shadow:inset 0 0 0 1px #E9E7E0;display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(5,1fr);gap:2px;padding:9px;">
+                    <i style="background:#1A1B1E;border-radius:1px;"></i><i></i><i style="background:#1A1B1E;border-radius:1px;"></i><i style="background:#1A1B1E;border-radius:1px;"></i><i></i><i></i><i style="background:#1A1B1E;border-radius:1px;"></i><i></i><i></i><i style="background:#1A1B1E;border-radius:1px;"></i><i style="background:#1A1B1E;border-radius:1px;"></i><i></i><i style="background:#1A1B1E;border-radius:1px;"></i><i style="background:#1A1B1E;border-radius:1px;"></i><i></i><i></i><i></i><i style="background:#1A1B1E;border-radius:1px;"></i><i></i><i style="background:#1A1B1E;border-radius:1px;"></i><i style="background:#1A1B1E;border-radius:1px;"></i><i style="background:#1A1B1E;border-radius:1px;"></i><i></i><i style="background:#1A1B1E;border-radius:1px;"></i><i style="background:#1A1B1E;border-radius:1px;"></i>
+                  </div>
+                  <div style="flex:1;font-size:12.5px;color:#6B6E76;line-height:1.45;">Scan to pay Meera via any UPI app, then mark below.</div>
+                </div>
+              </div>
+            </sc-if>
+          </div>
+          <div style="position:absolute;left:0;right:0;bottom:0;padding:14px 18px 22px;background:linear-gradient(transparent,#F6F5F1 22%);">
+            <button onClick="{{ join }}" style="{{ joinBtnStyle }}"><span class="ms" style="font-size:20px;">{{ joinIcon }}</span>{{ joinLabel }}</button>
+          </div>
+        </div>
+
+        <!-- ============ POOLS (overlay) ============ -->
+        <div data-screen="pools" style="position:absolute; inset:0; overflow-y:auto; background:#F6F5F1; transform:translateX(100%);">
+          <div style="padding:6px 18px 40px;">
+            <div style="display:flex;align-items:center;gap:12px;margin:6px 0 16px;">
+              <div onClick="{{ back }}" style="width:40px;height:40px;border-radius:13px;background:#fff;box-shadow:0 1px 2px rgba(20,20,40,.06);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .12s;" style-active="transform:scale(.9)"><span class="ms" style="font-size:23px;">arrow_back</span></div>
+              <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1.2px;color:#9A9DA6;">SUBSCRIPTION POOL</div>
+            </div>
+            <div style="background:#1A1B1E;border-radius:22px;padding:18px;color:#fff;margin-bottom:18px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <div><div style="font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:800;">Netflix Premium</div><div style="font-size:13px;opacity:.7;margin-top:2px;">4 of 4 seats · renews 5 Jul</div></div>
+                <div style="width:48px;height:48px;border-radius:14px;background:oklch(0.66 0.19 42);display:flex;align-items:center;justify-content:center;"><span class="ms" style="font-size:26px;">movie</span></div>
+              </div>
+              <div style="display:flex;gap:16px;margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,.12);">
+                <div><div style="font-size:11px;opacity:.6;">Total / month</div><div style="font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:800;font-variant-numeric:tabular-nums;">₹199</div></div>
+                <div><div style="font-size:11px;opacity:.6;">Your share</div><div style="font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:800;font-variant-numeric:tabular-nums;">₹49</div></div>
+              </div>
+            </div>
+            <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1.2px;color:#9A9DA6;margin-bottom:10px;">MEMBERS</div>
+            <div style="background:#fff;border-radius:20px;box-shadow:0 1px 2px rgba(20,20,40,.05);overflow:hidden;margin-bottom:18px;">
+              <sc-for list="{{ poolMembers }}" as="p" hint-placeholder-count="4">
+                <div style="display:flex;align-items:center;gap:12px;padding:13px 14px;border-bottom:1px solid #F1EFEA;">
+                  <div style="{{ p.avatarStyle }}">{{ p.initials }}</div>
+                  <div style="flex:1;"><div style="font-size:14.5px;font-weight:700;">{{ p.name }}</div><div style="font-size:12px;color:#8A8D95;font-variant-numeric:tabular-nums;">₹{{ p.share }} / month</div></div>
+                  <sc-if value="{{ p.showPay }}" hint-placeholder-val="{{ true }}"><button onClick="{{ p.onPay }}" style="{{ p.payStyle }}">{{ p.payLabel }}</button></sc-if>
+                  <sc-if value="{{ p.showStatus }}" hint-placeholder-val="{{ true }}"><span style="{{ p.statusStyle }}"><span class="ms" style="font-size:14px;">{{ p.statusIcon }}</span>{{ p.statusLabel }}</span></sc-if>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;background:oklch(0.48 0.19 264 / 0.07);border-radius:14px;padding:13px 14px;"><span class="ms" style="font-size:20px;color:oklch(0.44 0.19 264);">event_upcoming</span><span style="font-size:13px;color:#4A4D55;line-height:1.4;">Renews in <b>3 days</b>. 1 member still owes ₹49.</span></div>
+          </div>
+        </div>
+
+        <!-- ============ MATCHER (overlay) ============ -->
+        <div data-screen="matcher" style="position:absolute; inset:0; overflow-y:auto; background:#F6F5F1; transform:translateX(100%);">
+          <div style="padding:6px 18px 40px;">
+            <div style="display:flex;align-items:center;gap:12px;margin:6px 0 14px;">
+              <div onClick="{{ back }}" style="width:40px;height:40px;border-radius:13px;background:#fff;box-shadow:0 1px 2px rgba(20,20,40,.06);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .12s;" style-active="transform:scale(.9)"><span class="ms" style="font-size:23px;">arrow_back</span></div>
+              <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:24px;font-weight:800;letter-spacing:-0.02em;">Your matches</div>
+            </div>
+            <div style="display:flex;gap:8px;margin-bottom:18px;">
+              <span style="flex:1;text-align:center;background:oklch(0.48 0.19 264);color:#fff;font-size:13.5px;font-weight:700;padding:10px;border-radius:14px;">Roommate</span>
+              <span style="flex:1;text-align:center;background:#fff;color:#4A4D55;font-size:13.5px;font-weight:600;padding:10px;border-radius:14px;box-shadow:0 1px 2px rgba(20,20,40,.05);">Study-buddy</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:14px;">
+              <sc-for list="{{ matches }}" as="mt" hint-placeholder-count="3">
+                <div style="background:#fff;border-radius:22px;padding:16px;box-shadow:0 1px 2px rgba(20,20,40,.05);">
+                  <div style="display:flex;align-items:center;gap:13px;margin-bottom:13px;">
+                    <div style="position:relative;width:56px;height:56px;flex:none;">
+                      <svg width="56" height="56" viewBox="0 0 56 56" style="transform:rotate(-90deg);"><circle cx="28" cy="28" r="24" fill="none" stroke="#F0EEE8" stroke-width="5"></circle><circle cx="28" cy="28" r="24" fill="none" stroke="oklch(0.6 0.14 158)" stroke-width="5" stroke-linecap="round" stroke-dasharray="{{ mt.dash }}"></circle></svg>
+                      <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;"><span style="font-family:'Bricolage Grotesque',sans-serif;font-size:16px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1;">{{ mt.score }}</span><span style="font-size:8px;color:#8A8D95;font-weight:700;">MATCH</span></div>
+                    </div>
+                    <div style="flex:1;"><div style="font-size:17px;font-weight:800;letter-spacing:-0.01em;">{{ mt.name }}</div><div style="font-size:12.5px;color:#8A8D95;margin-top:1px;">{{ mt.sub }}</div></div>
+                  </div>
+                  <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:13px;">
+                    <sc-for list="{{ mt.chips }}" as="ch" hint-placeholder-count="3"><span style="display:inline-flex;align-items:center;gap:4px;background:oklch(0.6 0.14 158 / 0.1);color:oklch(0.42 0.14 158);font-size:11.5px;font-weight:700;padding:5px 10px;border-radius:20px;"><span class="ms" style="font-size:13px;">check</span>{{ ch }}</span></sc-for>
+                  </div>
+                  <div style="font-size:13px;color:#6B6E76;line-height:1.45;margin-bottom:14px;">{{ mt.bio }}</div>
+                  <button onClick="{{ mt.onConnect }}" style="{{ mt.connectStyle }}"><span class="ms" style="font-size:19px;">{{ mt.connectIcon }}</span>{{ mt.connectLabel }}</button>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ TIMETABLE (overlay) ============ -->
+        <div data-screen="timetable" style="position:absolute; inset:0; overflow-y:auto; background:#F6F5F1; transform:translateX(100%);">
+          <div style="padding:6px 18px 40px;">
+            <div style="display:flex;align-items:center;gap:12px;margin:6px 0 16px;">
+              <div onClick="{{ back }}" style="width:40px;height:40px;border-radius:13px;background:#fff;box-shadow:0 1px 2px rgba(20,20,40,.06);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .12s;" style-active="transform:scale(.9)"><span class="ms" style="font-size:23px;">arrow_back</span></div>
+              <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:24px;font-weight:800;letter-spacing:-0.02em;">Today</div>
+              <span style="margin-left:auto;font-family:'Space Mono',monospace;font-size:12px;color:#9A9DA6;">SAT</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px;">
+              <sc-for list="{{ todayClasses }}" as="c" hint-placeholder-count="4">
+                <div style="{{ c.rowStyle }}">
+                  <div style="display:flex;align-items:center;gap:12px;margin-bottom:11px;">
+                    <div style="text-align:center;flex:none;width:52px;"><div style="font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1;">{{ c.t }}</div></div>
+                    <div style="width:1px;height:30px;background:#EAE8E1;"></div>
+                    <div style="flex:1;"><div style="font-size:14.5px;font-weight:700;">{{ c.name }}</div><div style="font-size:12px;color:#8A8D95;font-family:'Space Mono',monospace;">{{ c.code }} · {{ c.venue }}</div></div>
+                    <sc-if value="{{ c.isNext }}" hint-placeholder-val="{{ true }}"><span style="background:oklch(0.48 0.19 264);color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:20px;">NEXT</span></sc-if>
+                  </div>
+                  <div style="display:flex;gap:6px;">
+                    <button onClick="{{ c.onPresent }}" style="{{ c.presentStyle }}">Present</button>
+                    <button onClick="{{ c.onAbsent }}" style="{{ c.absentStyle }}">Absent</button>
+                    <button onClick="{{ c.onCancel }}" style="{{ c.cancelStyle }}">Cancelled</button>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1.2px;color:#9A9DA6;margin-bottom:12px;">ATTENDANCE · CAN I SKIP?</div>
+            <div style="display:flex;flex-direction:column;gap:11px;">
+              <sc-for list="{{ summaryCourses }}" as="s" hint-placeholder-count="3">
+                <div style="background:#fff;border-radius:18px;padding:14px 15px;box-shadow:0 1px 2px rgba(20,20,40,.05);">
+                  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;"><div><div style="font-size:14.5px;font-weight:700;">{{ s.name }}</div><div style="font-size:11.5px;color:#8A8D95;font-family:'Space Mono',monospace;">{{ s.code }}</div></div><span style="{{ s.pctStyle }}">{{ s.pct }}%</span></div>
+                  <div style="height:7px;background:#F0EEE8;border-radius:7px;overflow:hidden;margin-bottom:9px;"><div style="{{ s.barStyle }}"></div></div>
+                  <div style="display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;{{ s.msgColor }}"><span class="ms" style="font-size:15px;">{{ s.msgIcon }}</span>{{ s.msg }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ THREAD (overlay) ============ -->
+        <div data-screen="thread" style="position:absolute; inset:0; display:flex; flex-direction:column; background:#F1EFEA; transform:translateX(100%);">
+          <div style="flex:none;background:#fff;box-shadow:0 1px 3px rgba(20,20,40,.05);padding:8px 14px;display:flex;align-items:center;gap:11px;z-index:2;">
+            <div onClick="{{ back }}" style="width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .12s;" style-active="transform:scale(.9)"><span class="ms" style="font-size:24px;">arrow_back</span></div>
+            <div style="width:40px;height:40px;border-radius:13px;background:oklch(0.66 0.19 42 / 0.14);color:oklch(0.52 0.19 40);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;font-family:'Bricolage Grotesque',sans-serif;">KS</div>
+            <div style="flex:1;"><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:15px;font-weight:800;">Karan S.</span><span style="background:oklch(0.48 0.19 264 / 0.1);color:oklch(0.42 0.19 264);font-size:9.5px;font-weight:800;padding:2px 6px;border-radius:20px;">TRUSTED</span></div><div style="font-size:11.5px;color:#8A8D95;">Active now</div></div>
+          </div>
+          <div style="flex:none;background:#fff;border-top:1px solid #F1EFEA;padding:9px 14px;display:flex;align-items:center;gap:10px;box-shadow:0 2px 4px rgba(20,20,40,.03);">
+            <div style="width:40px;height:40px;border-radius:10px;background:repeating-linear-gradient(135deg,#EDEBE4 0 8px,#E5E2D9 8px 16px);flex:none;"></div>
+            <div style="flex:1;"><div style="font-size:13px;font-weight:700;">Firefox Cycle — 21 gears</div><div style="font-size:12px;color:#8A8D95;font-variant-numeric:tabular-nums;">₹40/day · ₹1,000 deposit</div></div>
+            <span class="ms" style="font-size:20px;color:#C4C0B6;">chevron_right</span>
+          </div>
+          <div ref="{{ setThread }}" style="flex:1;overflow-y:auto;padding:16px 14px;" class="noscroll">
+            <div style="text-align:center;font-size:11px;color:#A6A29A;font-family:'Space Mono',monospace;margin-bottom:14px;">TODAY</div>
+            <sc-for list="{{ msgs }}" as="m" hint-placeholder-count="3">
+              <sc-if value="{{ m.me }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex;justify-content:flex-end;margin-bottom:8px;animation:fadeUp .28s ease both;"><div style="max-width:78%;background:oklch(0.48 0.19 264);color:#fff;padding:10px 14px;border-radius:18px 18px 5px 18px;font-size:14.5px;line-height:1.35;box-shadow:0 1px 2px rgba(20,20,50,.1);">{{ m.body }}</div></div>
+              </sc-if>
+              <sc-if value="{{ m.notMe }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex;justify-content:flex-start;margin-bottom:8px;animation:fadeUp .28s ease both;"><div style="max-width:78%;background:#fff;color:#1A1B1E;padding:10px 14px;border-radius:18px 18px 18px 5px;font-size:14.5px;line-height:1.35;box-shadow:0 1px 2px rgba(20,20,40,.06);">{{ m.body }}</div></div>
+              </sc-if>
+            </sc-for>
+          </div>
+          <div style="flex:none;background:#fff;border-top:1px solid #E9E7E0;padding:10px 12px 20px;">
+            <div style="display:flex;gap:7px;overflow-x:auto;margin-bottom:10px;" class="noscroll">
+              <sc-for list="{{ openers }}" as="o" hint-placeholder-count="3"><span onClick="{{ o.onClick }}" style="flex:none;background:#F1EFEA;color:#4A4D55;font-size:12.5px;font-weight:600;padding:7px 13px;border-radius:20px;cursor:pointer;transition:transform .12s;" style-active="transform:scale(.95)">{{ o.text }}</span></sc-for>
+            </div>
+            <div style="display:flex;align-items:center;gap:9px;">
+              <div style="flex:1;display:flex;align-items:center;gap:8px;background:#F1EFEA;border-radius:22px;padding:0 6px 0 15px;height:44px;">
+                <input value="{{ draft }}" onInput="{{ setDraft }}" placeholder="Message…" style="flex:1;border:none;background:transparent;outline:none;font-family:'Hanken Grotesk';font-size:14.5px;color:#1A1B1E;" />
+              </div>
+              <button onClick="{{ send }}" style="width:44px;height:44px;flex:none;border:none;border-radius:50%;background:oklch(0.48 0.19 264);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .12s;" style-active="transform:scale(.9)"><span class="ms" style="font-size:22px;color:#fff;">arrow_upward</span></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ CREATE (sheet) ============ -->
+        <div data-screen="create" style="position:absolute; inset:0; transform:translateY(100%);">
+          <div onClick="{{ back }}" style="position:absolute;inset:0;background:rgba(15,15,25,.35);backdrop-filter:blur(2px);"></div>
+          <div style="position:absolute;left:0;right:0;bottom:0;background:#F6F5F1;border-radius:28px 28px 0 0;padding:10px 18px 26px;">
+            <div style="width:40px;height:5px;border-radius:5px;background:#D8D5CC;margin:0 auto 16px;"></div>
+            <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;margin-bottom:14px;">Create something</div>
+            <div style="display:flex;flex-direction:column;gap:9px;">
+              <div onClick="{{ sheetMarket }}" style="display:flex;align-items:center;gap:13px;background:#fff;border-radius:16px;padding:14px;cursor:pointer;box-shadow:0 1px 2px rgba(20,20,40,.05);transition:transform .12s;" style-active="transform:scale(.98)"><div style="width:44px;height:44px;border-radius:13px;background:oklch(0.48 0.19 264 / 0.1);display:flex;align-items:center;justify-content:center;"><span class="ms" style="font-size:23px;color:oklch(0.44 0.19 264);">sell</span></div><div style="flex:1;"><div style="font-size:15px;font-weight:700;">Sell or rent an item</div><div style="font-size:12px;color:#8A8D95;">List on the marketplace</div></div><span class="ms" style="font-size:22px;color:#C4C0B6;">chevron_right</span></div>
+              <div onClick="{{ sheetBoard }}" style="display:flex;align-items:center;gap:13px;background:#fff;border-radius:16px;padding:14px;cursor:pointer;box-shadow:0 1px 2px rgba(20,20,40,.05);transition:transform .12s;" style-active="transform:scale(.98)"><div style="width:44px;height:44px;border-radius:13px;background:oklch(0.66 0.19 42 / 0.12);display:flex;align-items:center;justify-content:center;"><span class="ms" style="font-size:23px;color:oklch(0.56 0.19 40);">campaign</span></div><div style="flex:1;"><div style="font-size:15px;font-weight:700;">Post to the board</div><div style="font-size:12px;color:#8A8D95;">Lost, found, notice or event</div></div><span class="ms" style="font-size:22px;color:#C4C0B6;">chevron_right</span></div>
+              <div onClick="{{ sheetGroupbuy }}" style="display:flex;align-items:center;gap:13px;background:#fff;border-radius:16px;padding:14px;cursor:pointer;box-shadow:0 1px 2px rgba(20,20,40,.05);transition:transform .12s;" style-active="transform:scale(.98)"><div style="width:44px;height:44px;border-radius:13px;background:oklch(0.6 0.14 158 / 0.12);display:flex;align-items:center;justify-content:center;"><span class="ms" style="font-size:23px;color:oklch(0.5 0.14 158);">groups</span></div><div style="flex:1;"><div style="font-size:15px;font-weight:700;">Start a group-buy</div><div style="font-size:12px;color:#8A8D95;">Pool an order, split the cost</div></div><span class="ms" style="font-size:22px;color:#C4C0B6;">chevron_right</span></div>
+              <div onClick="{{ sheetMatcher }}" style="display:flex;align-items:center;gap:13px;background:#fff;border-radius:16px;padding:14px;cursor:pointer;box-shadow:0 1px 2px rgba(20,20,40,.05);transition:transform .12s;" style-active="transform:scale(.98)"><div style="width:44px;height:44px;border-radius:13px;background:oklch(0.7 0.13 300 / 0.14);display:flex;align-items:center;justify-content:center;"><span class="ms" style="font-size:23px;color:oklch(0.52 0.15 300);">handshake</span></div><div style="flex:1;"><div style="font-size:15px;font-weight:700;">Find a roommate or study-buddy</div><div style="font-size:12px;color:#8A8D95;">Match on habits &amp; courses</div></div><span class="ms" style="font-size:22px;color:#C4C0B6;">chevron_right</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ ONBOARDING ============ -->
+        <div data-ob style="position:absolute; inset:0; overflow:hidden; background:#F6F5F1; z-index:100;">
+          <div style="height:100%;display:flex;flex-direction:column;padding:14px 0 24px;">
+            <div style="display:flex;gap:6px;padding:8px 24px 0;">
+              <sc-for list="{{ obDots }}" as="d" hint-placeholder-count="4"><span style="{{ d.style }}"></span></sc-for>
+            </div>
+            <div style="flex:1;overflow:hidden;">
+              <div ref="{{ setObTrack }}" style="display:flex;width:400%;height:100%;">
+                <!-- step 0 welcome -->
+                <div style="width:25%;height:100%;padding:0 30px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;">
+                  <div style="width:64px;height:64px;border-radius:20px;background:oklch(0.48 0.19 264);display:flex;align-items:center;justify-content:center;margin-bottom:26px;box-shadow:0 14px 30px -12px oklch(0.48 0.19 264 / 0.7);"><span class="ms" style="font-size:34px;color:#fff;">school</span></div>
+                  <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:38px;font-weight:800;letter-spacing:-0.03em;line-height:1.02;">Your campus,<br>in one app.</div>
+                  <div style="font-size:16px;color:#6B6E76;line-height:1.5;margin:16px 0 0;">Buy &amp; sell, find your people, split subscriptions, never miss a class — all with verified students only.</div>
+                </div>
+                <!-- step 1 email -->
+                <div style="width:25%;height:100%;padding:0 30px;display:flex;flex-direction:column;justify-content:center;">
+                  <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:28px;font-weight:800;letter-spacing:-0.02em;">Sign in with your<br>campus email</div>
+                  <div style="font-size:14.5px;color:#8A8D95;margin:10px 0 24px;line-height:1.5;">We'll send a code to verify you're a real Riverside student.</div>
+                  <div style="display:flex;align-items:center;gap:10px;background:#fff;border-radius:16px;padding:0 16px;height:56px;box-shadow:inset 0 0 0 1.5px oklch(0.48 0.19 264);">
+                    <span class="ms" style="font-size:22px;color:oklch(0.48 0.19 264);">mail</span>
+                    <span style="font-size:15px;font-weight:600;color:#1A1B1E;">aarav.menon2023</span><span style="font-size:15px;color:#8A8D95;">@riverside.edu</span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:7px;margin-top:14px;font-size:12.5px;color:#8A8D95;"><span class="ms" style="font-size:16px;color:oklch(0.5 0.14 158);">verified_user</span>Only <b style="color:#4A4D55;">@riverside.edu</b> addresses can join.</div>
+                </div>
+                <!-- step 2 otp -->
+                <div style="width:25%;height:100%;padding:0 30px;display:flex;flex-direction:column;justify-content:center;">
+                  <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:28px;font-weight:800;letter-spacing:-0.02em;">Enter the code</div>
+                  <div style="font-size:14.5px;color:#8A8D95;margin:10px 0 26px;line-height:1.5;">Sent to aarav.menon2023@riverside.edu</div>
+                  <div style="display:flex;gap:10px;justify-content:space-between;">
+                    <div style="flex:1;aspect-ratio:1;max-width:52px;background:#fff;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;box-shadow:inset 0 0 0 1.5px oklch(0.48 0.19 264);">4</div>
+                    <div style="flex:1;aspect-ratio:1;max-width:52px;background:#fff;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;box-shadow:inset 0 0 0 1.5px oklch(0.48 0.19 264);">8</div>
+                    <div style="flex:1;aspect-ratio:1;max-width:52px;background:#fff;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;box-shadow:inset 0 0 0 1px #E9E7E0;">2</div>
+                    <div style="flex:1;aspect-ratio:1;max-width:52px;background:#fff;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#C4C0B6;box-shadow:inset 0 0 0 1px #E9E7E0;">·</div>
+                    <div style="flex:1;aspect-ratio:1;max-width:52px;background:#fff;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#C4C0B6;box-shadow:inset 0 0 0 1px #E9E7E0;">·</div>
+                    <div style="flex:1;aspect-ratio:1;max-width:52px;background:#fff;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#C4C0B6;box-shadow:inset 0 0 0 1px #E9E7E0;">·</div>
+                  </div>
+                  <div style="font-size:13px;color:#8A8D95;margin-top:18px;">Resend in <b style="color:#4A4D55;">0:24</b></div>
+                </div>
+                <!-- step 3 profile -->
+                <div style="width:25%;height:100%;padding:0 30px;display:flex;flex-direction:column;justify-content:center;">
+                  <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:28px;font-weight:800;letter-spacing:-0.02em;">Set up your profile</div>
+                  <div style="font-size:14.5px;color:#8A8D95;margin:10px 0 22px;">This is how other students see you.</div>
+                  <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;">
+                    <div style="width:64px;height:64px;border-radius:20px;background:oklch(0.48 0.19 264 / 0.12);color:oklch(0.42 0.19 264);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:22px;font-family:'Bricolage Grotesque',sans-serif;">AM</div>
+                    <div style="display:inline-flex;align-items:center;gap:6px;background:#fff;padding:9px 14px;border-radius:12px;font-size:13px;font-weight:700;color:#4A4D55;box-shadow:0 1px 2px rgba(20,20,40,.05);"><span class="ms" style="font-size:17px;">add_a_photo</span>Add photo</div>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:11px;">
+                    <div style="background:#fff;border-radius:14px;padding:12px 15px;box-shadow:0 1px 2px rgba(20,20,40,.05);"><div style="font-size:11px;color:#9A9DA6;font-weight:600;">NAME</div><div style="font-size:15px;font-weight:700;margin-top:2px;">Aarav Menon</div></div>
+                    <div style="display:flex;gap:11px;"><div style="flex:1;background:#fff;border-radius:14px;padding:12px 15px;box-shadow:0 1px 2px rgba(20,20,40,.05);"><div style="font-size:11px;color:#9A9DA6;font-weight:600;">BLOCK</div><div style="font-size:15px;font-weight:700;margin-top:2px;">A-Block</div></div><div style="flex:1;background:#fff;border-radius:14px;padding:12px 15px;box-shadow:0 1px 2px rgba(20,20,40,.05);"><div style="font-size:11px;color:#9A9DA6;font-weight:600;">BATCH</div><div style="font-size:15px;font-weight:700;margin-top:2px;">2023</div></div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="padding:0 30px;">
+              <button onClick="{{ obNext }}" style="{{ obBtnStyle }}">{{ obBtnLabel }}</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ TAB BAR ============ -->
+        <div ref="{{ setTabBar }}" style="position:absolute;left:0;right:0;bottom:0;height:88px;z-index:5;background:rgba(246,245,241,.85);backdrop-filter:blur(16px);border-top:1px solid #E9E7E0;display:flex;align-items:flex-start;justify-content:space-around;padding:12px 20px 0;">
+          <div onClick="{{ goHome }}" style="{{ navHomeStyle }}"><span class="ms" style="font-size:25px;">home</span><span style="font-size:10px;font-weight:700;color:inherit;">Home</span></div>
+          <div onClick="{{ goMarket }}" style="{{ navMarketStyle }}"><span class="ms" style="font-size:25px;">explore</span><span style="font-size:10px;font-weight:600;color:inherit;">Explore</span></div>
+          <div onClick="{{ openSheet }}" style="width:52px;height:52px;border-radius:18px;background:oklch(0.48 0.19 264);display:flex;align-items:center;justify-content:center;margin-top:-6px;cursor:pointer;box-shadow:0 8px 18px -6px oklch(0.48 0.19 264 / 0.65);transition:transform .12s;" style-active="transform:scale(.9)"><span class="ms" style="font-size:28px;color:#fff;">add</span></div>
+          <div onClick="{{ goChats }}" style="{{ navChatsStyle }}"><span class="ms" style="font-size:25px;">chat_bubble</span><span style="font-size:10px;font-weight:600;color:inherit;">Chats</span><span style="position:absolute;top:-3px;right:6px;width:8px;height:8px;border-radius:50%;background:oklch(0.66 0.19 42);box-shadow:0 0 0 2px #F6F5F1;"></span></div>
+          <div onClick="{{ goProfile }}" style="{{ navProfileStyle }}"><span class="ms" style="font-size:25px;">person</span><span style="font-size:10px;font-weight:600;color:inherit;">Profile</span></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:460,&quot;height&quot;:900},&quot;reduceMotion&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Behavior&quot;},&quot;startScreen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;onboarding&quot;,&quot;options&quot;:[&quot;onboarding&quot;,&quot;home&quot;,&quot;market&quot;,&quot;board&quot;,&quot;groupbuy&quot;,&quot;pools&quot;,&quot;matcher&quot;,&quot;timetable&quot;,&quot;chats&quot;,&quot;profile&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Behavior&quot;}}">
+const TABS = ['home','market','chats','profile'];
+const BRAND = 'oklch(0.48 0.19 264)';
+const CORAL = 'oklch(0.66 0.19 42)';
+const GREEN = 'oklch(0.6 0.14 158)';
+const MUT = '#9A9DA6';
+
+class Component extends DCLogic {
+  state = {
+    entered: false, ob: 0,
+    tab: 'home', stack: [],
+    saved: { cycle: true }, joined: false, joinCount: 11,
+    draft: '',
+    msgs: [
+      { me: false, body: 'Hey! Is the Firefox cycle still available?' },
+      { me: true, body: 'Yep — barely used, about a year old 🙂' },
+      { me: false, body: 'Nice. Can you do ₹3,000 outright instead?' },
+    ],
+    paid: {}, connected: {},
+    att: ['present', 'present', 'none', 'none'],
+  };
+
+  componentDidMount() {
+    const ss = this.props.startScreen;
+    if (ss && ss !== 'onboarding') {
+      if (TABS.includes(ss)) this.setState({ entered: true, tab: ss, stack: [] });
+      else this.setState({ entered: true, stack: [ss] });
+    } else {
+      this.setState({ entered: false });
+    }
+    requestAnimationFrame(() => this.applyLayout(false));
+  }
+  componentDidUpdate(prev) {
+    this.applyLayout(true);
+    if (this.threadRef && this.state.msgs.length !== (prev && prev.msgsLen)) {
+      this.threadRef.scrollTop = this.threadRef.scrollHeight;
+    }
+  }
+  dur() { return this.props.reduceMotion ? '0.001s' : '0.42s'; }
+
+  applyLayout(animate) {
+    const stage = this.stageRef; if (!stage) return;
+    const { stack, tab, entered } = this.state;
+    const n = stack.length, top = n ? stack[n - 1] : null;
+    const below = n > 1 ? stack[n - 2] : (n === 1 ? tab : null);
+    const sheet = top === 'create';
+    const tr = animate ? `transform ${this.dur()} cubic-bezier(.32,.72,0,1), opacity .3s ease` : 'none';
+    stage.querySelectorAll('[data-screen]').forEach(el => {
+      const id = el.getAttribute('data-screen');
+      const isTab = TABS.includes(id);
+      el.style.transition = tr;
+      let vis = false, x = '0%', y = '0%', sc = 1, op = 1, z = 1, pe = 'none';
+      if (top) {
+        if (id === top) { vis = true; z = id === 'create' ? 40 : 20; pe = 'auto'; }
+        else if (id === below) { vis = true; z = 8; if (sheet) { x = '0%'; sc = 1; op = 1; } else { x = '-16%'; sc = 0.96; op = 0.5; } }
+      } else if (isTab && id === tab) { vis = true; z = 2; pe = 'auto'; }
+      if (vis) {
+        el.style.transform = `translateX(${x}) translateY(${y}) scale(${sc})`;
+        el.style.opacity = op; el.style.zIndex = z; el.style.pointerEvents = pe;
+      } else if (isTab) {
+        el.style.transform = 'translateX(0) scale(.985)'; el.style.opacity = '0'; el.style.zIndex = '0'; el.style.pointerEvents = 'none';
+      } else if (id === 'create') {
+        el.style.transform = 'translateY(100%)'; el.style.opacity = '1'; el.style.zIndex = '30'; el.style.pointerEvents = 'none';
+      } else {
+        el.style.transform = 'translateX(100%)'; el.style.opacity = '1'; el.style.zIndex = '15'; el.style.pointerEvents = 'none';
+      }
+    });
+    const ob = stage.querySelector('[data-ob]');
+    if (ob) {
+      ob.style.transition = tr;
+      if (!entered) { ob.style.transform = 'translateX(0)'; ob.style.opacity = '1'; ob.style.pointerEvents = 'auto'; }
+      else { ob.style.transform = 'translateX(-8%) scale(.98)'; ob.style.opacity = '0'; ob.style.pointerEvents = 'none'; }
+    }
+    const trk = this.obTrackRef;
+    if (trk) { trk.style.transition = animate ? `transform ${this.dur()} cubic-bezier(.32,.72,0,1)` : 'none'; trk.style.transform = `translateX(${-25 * this.state.ob}%)`; }
+    const tb = this.tabBarRef;
+    if (tb) {
+      tb.style.transition = 'opacity .25s ease, transform .3s ease';
+      const show = !top && entered;
+      tb.style.opacity = show ? '1' : '0';
+      tb.style.transform = show ? 'translateY(0)' : 'translateY(120%)';
+      tb.style.pointerEvents = show ? 'auto' : 'none';
+    }
+  }
+
+  nav = (t) => { if (TABS.includes(t)) this.setState({ tab: t, stack: [] }); else this.setState(s => ({ stack: [...s.stack, t] })); };
+  back = () => this.setState(s => ({ stack: s.stack.slice(0, -1) }));
+  sheetTo = (t) => this.setState(s => ({ stack: [...s.stack.slice(0, -1), t] }));
+  toggleSave = (id, e) => { if (e) e.stopPropagation(); this.setState(s => ({ saved: { ...s.saved, [id]: !s.saved[id] } })); };
+  join = () => this.setState(s => s.joined ? { joined: false, joinCount: s.joinCount - 1 } : { joined: true, joinCount: s.joinCount + 1 });
+  connect = (id) => this.setState(s => ({ connected: { ...s.connected, [id]: true } }));
+  pay = (id) => this.setState(s => ({ paid: { ...s.paid, [id]: true } }));
+  mark = (i, st) => this.setState(s => { const a = [...s.att]; a[i] = st; return { att: a }; });
+  setDraft = (e) => this.setState({ draft: e.target.value });
+  send = () => {
+    const d = this.state.draft.trim(); if (!d) return;
+    this.setState(s => ({ msgs: [...s.msgs, { me: true, body: d }], draft: '' }));
+    setTimeout(() => this.setState(s => ({ msgs: [...s.msgs, { me: false, body: 'Sounds good — see you at 5 by the main gate! 🚲' }] })), 1200);
+  };
+  quick = (t) => this.setState(s => ({ msgs: [...s.msgs, { me: true, body: t }] }));
+  obNext = () => { if (this.state.ob >= 3) this.setState({ entered: true }); else this.setState(s => ({ ob: s.ob + 1 })); };
+
+  renderVals() {
+    const s = this.state;
+    const heart = (id) => ({ fontSize: '18px', color: s.saved[id] ? CORAL : '#B4B0A6', transition: 'transform .2s', animation: s.saved[id] ? 'pop .3s ease' : 'none' });
+    const imgStyle = { aspectRatio: '1/1', background: 'repeating-linear-gradient(135deg,#EDEBE4 0 10px,#E5E2D9 10px 20px)', position: 'relative' };
+    const rentTag = { position: 'absolute', top: '8px', left: '8px', background: GREEN, color: '#fff', fontSize: '9.5px', fontWeight: '800', padding: '2px 8px', borderRadius: '20px' };
+
+    const baseListings = [
+      { id: 'cycle', title: 'Firefox Cycle', price: '₹40', priceSuffix: '/day', tag: 'RENT', rating: '4.9', seller: 'Karan', imgLabel: 'cycle' },
+      { id: 'calc', title: 'TI-84 Plus', price: '₹1,200', priceSuffix: '', tag: '', rating: '4.8', seller: 'Riya', imgLabel: 'calculator' },
+      { id: 'fridge', title: 'Mini Fridge 45L', price: '₹4,000', priceSuffix: '', tag: '', rating: '4.7', seller: 'Meera', imgLabel: 'fridge' },
+      { id: 'lamp', title: 'Study Lamp', price: '₹450', priceSuffix: '', tag: '', rating: '4.9', seller: 'Aditya', imgLabel: 'lamp' },
+      { id: 'book', title: 'DBMS Textbook', price: '₹350', priceSuffix: '', tag: 'CSE2005', rating: '5.0', seller: 'Sana', imgLabel: 'textbook' },
+      { id: 'phones', title: 'Sony WH-CH520', price: '₹2,200', priceSuffix: '', tag: '', rating: '4.6', seller: 'Rohit', imgLabel: 'headphones' },
+    ];
+    const listings = baseListings.map(it => ({
+      ...it,
+      imgStyle,
+      tagStyle: it.tag === 'RENT' ? rentTag : { position: 'absolute', top: '8px', left: '8px', background: '#1A1B1E', color: '#fff', fontSize: '9px', fontWeight: '800', padding: '2px 8px', borderRadius: '20px', fontFamily: "'Space Mono',monospace" },
+      heartIcon: s.saved[it.id] ? 'favorite' : 'favorite_border',
+      heartStyle: heart(it.id),
+      onSave: (e) => this.toggleSave(it.id, e),
+      onOpen: () => this.nav('listing'),
+    }));
+
+    const badge = (bg, col) => ({ background: bg, color: col, fontSize: '10.5px', fontWeight: '800', letterSpacing: '.5px', padding: '3px 9px', borderRadius: '7px', fontFamily: "'Space Mono',monospace" });
+    const card = (resolved) => ({ background: '#fff', borderRadius: '18px', padding: '15px', boxShadow: '0 1px 2px rgba(20,20,40,.05)', opacity: resolved ? 0.6 : 1 });
+    const boardPosts = [
+      { type: 'FOUND', title: 'Black wireless earbuds', body: 'Found near SJT foyer, in a grey case.', meta: 'SJT · 1h ago', resolved: false, badgeStyle: badge('oklch(0.6 0.14 158 / 0.15)', 'oklch(0.42 0.14 158)'), cardStyle: card(false) },
+      { type: 'LOST', title: 'Blue steel water bottle', body: 'Left near TT ground after evening practice.', meta: 'TT Ground · 3h ago', resolved: false, badgeStyle: badge('oklch(0.66 0.19 42 / 0.14)', 'oklch(0.52 0.19 40)'), cardStyle: card(false) },
+      { type: 'NOTICE', title: 'Library hours extended for end-sems', body: 'Central Library open till 2 AM from 3–18 Jul.', meta: 'Admin · today', resolved: false, badgeStyle: badge('oklch(0.48 0.19 264 / 0.12)', 'oklch(0.42 0.19 264)'), cardStyle: card(false) },
+      { type: 'EVENT', title: 'Riviera dance auditions', body: 'Anna Auditorium · Fri 6 PM. Bring your crew.', meta: 'Fri 6 PM · Anna Aud', resolved: false, badgeStyle: badge('oklch(0.7 0.13 300 / 0.14)', 'oklch(0.5 0.15 300)'), cardStyle: card(false) },
+      { type: 'FOUND', title: 'ID card — returned to owner', body: 'Reunited with its owner. Thanks all!', meta: 'yesterday', resolved: true, badgeStyle: badge('oklch(0.6 0.14 158 / 0.15)', 'oklch(0.42 0.14 158)'), cardStyle: card(true) },
+    ];
+
+    const av = (bg, col) => ({ width: '46px', height: '46px', borderRadius: '14px', background: bg, color: col, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '14px', fontFamily: "'Bricolage Grotesque',sans-serif", flex: 'none' });
+    const chatList = [
+      { name: 'Karan S.', initials: 'KS', badge: 'TRUSTED', last: 'Sounds good — see you at 5 by the gate!', time: '2m', unread: true, avatarStyle: av('oklch(0.66 0.19 42 / 0.14)', 'oklch(0.52 0.19 40)'), badgeStyle: { background: 'oklch(0.48 0.19 264 / 0.1)', color: 'oklch(0.42 0.19 264)', fontSize: '9px', fontWeight: '800', padding: '2px 6px', borderRadius: '20px' }, onOpen: () => this.nav('thread') },
+      { name: 'Study Group · CSE2005', initials: 'CS', badge: '', last: 'Anyone free to review before the lab at 6?', time: '12m', unread: false, avatarStyle: av('oklch(0.6 0.14 158 / 0.14)', 'oklch(0.45 0.14 158)'), onOpen: () => this.nav('thread') },
+      { name: 'Priya M.', initials: 'PM', badge: '', last: 'Is the TI-84 still available?', time: '1h', unread: true, avatarStyle: av('oklch(0.7 0.13 300 / 0.16)', 'oklch(0.5 0.15 300)'), onOpen: () => this.nav('thread') },
+      { name: 'Netflix Pool', initials: 'NP', badge: 'OWNER', last: 'Payment received ✓ You\'re all set.', time: 'Tue', unread: false, avatarStyle: av('#1A1B1E', '#fff'), badgeStyle: { background: '#F0EEE8', color: '#6B6E76', fontSize: '9px', fontWeight: '800', padding: '2px 6px', borderRadius: '20px' }, onOpen: () => this.nav('thread') },
+    ];
+
+    const connectBtn = (done) => ({ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px', height: '44px', border: 'none', borderRadius: '14px', fontFamily: "'Hanken Grotesk'", fontSize: '14.5px', fontWeight: '800', cursor: 'pointer', transition: 'transform .12s', background: done ? 'oklch(0.6 0.14 158 / 0.12)' : BRAND, color: done ? 'oklch(0.4 0.14 158)' : '#fff' });
+    const baseMatches = [
+      { id: 'ishaan', name: 'Ishaan R.', sub: 'CSE · 2nd year · looking for roommate', score: '94', chips: ['Night owl', 'Very tidy', 'Quiet study'], bio: 'Early-ish sleeper, keeps the room clean, into late-night coding. Prefers a calm space.' },
+      { id: 'aditi', name: 'Aditi V.', sub: 'CSE · 3rd year · study-buddy', score: '88', chips: ['Group study', 'CSE2005', 'Evenings'], bio: 'Loves whiteboard sessions before exams. Free most evenings after 6.' },
+      { id: 'rehan', name: 'Rehan K.', sub: 'ECE · 2nd year · looking for roommate', score: '81', chips: ['Flexible hrs', 'Non-smoker', 'Fitness'], bio: 'Easy-going, gym in the morning, tidy enough. Open to most schedules.' },
+    ];
+    const matches = baseMatches.map(m => {
+      const done = !!s.connected[m.id];
+      const pct = parseInt(m.score, 10);
+      return { ...m, dash: `${(pct / 100 * 150.8).toFixed(1)} 150.8`, onConnect: () => this.connect(m.id), connectStyle: connectBtn(done), connectLabel: done ? 'Request sent' : 'Connect', connectIcon: done ? 'check' : 'waving_hand' };
+    });
+
+    const payBtn = { border: 'none', borderRadius: '10px', background: BRAND, color: '#fff', fontFamily: "'Hanken Grotesk'", fontSize: '12.5px', fontWeight: '800', padding: '7px 13px', cursor: 'pointer', transition: 'transform .12s' };
+    const paidChip = { display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'oklch(0.6 0.14 158 / 0.12)', color: 'oklch(0.4 0.14 158)', fontSize: '11.5px', fontWeight: '800', padding: '5px 10px', borderRadius: '20px' };
+    const dueChip = { display: 'inline-flex', alignItems: 'center', gap: '4px', background: '#F0EEE8', color: '#8A8D95', fontSize: '11.5px', fontWeight: '700', padding: '5px 10px', borderRadius: '20px' };
+    const pm = (name, initials, bg, col, key, state) => {
+      const isPaid = key === 'you' ? s.paid.you : state === 'paid';
+      return { name, initials, share: '49', avatarStyle: av(bg, col),
+        showPay: key === 'you' && !isPaid,
+        showStatus: !(key === 'you' && !isPaid),
+        onPay: () => this.pay('you'), payLabel: 'Pay ₹49', payStyle: payBtn,
+        statusStyle: isPaid ? paidChip : dueChip,
+        statusIcon: isPaid ? 'check' : 'schedule',
+        statusLabel: isPaid ? 'Paid' : 'Due',
+      };
+    };
+    const poolMembers = [
+      pm('You', 'AM', 'oklch(0.48 0.19 264 / 0.12)', 'oklch(0.42 0.19 264)', 'you'),
+      pm('Karan S.', 'KS', 'oklch(0.66 0.19 42 / 0.14)', 'oklch(0.52 0.19 40)', 'k', 'paid'),
+      pm('Meera G.', 'MG', 'oklch(0.6 0.14 158 / 0.14)', 'oklch(0.45 0.14 158)', 'm', 'paid'),
+      pm('Aditya N.', 'AN', 'oklch(0.7 0.13 300 / 0.16)', 'oklch(0.5 0.15 300)', 'a', 'due'),
+    ];
+
+    const seg = (active, kind) => {
+      const colors = { present: GREEN, absent: CORAL, cancel: '#8A8D95' };
+      const c = colors[kind];
+      return { flex: 1, border: 'none', borderRadius: '11px', padding: '9px 0', fontFamily: "'Hanken Grotesk'", fontSize: '12.5px', fontWeight: '700', cursor: 'pointer', transition: 'transform .12s, background .15s',
+        background: active ? c : '#F4F2EC', color: active ? '#fff' : '#8A8D95' };
+    };
+    const baseToday = [
+      { t: '09:00', name: 'Discrete Maths', code: 'MAT2001', venue: 'TT-201' },
+      { t: '11:00', name: 'Data Structures', code: 'CSE2003', venue: 'SJT-115' },
+      { t: '14:00', name: 'DBMS Lab', code: 'CSE2005', venue: 'SJT-403', isNext: true },
+      { t: '16:00', name: 'Technical English', code: 'ENG1002', venue: 'GDN-105' },
+    ];
+    const todayClasses = baseToday.map((c, i) => {
+      const st = s.att[i];
+      return { ...c,
+        rowStyle: { background: '#fff', borderRadius: '18px', padding: '14px 15px', boxShadow: c.isNext ? '0 1px 2px rgba(20,20,40,.05), inset 0 0 0 1.5px oklch(0.48 0.19 264 / 0.4)' : '0 1px 2px rgba(20,20,40,.05)' },
+        onPresent: () => this.mark(i, 'present'), onAbsent: () => this.mark(i, 'absent'), onCancel: () => this.mark(i, 'cancelled'),
+        presentStyle: seg(st === 'present', 'present'), absentStyle: seg(st === 'absent', 'absent'), cancelStyle: seg(st === 'cancelled', 'cancel') };
+    });
+
+    const summaryCourses = [
+      { name: 'DBMS Lab', code: 'CSE2005', pct: 78, ok: true, msg: 'You can skip 2 more classes' },
+      { name: 'Data Structures', code: 'CSE2003', pct: 71, ok: false, msg: 'Attend the next 2 to reach 75%' },
+      { name: 'Discrete Maths', code: 'MAT2001', pct: 85, ok: true, msg: 'You can skip 4 more classes' },
+    ].map(c => ({ ...c,
+      pctStyle: { fontFamily: "'Bricolage Grotesque',sans-serif", fontSize: '17px', fontWeight: '800', fontVariantNumeric: 'tabular-nums', color: c.ok ? 'oklch(0.45 0.14 158)' : 'oklch(0.56 0.19 40)' },
+      barStyle: { width: c.pct + '%', height: '100%', borderRadius: '7px', background: c.ok ? GREEN : CORAL },
+      msgColor: c.ok ? 'color:oklch(0.45 0.14 158)' : 'color:oklch(0.56 0.19 40)',
+      msgIcon: c.ok ? 'sentiment_satisfied' : 'warning',
+    }));
+
+    const msgs = s.msgs.map(m => ({ ...m, notMe: !m.me }));
+    const openers = ['Is this still available?', 'Can you do ₹3,000?', 'Where can we meet?'].map(t => ({ text: t, onClick: () => this.quick(t) }));
+
+    const moduleTiles = [
+      { icon: 'storefront', label: 'Market', onClick: () => this.nav('market') },
+      { icon: 'campaign', label: 'Board', onClick: () => this.nav('board') },
+      { icon: 'groups', label: 'Group-Buy', onClick: () => this.nav('groupbuy') },
+      { icon: 'subscriptions', label: 'Pools', onClick: () => this.nav('pools') },
+      { icon: 'handshake', label: 'Match', onClick: () => this.nav('matcher') },
+      { icon: 'calendar_month', label: 'Timetable', onClick: () => this.nav('timetable') },
+    ];
+
+    const activeTab = s.stack.length ? null : s.tab;
+    const navBase = (on) => ({ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', cursor: 'pointer', position: 'relative', color: on ? BRAND : MUT, transition: 'color .2s' });
+
+    const joinPct = Math.min(100, Math.round(s.joinCount / 15 * 100));
+
+    return {
+      setStage: (el) => { this.stageRef = el; },
+      setObTrack: (el) => { this.obTrackRef = el; },
+      setTabBar: (el) => { this.tabBarRef = el; },
+      setThread: (el) => { this.threadRef = el; },
+      goHome: () => this.nav('home'), goMarket: () => this.nav('market'), goChats: () => this.nav('chats'), goProfile: () => this.nav('profile'),
+      openTimetable: () => this.nav('timetable'), openPools: () => this.nav('pools'), openGroupbuy: () => this.nav('groupbuy'), openBoard: () => this.nav('board'), openMatcher: () => this.nav('matcher'), openListing: () => this.nav('listing'), openThread: () => this.nav('thread'),
+      openSheet: () => this.setState(st => ({ stack: [...st.stack, 'create'] })),
+      sheetMarket: () => this.sheetTo('market'), sheetBoard: () => this.sheetTo('board'), sheetGroupbuy: () => this.sheetTo('groupbuy'), sheetMatcher: () => this.sheetTo('matcher'),
+      back: this.back,
+      listings, boardPosts, chatList, matches, poolMembers, todayClasses, summaryCourses, msgs, openers, moduleTiles,
+      draft: s.draft, setDraft: this.setDraft, send: this.send,
+      join: this.join, joined: s.joined, joinCount: s.joinCount, joinPct,
+      joinBarStyle: { width: joinPct + '%', height: '100%', borderRadius: '9px', background: `linear-gradient(90deg,${BRAND},${CORAL})`, transition: 'width .5s cubic-bezier(.4,0,.2,1)' },
+      joinIcon: s.joined ? 'check_circle' : 'add_circle',
+      joinLabel: s.joined ? "You're in — 1 record" : 'Join this order',
+      joinBtnStyle: { width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', height: '54px', border: 'none', borderRadius: '17px', fontFamily: "'Hanken Grotesk'", fontSize: '16px', fontWeight: '800', cursor: 'pointer', transition: 'transform .12s', background: s.joined ? 'oklch(0.6 0.14 158 / 0.14)' : BRAND, color: s.joined ? 'oklch(0.4 0.14 158)' : '#fff', boxShadow: s.joined ? 'none' : '0 10px 24px -10px oklch(0.48 0.19 264 / 0.8)' },
+      obDots: [0, 1, 2, 3].map(i => ({ style: { flex: 1, height: '4px', borderRadius: '4px', transition: 'background .3s', background: i <= s.ob ? BRAND : '#E2DFD7' } })),
+      obNext: this.obNext,
+      obBtnLabel: s.ob === 0 ? 'Get started' : s.ob === 1 ? 'Send code' : s.ob === 2 ? 'Verify' : 'Enter Campus',
+      obBtnStyle: { width: '100%', height: '56px', border: 'none', borderRadius: '17px', background: BRAND, color: '#fff', fontFamily: "'Hanken Grotesk'", fontSize: '16.5px', fontWeight: '800', cursor: 'pointer', transition: 'transform .12s', boxShadow: '0 12px 26px -10px oklch(0.48 0.19 264 / 0.75)' },
+      navHomeStyle: navBase(activeTab === 'home'), navMarketStyle: navBase(activeTab === 'market'), navChatsStyle: navBase(activeTab === 'chats'), navProfileStyle: navBase(activeTab === 'profile'),
+    };
+  }
+}
+</script>
+</body>
+</html>

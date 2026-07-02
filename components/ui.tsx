@@ -12,7 +12,7 @@ export function Card({
   className?: string;
 }) {
   return (
-    <div className={`rounded-xl border border-border bg-card p-4 ${className}`}>
+    <div className={`rounded-2xl border border-border bg-card p-4 ${className}`}>
       {children}
     </div>
   );
@@ -27,13 +27,13 @@ export function Button({
   variant?: "primary" | "secondary" | "accent";
 }) {
   const styles = {
-    primary: "bg-primary text-on-primary hover:opacity-90",
+    primary: "bg-primary text-on-primary hover:bg-primary-strong",
     secondary: "border border-border bg-card text-foreground hover:bg-muted",
     accent: "bg-accent text-on-accent hover:opacity-90",
   }[variant];
   return (
     <button
-      className={`min-h-11 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-150 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${styles} ${className}`}
+      className={`min-h-11 rounded-full px-5 py-2 text-sm font-semibold transition-all duration-150 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${styles} ${className}`}
       {...props}
     >
       {children}
@@ -70,4 +70,4 @@ export function Section({
 
 // Shared form input style — Phase 1 pages use it, later module forms will too.
 export const inputClass =
-  "min-h-11 w-full rounded-lg border border-border bg-card px-3 py-2 text-foreground placeholder:text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring";
+  "min-h-11 w-full rounded-xl border border-border bg-card px-3 py-2 text-foreground placeholder:text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring";

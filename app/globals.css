@@ -1,28 +1,30 @@
 @import "tailwindcss";
 
-/* Design system: ui-ux-pro-max "Marketplace P2P" — trust purple + transaction
-   green (WCAG-adjusted). Fonts: Outfit (headings) + Work Sans (body).
-   Dark mode arrives in Phase 29 — keep light-only until then. */
+/* Design system: adopted from the user's Claude Design "Campus" project
+   (docs/design/) — warm cream paper, near-black ink, one saturated cobalt,
+   transaction green kept for money/success states. Fonts: Bricolage Grotesque
+   (display) + Hanken Grotesk (body). Dark mode arrives in Phase 29. */
 @theme {
-  --color-primary: #7c3aed;
+  --color-primary: oklch(0.48 0.19 264);
+  --color-primary-strong: oklch(0.42 0.19 264);
   --color-on-primary: #ffffff;
-  --color-secondary: #a78bfa;
-  --color-on-secondary: #0f172a;
+  --color-secondary: oklch(0.48 0.19 264 / 0.12);
+  --color-on-secondary: #0b0b0d;
   --color-accent: #16a34a;
   --color-on-accent: #ffffff;
-  --color-background: #faf5ff;
-  --color-foreground: #4c1d95;
+  --color-background: #f6f5f1;
+  --color-foreground: #0b0b0d;
   --color-card: #ffffff;
-  --color-card-foreground: #4c1d95;
-  --color-muted: #eceef9;
-  --color-muted-foreground: #64748b;
-  --color-border: #ddd6fe;
+  --color-card-foreground: #0b0b0d;
+  --color-muted: #e7e5df;
+  --color-muted-foreground: #6b6e76;
+  --color-border: #e7e5df;
   --color-destructive: #dc2626;
   --color-on-destructive: #ffffff;
-  --color-ring: #7c3aed;
+  --color-ring: oklch(0.48 0.19 264);
 
-  --font-heading: var(--font-outfit), sans-serif;
-  --font-sans: var(--font-work-sans), sans-serif;
+  --font-heading: var(--font-bricolage), sans-serif;
+  --font-sans: var(--font-hanken), sans-serif;
 }
 
 body {
