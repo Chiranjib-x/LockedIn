@@ -31,6 +31,8 @@ export async function createPost(formData: FormData) {
     .eq("id", user.id)
     .single();
 
+  const communityId = String(formData.get("community_id") ?? "").trim() || null;
+
   const { error } = await supabase.from("posts").insert({
     author_id: user.id,
     college_id: profile?.college_id, // server-side stamp; RLS double-checks
@@ -40,11 +42,16 @@ export async function createPost(formData: FormData) {
     location: String(formData.get("location") ?? "").trim() || null,
     event_date: type === "event" ? new Date(eventDateRaw).toISOString() : null,
     images: JSON.parse(String(formData.get("images") ?? "[]")),
+    community_id: communityId, // RLS: moderators only when set
   });
 
   if (error) redirect("/board/new?error=" + encodeURIComponent(error.message));
 
   revalidatePath("/board");
+  if (communityId) {
+    revalidatePath(`/communities/${communityId}`);
+    redirect(`/communities/${communityId}`);
+  }
   redirect("/board");
 }
 

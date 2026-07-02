@@ -13,8 +13,16 @@ const TYPES = [
   { value: "event", label: "Event", emoji: "🎪", hint: "Venue" },
 ] as const;
 
-export default function PostForm({ error }: { error?: string }) {
-  const [type, setType] = useState<(typeof TYPES)[number]["value"]>("lost");
+export default function PostForm({
+  error,
+  communityId,
+  communityName,
+}: {
+  error?: string;
+  communityId?: string;
+  communityName?: string;
+}) {
+  const [type, setType] = useState<(typeof TYPES)[number]["value"]>(communityId ? "notice" : "lost");
   const [images, setImages] = useState<string[]>([]);
   const active = TYPES.find((t) => t.value === type)!;
 
@@ -22,6 +30,13 @@ export default function PostForm({ error }: { error?: string }) {
     <form action={createPost} className="flex flex-col gap-4">
       <input type="hidden" name="type" value={type} />
       <input type="hidden" name="images" value={JSON.stringify(images)} />
+      {communityId && <input type="hidden" name="community_id" value={communityId} />}
+
+      {communityName && (
+        <p className="rounded-2xl border border-primary/30 bg-primary/5 p-3 text-sm font-medium text-primary">
+          Posting as {communityName}
+        </p>
+      )}
 
       {error && (
         <p className="rounded-xl border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">

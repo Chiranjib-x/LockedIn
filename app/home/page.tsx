@@ -19,6 +19,7 @@ const MODULES: {
   { name: "Subscriptions", short: "Pools", desc: "Share OTT & tool costs", href: "/subscriptions", emoji: "📺", live: true },
   { name: "Roommate Match", short: "Match", desc: "Find your people", href: "/matches", emoji: "🎯", live: true },
   { name: "Gate Runner", short: "Gate", desc: "Deliveries fetched to your hostel", href: "/gate", emoji: "🏃", live: true },
+  { name: "Communities", short: "Groups", desc: "Clubs & interest groups — find your people", href: "/communities", emoji: "🫂", live: true },
 ];
 
 function greeting() {
