@@ -33,10 +33,10 @@ export default async function BottomNav() {
           +
         </Link>
       </span>
-      <span className={dead} title="Coming soon">
-        <span className="text-xl leading-none grayscale opacity-50">💬</span>
+      <Link href="/chats" className={`${live} relative`}>
+        <span className="text-xl leading-none">💬</span>
         Chats
-      </span>
+      </Link>
       <Link href="/profile" className={live}>
         <span className="text-xl leading-none">👤</span>
         Profile

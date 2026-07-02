@@ -2,8 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import Gallery from "@/modules/marketplace/gallery";
-import ContactSeller from "@/modules/marketplace/contact-seller";
 import { rupees } from "@/modules/marketplace/format";
+import { openChat } from "@/modules/chat/actions";
 import { RatingBadge } from "@/modules/ratings/stars";
 import { getRating } from "@/modules/ratings/get-rating";
 import { KarmaBadge } from "@/modules/karma/badge";
@@ -33,6 +33,11 @@ export default async function ListingDetailPage({
   };
   const isMine = seller.id === user.id;
   const sellerRating = await getRating(seller.id);
+
+  async function startChat() {
+    "use server";
+    await openChat(seller.id, "listing", listing.id);
+  }
 
   return (
     <main className="animate-fade-up mx-auto flex w-full max-w-lg flex-1 flex-col gap-4 px-4 py-6">
@@ -85,7 +90,16 @@ export default async function ListingDetailPage({
           Edit your listing
         </Link>
       ) : (
-        listing.status === "available" && <ContactSeller contact={seller.contact_pref} />
+        listing.status === "available" && (
+          <form action={startChat}>
+            <button
+              type="submit"
+              className="press flex min-h-12 w-full items-center justify-center rounded-full bg-primary px-6 font-semibold text-on-primary shadow-lg shadow-primary/25"
+            >
+              Chat with seller
+            </button>
+          </form>
+        )
       )}
     </main>
   );
