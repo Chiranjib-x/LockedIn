@@ -2,6 +2,8 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { Button, inputClass } from "@/components/ui";
+import { RatingBadge, Stars } from "@/modules/ratings/stars";
+import { getRating } from "@/modules/ratings/get-rating";
 
 async function updateProfile(formData: FormData) {
   "use server";
@@ -46,6 +48,15 @@ export default async function ProfilePage({
 
   if (!profile) redirect("/login");
 
+  const rating = await getRating(user.id);
+  const { data: ratedComments } = await supabase
+    .from("ratings")
+    .select("stars, comment, created_at")
+    .eq("ratee_id", user.id)
+    .not("comment", "is", null)
+    .order("created_at", { ascending: false })
+    .limit(5);
+
   const field = inputClass;
 
   return (
@@ -54,6 +65,12 @@ export default async function ProfilePage({
       <p className="text-sm text-muted-foreground">
         {user.email} · {profile.colleges?.name}
       </p>
+      <div className="flex items-center gap-2">
+        <RatingBadge avg={rating.avg} count={rating.count} />
+        {(ratedComments?.length ?? 0) > 0 && (
+          <span className="text-xs text-muted-foreground">· recent feedback below</span>
+        )}
+      </div>
       {saved && (
         <p className="rounded-lg border border-accent/30 bg-accent/10 p-3 text-sm text-accent">Saved.</p>
       )}
@@ -85,6 +102,18 @@ export default async function ProfilePage({
           Save
         </Button>
       </form>
+
+      {(ratedComments?.length ?? 0) > 0 && (
+        <section className="mt-4 flex flex-col gap-2">
+          <h2 className="text-lg font-semibold">Recent feedback</h2>
+          {ratedComments!.map((r, i) => (
+            <div key={i} className="rounded-2xl border border-border bg-card p-3">
+              <Stars value={r.stars} />
+              {r.comment && <p className="mt-1 text-sm text-foreground/85">{r.comment}</p>}
+            </div>
+          ))}
+        </section>
+      )}
     </main>
   );
 }

@@ -4,6 +4,8 @@ import { requireUser } from "@/lib/auth";
 import Gallery from "@/modules/marketplace/gallery";
 import ContactSeller from "@/modules/marketplace/contact-seller";
 import { rupees } from "@/modules/marketplace/format";
+import { RatingBadge } from "@/modules/ratings/stars";
+import { getRating } from "@/modules/ratings/get-rating";
 
 export default async function ListingDetailPage({
   params,
@@ -27,6 +29,7 @@ export default async function ListingDetailPage({
     contact_pref: string | null;
   };
   const isMine = seller.id === user.id;
+  const sellerRating = await getRating(seller.id);
 
   return (
     <main className="animate-fade-up mx-auto flex w-full max-w-lg flex-1 flex-col gap-4 px-4 py-6">
@@ -61,7 +64,7 @@ export default async function ListingDetailPage({
         </div>
         <div className="min-w-0">
           <p className="truncate font-medium">{seller.name || "Student"}</p>
-          {seller.hostel_block && <p className="text-xs text-muted-foreground">{seller.hostel_block}</p>}
+          <RatingBadge avg={sellerRating.avg} count={sellerRating.count} />
         </div>
       </div>
 

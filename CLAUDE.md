@@ -68,13 +68,14 @@ Tokens live in `app/globals.css` `@theme` — **never hardcode hex in components
 
 - [ ] Phase 14.5 — Capacitor Android wrap (APK/AAB + Play Store)
 
-### User ideas (designed 2026-07-04) — recommended build order before Wave A
+### User ideas (designed 2026-07-04) — DECIDED: Wave A trust (15–19) builds FIRST, then these; Deals stays unpaid until traffic justifies charging
 1. [ ] **Clubs & Teams** — student proposes club → founder approves (adds `is_moderator` to profiles — thin Phase 17 slice — flag the founder's account); approved club gets page (name/logo/category/description) + `club_members` with role member/admin; admins post updates/events via `posts.club_id` (nullable FK) so club events ride the board rails, share cards (22), and the feed (26). TENANCY RULE on `clubs`.
 2. [ ] **Deals (local shops)** — Phase 40 pulled forward as FREE content: `merchants` + `/deals` (category filters) + `/admin/merchants` CRUD (is_moderator). Build in `merchant_stats` (impressions/clicks) + a clearly-labeled sponsored feed slot, but keep it unpaid until traffic justifies charging.
 3. [ ] **Cab pooling** — `trips` (college_id, creator_id, origin, destination, depart_at, seats, notes, status) + `trip_members` (capacity-enforced join); browse by destination/date; fare split via existing UPI helper; chat context lands with Phase 18. Demand spikes: airport/station at breaks.
 4. [ ] **Timetable + attendance** (Phases 24–25 pulled forward) — the daily-open anchor: slot grid per college, one-tap present/absent/cancelled, 75% threshold + bunk math.
 5. [ ] **Personalized home feed** (Phase 26 pulled forward) — surfaces next class, attendance warnings, closing group-buys, club events, deals, cab pools. The daily surface everything above feeds.
 
-- [ ] Phases 15–40 — see Part 2 doc (Wave A trust: ratings/karma/chat — deliberately sequenced AFTER the engagement modules above; revisit if stranger-transaction volume grows first)
+- [x] Phase 15 — Transactions + ratings (0011): sold-to-buyer flow, mutual rate-nudge via trigger, stars on profiles/listings, RLS-guarded (party-only, one-per-txn)
+- [ ] Phases 16–40 — see Part 2 doc (Wave A trust: 16 karma → 17 moderation → 18–19 chat)
 
 Update this tracker when a phase is committed.

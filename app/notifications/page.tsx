@@ -8,6 +8,7 @@ const TYPE_EMOJI: Record<string, string> = {
   gate: "🏃",
   space: "👗",
   subscription: "📺",
+  rating: "⭐",
 };
 
 function ago(ts: string) {
