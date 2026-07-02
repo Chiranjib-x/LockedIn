@@ -9,32 +9,38 @@ export default async function Header() {
   } = await supabase.auth.getUser();
 
   return (
-    <header className="flex items-center justify-between border-b border-zinc-200 px-4 py-3">
-      <Link href="/" className="text-lg font-bold tracking-tight">
+    <header className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-card/90 px-4 py-2 backdrop-blur">
+      <Link
+        href="/"
+        className="flex min-h-11 items-center font-heading text-lg font-bold tracking-tight text-primary"
+      >
         LockedIn
       </Link>
       {user ? (
-        <nav className="flex items-center gap-4 text-sm">
-          <Link href="/home" className="font-medium hover:underline">
+        <nav className="flex items-center gap-2 text-sm">
+          <Link href="/home" className="flex min-h-11 items-center px-2 font-medium hover:text-primary">
             Home
           </Link>
-          <Link href="/profile" className="font-medium hover:underline">
+          <Link href="/profile" className="flex min-h-11 items-center px-2 font-medium hover:text-primary">
             Profile
           </Link>
           <form action={logout}>
-            <button type="submit" className="text-zinc-500 hover:underline">
+            <button
+              type="submit"
+              className="flex min-h-11 items-center px-2 text-muted-foreground hover:text-foreground"
+            >
               Log out
             </button>
           </form>
         </nav>
       ) : (
-        <nav className="flex items-center gap-4 text-sm">
-          <Link href="/login" className="font-medium hover:underline">
+        <nav className="flex items-center gap-2 text-sm">
+          <Link href="/login" className="flex min-h-11 items-center px-2 font-medium hover:text-primary">
             Log in
           </Link>
           <Link
             href="/signup"
-            className="rounded-md bg-zinc-900 px-3 py-1.5 font-medium text-white hover:bg-zinc-700"
+            className="flex min-h-11 items-center rounded-lg bg-primary px-4 font-medium text-on-primary hover:opacity-90"
           >
             Sign up
           </Link>

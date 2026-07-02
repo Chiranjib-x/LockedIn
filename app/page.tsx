@@ -10,15 +10,20 @@ export default async function Home() {
   if (user) redirect("/home");
 
   return (
-    <main className="flex flex-1 flex-col items-center justify-center gap-4 px-6">
-      <h1 className="text-4xl font-bold tracking-tight">LockedIn</h1>
-      <p className="text-zinc-500">Your campus, one app.</p>
+    <main className="flex flex-1 flex-col items-center justify-center gap-5 px-6 text-center">
+      <h1 className="text-5xl font-bold tracking-tight text-primary">LockedIn</h1>
+      <p className="max-w-xs text-lg text-muted-foreground">
+        Buy, sell, split, and find your people — all inside your campus.
+      </p>
       <Link
         href="/signup"
-        className="rounded-md bg-zinc-900 px-4 py-2 font-medium text-white hover:bg-zinc-700"
+        className="flex min-h-12 items-center rounded-lg bg-primary px-6 font-medium text-on-primary shadow-lg shadow-primary/25 transition-all duration-150 hover:opacity-90"
       >
         Join with your college email
       </Link>
+      <p className="text-sm text-muted-foreground">
+        Verified students only. That&apos;s the point.
+      </p>
     </main>
   );
 }

@@ -1,7 +1,8 @@
 import Link from "next/link";
 
-// Base UI conventions every module reuses. ponytail: one file, three primitives —
-// split into components/ui/ if this grows past ~5.
+// Base UI conventions every module reuses. Colors come from the design tokens
+// in globals.css — never hardcode hex here. Touch targets min 44px (min-h-11).
+// ponytail: one file, three primitives — split into components/ui/ if this grows past ~5.
 
 export function Card({
   children,
@@ -11,7 +12,7 @@ export function Card({
   className?: string;
 }) {
   return (
-    <div className={`rounded-xl border border-zinc-200 bg-white p-4 ${className}`}>
+    <div className={`rounded-xl border border-border bg-card p-4 ${className}`}>
       {children}
     </div>
   );
@@ -23,15 +24,16 @@ export function Button({
   className = "",
   ...props
 }: React.ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: "primary" | "secondary";
+  variant?: "primary" | "secondary" | "accent";
 }) {
-  const styles =
-    variant === "primary"
-      ? "bg-zinc-900 text-white hover:bg-zinc-700"
-      : "border border-zinc-300 text-zinc-900 hover:bg-zinc-50";
+  const styles = {
+    primary: "bg-primary text-on-primary hover:opacity-90",
+    secondary: "border border-border bg-card text-foreground hover:bg-muted",
+    accent: "bg-accent text-on-accent hover:opacity-90",
+  }[variant];
   return (
     <button
-      className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${styles} ${className}`}
+      className={`min-h-11 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${styles} ${className}`}
       {...props}
     >
       {children}
@@ -53,7 +55,10 @@ export function Section({
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">{title}</h2>
         {action && (
-          <Link href={action.href} className="text-sm font-medium text-zinc-500 hover:underline">
+          <Link
+            href={action.href}
+            className="flex min-h-11 items-center text-sm font-medium text-primary hover:underline"
+          >
             {action.label}
           </Link>
         )}
@@ -62,3 +67,7 @@ export function Section({
     </section>
   );
 }
+
+// Shared form input style — Phase 1 pages use it, later module forms will too.
+export const inputClass =
+  "min-h-11 w-full rounded-lg border border-border bg-card px-3 py-2 text-foreground placeholder:text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring";

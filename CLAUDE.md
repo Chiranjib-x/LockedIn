@@ -30,6 +30,10 @@ Ship Android via a **Capacitor wrapper** around this same Next.js app — no sep
 - Phase 21 (push): inside the Android app use **native FCM via @capacitor/push-notifications**, web push only as the browser fallback. Keep the push-send helper transport-agnostic (one `push_subscriptions` table with a `kind` column: webpush | fcm).
 - Keep everything mobile-web compatible: no desktop-only interactions, camera/QR features must work in a webview.
 
+## Design system (decided — via ui-ux-pro-max)
+
+Tokens live in `app/globals.css` `@theme` — **never hardcode hex in components**. Palette: "Marketplace P2P" trust purple (`primary #7c3aed`) + transaction green (`accent #16a34a`), WCAG-adjusted. Fonts: Outfit (headings) / Work Sans (body) via `next/font`. Use `Card`/`Button`/`Section`/`inputClass` from `components/ui.tsx`. Touch targets ≥44px (`min-h-11`), ≥8px gaps between tappables, mobile-first breakpoints. For new UI decisions (charts, new page patterns), query the local skill: `python ~/.claude/skills/ui-ux-pro-max/src/ui-ux-pro-max/scripts/search.py "<query>" --domain <style|color|typography|ux|chart>`.
+
 ## Conventions
 
 - Supabase clients: `lib/supabase/client.ts` (browser), `lib/supabase/server.ts` (server). Migrations as SQL files in `supabase/migrations/` — numbered, never edited after commit.
