@@ -9,6 +9,7 @@ import RenewalsSoon from "@/modules/feed/renewals-soon";
 import FreshListings from "@/modules/feed/fresh-listings";
 import BoardHighlights from "@/modules/feed/board-highlights";
 import GroupBuysClosing from "@/modules/feed/group-buys-closing";
+import QuantaBanner from "@/modules/communities/quanta-banner";
 
 // Personalized home feed (Phase 26, pulled forward). The chip row below is
 // the "compact module nav" the phase brief asks for — direct access to any
@@ -67,11 +68,11 @@ export default async function HomePage() {
       </div>
 
       <div
-        className="animate-fade-up flex gap-2 overflow-x-auto pb-1"
+        className="animate-fade-up grid grid-cols-4 gap-3"
         style={{ animationDelay: "60ms" }}
       >
         {MODULES.map((m) => (
-          <Link key={m.short} href={m.href} className="press flex min-w-16 flex-col items-center gap-1">
+          <Link key={m.short} href={m.href} className="press flex flex-col items-center gap-1">
             <span className="flex h-14 w-14 items-center justify-center rounded-2xl border border-border bg-card text-2xl">
               {m.emoji}
             </span>
@@ -83,6 +84,8 @@ export default async function HomePage() {
       <Suspense fallback={<SkeletonSection />}>
         <NowStrip />
       </Suspense>
+
+      <QuantaBanner />
 
       {(mySpaces?.length ?? 0) > 0 && (
         <div className="flex flex-col gap-3">
