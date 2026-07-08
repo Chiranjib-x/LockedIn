@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requireUser } from "@/lib/auth";
 import { Card } from "@/components/ui";
 import { ApproveButtons } from "@/modules/communities/client";
+import QuantaBanner from "@/modules/communities/quanta-banner";
 
 const CATEGORY_LABEL: Record<string, string> = {
   club: "🏛️ Club",
@@ -43,6 +44,8 @@ export default async function CommunitiesPage({
           ＋ Propose
         </Link>
       </div>
+
+      <QuantaBanner />
 
       {proposed && (
         <p className="rounded-2xl border border-accent/30 bg-accent/10 p-3 text-sm text-accent">
