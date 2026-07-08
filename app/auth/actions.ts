@@ -12,11 +12,14 @@ export async function signup(formData: FormData) {
 
   // Friendly pre-check; the DB trigger is the real trust boundary.
   const domain = email.split("@")[1] ?? "";
-  const { data: college } = await supabase
+  const { data: college, error: collegeError } = await supabase
     .from("colleges")
     .select("id, name")
     .eq("email_domain", domain)
     .maybeSingle();
+  if (collegeError) {
+    redirect("/signup?error=" + encodeURIComponent("Couldn't reach the server — try again."));
+  }
   if (!college) {
     redirect(
       "/signup?error=" +
