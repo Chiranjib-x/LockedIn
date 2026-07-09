@@ -44,6 +44,7 @@
 - [x] Phase 17 — Report/block/moderation (0014): is_moderator + is_banned flags, soft-delete, report sheet + block filter, banned banner, /admin/moderation console. Founder (test acct) flagged moderator.
 - [x] Phase 18 — Chat core (0015): Realtime 1:1 conversations, find-or-create DM RPC (block/ban enforced), /chats list + thread (optimistic send, openers, share-contact), Chat-with-seller replaces contact reveal, Chats tab live
 - [x] Phase 19 — Chat everywhere (0016): mutual-match auto-chat + icebreaker, Message organizer/owner, realtime unread nav badge, new-message notifications (collapsed per-conversation). **🚢 Wave A "The Trust Update" COMPLETE.**
-- [ ] Phases 20–40 — see Part 2 doc → then user's clubs/deals/cabs
+- [x] Phase 20 — PWA installability: app/manifest.ts + generated icon set (cobalt padlock, maskable variants), hand-rolled public/sw.js (network-first navigations + offline.html fallback, cache-first hashed statics, never caches user data), install-prompt card on /home (2nd session, dismiss-forever), iOS meta. Verified against the production build via Playwright: SW registration, offline fallback, install card, sticky dismiss.
+- [ ] Phases 21–40 — see Part 2 doc → then user's clubs/deals/cabs
 
 Update this tracker when a phase is committed.

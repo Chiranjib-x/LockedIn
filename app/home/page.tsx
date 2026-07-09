@@ -10,6 +10,7 @@ import FreshListings from "@/modules/feed/fresh-listings";
 import BoardHighlights from "@/modules/feed/board-highlights";
 import GroupBuysClosing from "@/modules/feed/group-buys-closing";
 import QuantaBanner from "@/modules/communities/quanta-banner";
+import { InstallPrompt } from "@/components/pwa";
 
 // Personalized home feed (Phase 26, pulled forward). The chip row below is
 // the "compact module nav" the phase brief asks for — direct access to any
@@ -80,6 +81,8 @@ export default async function HomePage() {
           </Link>
         ))}
       </div>
+
+      <InstallPrompt />
 
       <Suspense fallback={<SkeletonSection />}>
         <NowStrip />

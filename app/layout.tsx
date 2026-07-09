@@ -3,6 +3,7 @@ import { Bricolage_Grotesque, Hanken_Grotesk } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/header";
 import BottomNav from "@/components/bottom-nav";
+import { RegisterSW } from "@/components/pwa";
 
 const bricolage = Bricolage_Grotesque({
   variable: "--font-bricolage",
@@ -17,6 +18,8 @@ const hanken = Hanken_Grotesk({
 export const metadata: Metadata = {
   title: "LockedIn",
   description: "Your campus, one app.",
+  appleWebApp: { capable: true, statusBarStyle: "default", title: "LockedIn" },
+  icons: { apple: "/icons/apple-touch-icon.png" },
 };
 
 export const viewport = {
@@ -34,6 +37,7 @@ export default function RootLayout({
       className={`${bricolage.variable} ${hanken.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col pb-24">
+        <RegisterSW />
         <Header />
         {children}
         <BottomNav />
