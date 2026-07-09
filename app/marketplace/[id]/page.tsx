@@ -8,6 +8,7 @@ import { RatingBadge } from "@/modules/ratings/stars";
 import { getRating } from "@/modules/ratings/get-rating";
 import { KarmaBadge } from "@/modules/karma/badge";
 import ReportSheet from "@/modules/moderation/report-sheet";
+import ShareButton from "@/components/share-button";
 
 export default async function ListingDetailPage({
   params,
@@ -45,7 +46,10 @@ export default async function ListingDetailPage({
         <Link href="/marketplace" className="text-sm text-muted-foreground hover:text-foreground">
           ← Marketplace
         </Link>
-        {!isMine && <ReportSheet targetType="listing" targetId={listing.id} authorId={seller.id} />}
+        <span className="flex items-center gap-2">
+          <ShareButton path={`/p/listing/${listing.id}`} title={listing.title} />
+          {!isMine && <ReportSheet targetType="listing" targetId={listing.id} authorId={seller.id} />}
+        </span>
       </div>
 
       <Gallery images={listing.images ?? []} title={listing.title} />

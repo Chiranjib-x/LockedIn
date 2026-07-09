@@ -45,6 +45,7 @@
 - [x] Phase 18 — Chat core (0015): Realtime 1:1 conversations, find-or-create DM RPC (block/ban enforced), /chats list + thread (optimistic send, openers, share-contact), Chat-with-seller replaces contact reveal, Chats tab live
 - [x] Phase 19 — Chat everywhere (0016): mutual-match auto-chat + icebreaker, Message organizer/owner, realtime unread nav badge, new-message notifications (collapsed per-conversation). **🚢 Wave A "The Trust Update" COMPLETE.**
 - [x] Phase 20 — PWA installability: app/manifest.ts + generated icon set (cobalt padlock, maskable variants), hand-rolled public/sw.js (network-first navigations + offline.html fallback, cache-first hashed statics, never caches user data), install-prompt card on /home (2nd session, dismiss-forever), iOS meta. Verified against the production build via Playwright: SW registration, offline fallback, install card, sticky dismiss.
-- [ ] Phases 21–40 — see Part 2 doc → then user's clubs/deals/cabs
+- [x] Phase 22 — Share cards & public previews (built out of order, 2026-07-09; Phase 21 needs user-side Firebase setup): definer RPCs `public_listing_preview`/`public_post_preview` (migration 0021 — whitelisted fields only, no author identity/contact, `removed` excluded), public `/p/listing/[id]` + `/p/post/[id]` pages with signup CTA, `next/og` opengraph-image routes (brand card fallback when data absent), ShareButton (Web Share API → WhatsApp deeplink + copy-link fallback) on listing/board detail. OG meta deliberately lives on the public /p/ routes, not the auth-gated detail pages crawlers can't reach. ⚠ Migration 0021 pending application at commit time.
+- [ ] Phases 21, 23–40 — see Part 2 doc → then user's clubs/deals/cabs
 
 Update this tracker when a phase is committed.

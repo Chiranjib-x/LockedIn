@@ -5,6 +5,7 @@ import Gallery from "@/modules/marketplace/gallery";
 import TypeBadge from "@/modules/board/badge";
 import ResolveButton from "@/modules/board/resolve-button";
 import ReportSheet from "@/modules/moderation/report-sheet";
+import ShareButton from "@/components/share-button";
 
 export default async function PostDetailPage({
   params,
@@ -36,7 +37,10 @@ export default async function PostDetailPage({
         <Link href="/board" className="text-sm text-muted-foreground hover:text-foreground">
           ← Board
         </Link>
-        {!isMine && <ReportSheet targetType="post" targetId={post.id} authorId={author.id} />}
+        <span className="flex items-center gap-2">
+          <ShareButton path={`/p/post/${post.id}`} title={post.title} />
+          {!isMine && <ReportSheet targetType="post" targetId={post.id} authorId={author.id} />}
+        </span>
       </div>
 
       {post.images?.length > 0 && <Gallery images={post.images} title={post.title} />}

@@ -4,14 +4,14 @@
 Build Phase 20 (PWA installability): manifest, icons, service worker, install prompt, iOS meta.
 
 ## Now
-Phase 20 complete and committed. Next session: Phase 14.5 (Capacitor) — needs Android Studio + Play account from user — or Phase 21 (push) — needs Firebase project from user.
+Phase 22 (share cards + public previews) built and committed; Phase 20 committed earlier. BLOCKED on user: apply migration 0021 (harness requires attended approval for live-DB writes), then verify preview data rendering, then redeploy prod (Phases 20+22 both undeployed).
 
 ## Next
-1. Icons (public/icons/, 192/512 + maskable) + app/manifest.ts — check: files exist, manifest served
-2. public/sw.js + public/offline.html + SW registration — check: Playwright SW registered, offline shows fallback
-3. Install-prompt card on /home (2nd session, dismiss-forever) — check: Playwright synthetic beforeinstallprompt
-4. iOS meta (apple-touch-icon, appleWebApp metadata) — check: curl rendered head
-5. Full check: npm run build + commit
+1. User back: apply 0021 (rerun scratchpad/apply_0021.js with approval, or SQL editor)
+2. Verify /p/listing/<id> + /p/post/<id> render data + OG cards with real content
+3. Redeploy prod on user's word (covers Phase 20 PWA + Phase 22)
+4. Then: Phase 21 push (Firebase project from user) or 14.5 Capacitor (Android Studio)
+
 
 ## Constraints
 - Keep the gmail.com seed college until user finishes testing (delete only at real launch).
@@ -36,6 +36,8 @@ Phase 20 complete and committed. Next session: Phase 14.5 (Capacitor) — needs 
 - Phase 20 PWA (2026-07-09) — RESULT: npm run build clean; Playwright on prod build: sw-registered/offline-fallback/install-card/dismiss-sticky all True. NOT yet redeployed to prod.
 
 ## Open items
+- APPLY MIGRATION 0021 (public preview RPCs) — command ready: `node --env-file=.env.local <scratchpad>/apply_0021.js` needs attended run; or paste supabase/migrations/0021_public_previews.sql in SQL editor.
+- Prod redeploy pending (Phases 20 + 22 committed but not deployed; user must say deploy).
 - Delete gmail.com seed college + test accounts at real launch (DEPLOY.md item 3).
 - Re-point Girls' Closet/Boys' Den founding members to real hostel reps at launch (DEPLOY.md item 4).
 - Manual phone QA: photo upload, two-account realtime chat, UPI QR (can't automate).
