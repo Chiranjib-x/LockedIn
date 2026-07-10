@@ -4,11 +4,16 @@
 Build Phase 20 (PWA installability): manifest, icons, service worker, install prompt, iOS meta.
 
 ## Now
-Phases 20 + 22 deployed to prod and verified (2026-07-10). Next session: Phase 21 push (user must create a Firebase project) or Phase 14.5 Capacitor (user must install Android Studio).
+Phase 14.5 done: debug APK at android/app/build/outputs/apk/debug/app-debug.apk (4.4 MB) — user installs on phone and runs in-app QA (login, feed, photo upload, chat).
 
 ## Next
-1. Phase 21 (push) — needs Firebase project from user, or 14.5 (Capacitor) — needs Android Studio
-2. Roadmap step 5: Gate Runner timeout escalation + multi-parcel; step 6: free-window feed + cab matching columns; step 7: sealed vouching (closes AddMember enumeration hole)
+1. User: on-device APK QA; report anything broken in the webview
+2. Phase 21 (push) — user creates Firebase project (console.firebase.google.com), then native FCM into the Capacitor app + web-push fallback with thin-push/token-lifecycle rules
+3. Roadmap: Gate Runner timeout escalation; free-window feed + cab columns; sealed vouching (AddMember enumeration hole)
+
+## Facts (14.5 additions)
+- Build APK: `cd android && ./gradlew.bat assembleDebug` (Java 21 system, sdk.dir in android/local.properties — gitignored)
+- After changing capacitor.config.ts or public/: `npx cap sync android`
 
 
 ## Constraints

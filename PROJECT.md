@@ -24,7 +24,7 @@
 - [x] Phase 13 — Polish: route skeletons, error/404 pages, global focus-visible, theme-color
 - [x] Phase 14 — Deploy setup: Vercel linked, env vars set, preview verified; production launch pending user's go-live checklist (see DEPLOY.md)
 
-- [ ] Phase 14.5 — Capacitor Android wrap (APK/AAB + Play Store). **Use `components/SplashLoader` (recolored uiverse metaball, on-brand cobalt) as the app-launch splash.**
+- [x] Phase 14.5 — Capacitor Android wrap (2026-07-10): @capacitor v8.4.1 remote-load wrapper (`capacitor.config.ts` → prod URL, appId `com.lockedin.campus` — renameable until first Play publish), android/ project committed, icon+splash resources from `assets/` via @capacitor/assets (cobalt padlock; native splash is the static Android-12 icon+color — the web `SplashLoader` shows while the remote page loads). Debug APK builds via `android/gradlew.bat assembleDebug` (BUILD SUCCESSFUL, 4.4 MB). Remaining for Play Store: signed AAB + keystore (user's machine) + store listing — do with the launch checklist.
 
 ### User ideas (designed 2026-07-04, expanded 2026-07-05) — Wave A trust + all 5 items below DONE (2026-07-03); Deals stays unpaid until traffic justifies charging; next up is Wave B (Capacitor/PWA/push) or Phase 27 global search
 

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">LockedIn</string>
+    <string name="title_activity_main">LockedIn</string>
+    <string name="package_name">com.lockedin.campus</string>
+    <string name="custom_url_scheme">com.lockedin.campus</string>
+</resources>
