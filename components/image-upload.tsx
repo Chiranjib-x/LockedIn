@@ -19,6 +19,7 @@ export default function ImageUpload({
 }) {
   const supabase = createClient();
   const inputRef = useRef<HTMLInputElement>(null);
+  const cameraRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -61,6 +62,7 @@ export default function ImageUpload({
     onChange([...value, ...uploaded]);
     setBusy(false);
     if (inputRef.current) inputRef.current.value = "";
+    if (cameraRef.current) cameraRef.current.value = "";
   }
 
   function remove(url: string) {
@@ -87,14 +89,24 @@ export default function ImageUpload({
           </div>
         ))}
         {value.length < max && (
-          <button
-            type="button"
-            onClick={() => inputRef.current?.click()}
-            disabled={busy}
-            className="press flex h-20 w-20 flex-col items-center justify-center rounded-xl border-2 border-dashed border-border text-xs text-muted-foreground disabled:opacity-50"
-          >
-            {busy ? <span className="shimmer h-full w-full rounded-lg" /> : <><span className="text-xl">＋</span>Photo</>}
-          </button>
+          <>
+            <button
+              type="button"
+              onClick={() => inputRef.current?.click()}
+              disabled={busy}
+              className="press flex h-20 w-20 flex-col items-center justify-center rounded-xl border-2 border-dashed border-border text-xs text-muted-foreground disabled:opacity-50"
+            >
+              {busy ? <span className="shimmer h-full w-full rounded-lg" /> : <><span className="text-xl">🖼️</span>Gallery</>}
+            </button>
+            <button
+              type="button"
+              onClick={() => cameraRef.current?.click()}
+              disabled={busy}
+              className="press flex h-20 w-20 flex-col items-center justify-center rounded-xl border-2 border-dashed border-border text-xs text-muted-foreground disabled:opacity-50"
+            >
+              <span className="text-xl">📷</span>Camera
+            </button>
+          </>
         )}
       </div>
       <input
@@ -102,6 +114,15 @@ export default function ImageUpload({
         type="file"
         accept="image/*"
         multiple
+        hidden
+        onChange={(e) => handleFiles(e.target.files)}
+      />
+      {/* capture forces the camera in webviews/mobile browsers; single shot by design */}
+      <input
+        ref={cameraRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
         hidden
         onChange={(e) => handleFiles(e.target.files)}
       />
