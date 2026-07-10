@@ -4,13 +4,11 @@
 Build Phase 20 (PWA installability): manifest, icons, service worker, install prompt, iOS meta.
 
 ## Now
-Phase 22 (share cards + public previews) built and committed; Phase 20 committed earlier. BLOCKED on user: apply migration 0021 (harness requires attended approval for live-DB writes), then verify preview data rendering, then redeploy prod (Phases 20+22 both undeployed).
+Phases 20 + 22 deployed to prod and verified (2026-07-10). Next session: Phase 21 push (user must create a Firebase project) or Phase 14.5 Capacitor (user must install Android Studio).
 
 ## Next
-1. User back: apply 0021 (rerun scratchpad/apply_0021.js with approval, or SQL editor)
-2. Verify /p/listing/<id> + /p/post/<id> render data + OG cards with real content
-3. Redeploy prod on user's word (covers Phase 20 PWA + Phase 22)
-4. Then: Phase 21 push (Firebase project from user) or 14.5 Capacitor (Android Studio)
+1. Phase 21 (push) — needs Firebase project from user, or 14.5 (Capacitor) — needs Android Studio
+2. Roadmap step 5: Gate Runner timeout escalation + multi-parcel; step 6: free-window feed + cab matching columns; step 7: sealed vouching (closes AddMember enumeration hole)
 
 
 ## Constraints
@@ -33,11 +31,10 @@ Phase 22 (share cards + public previews) built and committed; Phase 20 committed
 ## Done
 - Prod deploy + QA sweep (2026-07-09) — RESULT: all 12 module pages OK, login OK, domain-reject OK on lockedin-swart-ten.vercel.app.
 - Test boy/girl accounts in respective spaces — RESULT: symmetric isolation verified via UI both ways.
-- Phase 20 PWA (2026-07-09) — RESULT: npm run build clean; Playwright on prod build: sw-registered/offline-fallback/install-card/dismiss-sticky all True. NOT yet redeployed to prod.
+- Phase 20 PWA (2026-07-09) — RESULT: npm run build clean; Playwright on prod build: sw-registered/offline-fallback/install-card/dismiss-sticky all True.
+- Migration 0021 applied + Phases 20/22 deployed (2026-07-10) — RESULT: prod /p/listing + /p/post 200 with data + CTA, leak-check clean (no seller/contact), og images 200 image/png, anon on /marketplace/<id> renders login form (Next streams RSC redirects as 200 + original URL — check content, not status, when probing gates).
 
 ## Open items
-- APPLY MIGRATION 0021 (public preview RPCs) — command ready: `node --env-file=.env.local <scratchpad>/apply_0021.js` needs attended run; or paste supabase/migrations/0021_public_previews.sql in SQL editor.
-- Prod redeploy pending (Phases 20 + 22 committed but not deployed; user must say deploy).
 - Delete gmail.com seed college + test accounts at real launch (DEPLOY.md item 3).
 - Re-point Girls' Closet/Boys' Den founding members to real hostel reps at launch (DEPLOY.md item 4).
 - Manual phone QA: photo upload, two-account realtime chat, UPI QR (can't automate).
