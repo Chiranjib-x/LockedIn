@@ -30,6 +30,7 @@ type Row = {
   expected_at: string;
   reward: number;
   status: string;
+  delivered_claimed_at: string | null;
   requester: { name: string; hostel_block: string | null };
   runner: { name: string } | null;
 };
@@ -90,9 +91,12 @@ export default async function GatePage() {
                       reward={Number(r.reward)}
                       runnerUpi={r.runner_upi}
                       runnerName={r.runner?.name ?? null}
+                      droppedOff={r.delivered_claimed_at !== null}
                     />
                   ) : (
-                    r.status === "claimed" && <RunnerActions id={r.id} />
+                    r.status === "claimed" && (
+                      <RunnerActions id={r.id} droppedOff={r.delivered_claimed_at !== null} />
+                    )
                   )}
                 </div>
               </Card>

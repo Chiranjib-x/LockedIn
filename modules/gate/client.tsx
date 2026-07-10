@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { inputClass } from "@/components/ui";
 import UpiPay from "@/components/upi-pay";
-import { claimPickup, unclaimPickup, confirmDelivered, cancelPickup } from "./actions";
+import { claimPickup, unclaimPickup, confirmDelivered, cancelPickup, markDroppedOff } from "./actions";
 
 export function ClaimButton({ id, reward }: { id: string; reward: number }) {
   const [open, setOpen] = useState(false);
@@ -44,14 +44,29 @@ export function ClaimButton({ id, reward }: { id: string; reward: number }) {
   );
 }
 
-export function RunnerActions({ id }: { id: string }) {
+export function RunnerActions({ id, droppedOff }: { id: string; droppedOff: boolean }) {
+  if (droppedOff) {
+    return (
+      <p className="text-xs text-muted-foreground">
+        Dropped off ✓ — waiting for them to confirm. They get a nudge if they forget.
+      </p>
+    );
+  }
   return (
-    <button
-      onClick={() => { if (confirm("Give this pickup back to the pool?")) unclaimPickup(id); }}
-      className="press rounded-full border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted"
-    >
-      Can’t make it
-    </button>
+    <span className="flex flex-wrap gap-2">
+      <button
+        onClick={() => markDroppedOff(id)}
+        className="press rounded-full bg-primary px-4 py-1.5 text-sm font-semibold text-on-primary hover:bg-primary-strong"
+      >
+        Dropped it off ✓
+      </button>
+      <button
+        onClick={() => { if (confirm("Give this pickup back to the pool?")) unclaimPickup(id); }}
+        className="press rounded-full border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted"
+      >
+        Can’t make it
+      </button>
+    </span>
   );
 }
 
@@ -61,12 +76,14 @@ export function RequesterActions({
   reward,
   runnerUpi,
   runnerName,
+  droppedOff = false,
 }: {
   id: string;
   status: string;
   reward: number;
   runnerUpi: string | null;
   runnerName: string | null;
+  droppedOff?: boolean;
 }) {
   const [payOpen, setPayOpen] = useState(false);
 
@@ -82,12 +99,19 @@ export function RequesterActions({
   }
   if (status === "claimed") {
     return (
-      <button
-        onClick={() => confirmDelivered(id)}
-        className="press rounded-full bg-accent px-4 py-2 text-sm font-semibold text-on-accent"
-      >
-        Received it ✓
-      </button>
+      <span className="flex w-full flex-col gap-1">
+        {droppedOff && (
+          <p className="text-xs font-medium text-accent">
+            {runnerName ?? "The runner"} says it’s been dropped off — all good?
+          </p>
+        )}
+        <button
+          onClick={() => confirmDelivered(id)}
+          className="press self-start rounded-full bg-accent px-4 py-2 text-sm font-semibold text-on-accent"
+        >
+          Received it ✓
+        </button>
+      </span>
     );
   }
   if (status === "delivered" && reward > 0) {

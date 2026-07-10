@@ -45,20 +45,30 @@ export async function createPickup(formData: FormData) {
 
 export async function claimPickup(id: string, upi: string) {
   const { supabase } = await ctx();
+  // claim_pickup (0022) returns null on success, else a user-facing reason
+  // (someone beat you to it / you're at the 3-claim cap).
   const { data, error } = await supabase.rpc("claim_pickup", { rid: id, upi: upi || null });
   revalidatePath("/gate");
   if (error) return error.message;
-  return data ? null : "Someone else claimed it first.";
+  return (data as string | null) ?? null;
+}
+
+export async function markDroppedOff(id: string) {
+  const { supabase, user } = await ctx();
+  await supabase
+    .from("pickup_requests")
+    .update({ delivered_claimed_at: new Date().toISOString() })
+    .eq("id", id)
+    .eq("runner_id", user.id)
+    .eq("status", "claimed");
+  revalidatePath("/gate");
 }
 
 export async function unclaimPickup(id: string) {
   const { supabase } = await ctx();
-  // RLS: only the runner (or requester) can update this row.
-  await supabase
-    .from("pickup_requests")
-    .update({ runner_id: null, runner_upi: null, status: "open" })
-    .eq("id", id)
-    .eq("status", "claimed");
+  // Direct UPDATE can't null runner_id under the RLS policy (0023) — the
+  // security definer function owns this transition.
+  await supabase.rpc("unclaim_pickup", { rid: id });
   revalidatePath("/gate");
 }
 
