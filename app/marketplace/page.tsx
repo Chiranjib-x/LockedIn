@@ -4,6 +4,7 @@ import { Card } from "@/components/ui";
 import FilterBar from "@/modules/marketplace/filter-bar";
 import ListingCard from "@/modules/marketplace/listing-card";
 import { blockedIds, notInList } from "@/modules/moderation/blocks";
+import SaveSearchButton from "@/modules/search/save-search-button";
 
 export default async function MarketplacePage({
   searchParams,
@@ -41,6 +42,7 @@ export default async function MarketplacePage({
       </div>
 
       <FilterBar />
+      <SaveSearchButton module="marketplace" query={q ?? ""} filters={category ? { category } : {}} />
 
       {!listings?.length ? (
         <Card className="mt-2 flex flex-col items-center gap-2 py-10 text-center">

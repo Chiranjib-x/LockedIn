@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
@@ -65,6 +66,13 @@ export default async function ProfilePage({
         <RatingBadge avg={rating.avg} count={rating.count} />
       </div>
       <KarmaProgress karma={profile.karma ?? 0} />
+      <Link
+        href="/saved"
+        className="press flex min-h-11 items-center justify-between rounded-2xl border border-border bg-card px-4 text-sm font-medium"
+      >
+        <span>🔖 Saved items & alerts</span>
+        <span className="text-primary">→</span>
+      </Link>
       {saved && (
         <p className="rounded-lg border border-accent/30 bg-accent/10 p-3 text-sm text-accent">Saved.</p>
       )}

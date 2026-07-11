@@ -25,6 +25,7 @@ MID-PHASE-28 (saves + saved-search alerts), interrupted by /compact. Migration 0
 - Keep the gmail.com seed college until user finishes testing (delete only at real launch).
 - User asked: production launch steps only with explicit go-ahead ("deploy" given 2026-07-09 — done).
 - 2026-07-12, verbatim: "i allow to apply all upcoming migrations without asking me , and now lets move one to next phases until i have to actually do something manually"
+- 2026-07-12 night, verbatim: "keep working , i am going to sleep , automatically go on to next phases when finished with a single phases , u have all my permissions for all upcoming requests , I will check back tommorow morning"
 
 ## Decisions
 - DECISION: hand-rolled service worker, no next-pwa — next-pwa predates app router and is unmaintained; ~60 lines covers app-shell cache + offline fallback; no new dependency.

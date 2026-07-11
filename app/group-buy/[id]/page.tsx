@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { rupees } from "@/modules/marketplace/format";
 import { openChat } from "@/modules/chat/actions";
+import SaveButton from "@/components/save-button";
 import {
   JoinForm,
   LeaveButton,
@@ -44,13 +45,23 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
     "use server";
     await openChat(organizer.id, "group_order", order.id);
   }
+  const { data: savedRow } = await supabase
+    .from("saves")
+    .select("target_id")
+    .eq("user_id", user.id)
+    .eq("target_type", "group_order")
+    .eq("target_id", order.id)
+    .maybeSingle();
   const total = (items ?? []).reduce((s, it) => s + Number(it.amount_owed), 0);
   const collected = (items ?? []).filter((it) => it.paid_confirmed).reduce((s, it) => s + Number(it.amount_owed), 0);
   const stepIdx = STATUS_STEPS.indexOf(order.status);
 
   return (
     <main className="animate-fade-up mx-auto flex w-full max-w-lg flex-1 flex-col gap-4 px-4 py-6">
-      <Link href="/group-buy" className="text-sm text-muted-foreground hover:text-foreground">← Group-buys</Link>
+      <div className="flex items-center justify-between">
+        <Link href="/group-buy" className="text-sm text-muted-foreground hover:text-foreground">← Group-buys</Link>
+        <SaveButton targetType="group_order" targetId={order.id} initialSaved={savedRow !== null} />
+      </div>
 
       <div>
         <h1 className="text-2xl font-bold">{order.title}</h1>

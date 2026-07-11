@@ -4,6 +4,7 @@ import { Card } from "@/components/ui";
 import BoardFilter from "@/modules/board/board-filter";
 import TypeBadge from "@/modules/board/badge";
 import { blockedIds, notInList } from "@/modules/moderation/blocks";
+import SaveSearchButton from "@/modules/search/save-search-button";
 
 function when(post: { type: string; event_date: string | null; created_at: string }) {
   if (post.type === "event" && post.event_date) {
@@ -54,6 +55,7 @@ export default async function BoardPage({
       </div>
 
       <BoardFilter />
+      <SaveSearchButton module="board" query={q ?? ""} filters={type ? { type } : {}} />
 
       {!posts?.length ? (
         <Card className="mt-2 flex flex-col items-center gap-2 py-10 text-center">
