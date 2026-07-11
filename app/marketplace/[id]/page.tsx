@@ -10,6 +10,7 @@ import { KarmaBadge } from "@/modules/karma/badge";
 import ReportSheet from "@/modules/moderation/report-sheet";
 import ShareButton from "@/components/share-button";
 import SaveButton from "@/components/save-button";
+import { BuyerOffer, SellerOffers, type OfferRow } from "@/modules/marketplace/offer-panel";
 
 export default async function ListingDetailPage({
   params,
@@ -42,6 +43,24 @@ export default async function ListingDetailPage({
     .eq("target_type", "listing")
     .eq("target_id", listing.id)
     .maybeSingle();
+
+  // Phase 33 offers: RLS returns the seller's full list, a buyer only theirs.
+  const { data: offerRows } = await supabase
+    .from("offers")
+    .select("id, buyer_id, amount, counter_amount, status, buyer:profiles!offers_buyer_id_fkey(name)")
+    .eq("listing_id", listing.id)
+    .order("created_at", { ascending: false });
+  const offers: OfferRow[] = (offerRows ?? []).map((o) => ({
+    id: o.id,
+    buyer_id: o.buyer_id,
+    amount: Number(o.amount),
+    counter_amount: o.counter_amount == null ? null : Number(o.counter_amount),
+    status: o.status,
+    buyer_name: (o.buyer as unknown as { name: string } | null)?.name ?? "Student",
+  }));
+  const myOffer = offers.find(
+    (o) => o.buyer_id === user.id && (o.status === "pending" || o.status === "countered")
+  );
 
   async function startChat() {
     "use server";
@@ -111,22 +130,30 @@ export default async function ListingDetailPage({
       </div>
 
       {isMine ? (
-        <Link
-          href={`/marketplace/${listing.id}/edit`}
-          className="press flex min-h-12 items-center justify-center rounded-full border border-border bg-card px-6 font-semibold"
-        >
-          Edit your listing
-        </Link>
+        <>
+          {listing.listing_type !== "rent" && <SellerOffers offers={offers} />}
+          <Link
+            href={`/marketplace/${listing.id}/edit`}
+            className="press flex min-h-12 items-center justify-center rounded-full border border-border bg-card px-6 font-semibold"
+          >
+            Edit your listing
+          </Link>
+        </>
       ) : (
         listing.status === "available" && (
-          <form action={startChat}>
-            <button
-              type="submit"
-              className="press flex min-h-12 w-full items-center justify-center rounded-full bg-primary px-6 font-semibold text-on-primary shadow-lg shadow-primary/25"
-            >
-              Chat with seller
-            </button>
-          </form>
+          <>
+            <form action={startChat}>
+              <button
+                type="submit"
+                className="press flex min-h-12 w-full items-center justify-center rounded-full bg-primary px-6 font-semibold text-on-primary shadow-lg shadow-primary/25"
+              >
+                Chat with seller
+              </button>
+            </form>
+            {listing.listing_type !== "rent" && (
+              <BuyerOffer listingId={listing.id} mine={myOffer ?? null} />
+            )}
+          </>
         )
       )}
     </main>

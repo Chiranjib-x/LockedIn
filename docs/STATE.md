@@ -4,7 +4,7 @@
 User-approved sequence (2026-07-12): Phase 28 (saves+alerts, IN PROGRESS) → Phase 29 (dark mode) → 🚢 ship Wave C → Play Store release → Wave D in plan order. Keep going without asking until user input is genuinely required.
 
 ## Now
-OVERNIGHT AUTONOMOUS RUN (user asleep, full permissions incl. migrations+deploys, caveman output). DONE tonight: Phase 28 (95c0aac), Phase 29 dark mode (bcb7d7e), 🚢 Wave C DEPLOYED+verified, Phase 30 lost&found claims+matching (2b10d04, 0030), Phase 31 pool discovery+prorated joins (608a771, 0031 — note: fixed INSERT..RETURNING vs definer-subquery RLS race by adding owner_id disjunct to select policy). NEXT: Phase 32 rent/lend → 33 offers → 34 study groups → 35 group-buy lifecycle → deploy Wave D batch. Morning report for user at end.
+OVERNIGHT AUTONOMOUS RUN (user asleep, full permissions incl. migrations+deploys, caveman output). DONE tonight: Phase 28 (95c0aac), Phase 29 dark mode (bcb7d7e), 🚢 Wave C DEPLOYED+verified, Phase 30 lost&found claims+matching (2b10d04, 0030), Phase 31 pool discovery+prorated joins (608a771, 0031 — note: fixed INSERT..RETURNING vs definer-subquery RLS race by adding owner_id disjunct to select policy). Phase 32 rent/lend DONE (19e2f97, 0032). NEXT: Phase 33 offers (deviation: offer panel on listing detail + plain-text DM drops instead of special chat cards — chat renderer untouched; accept → "sold at ₹X" via markSoldTo path) → 34 study groups (multi-party chat!) → 35 group-buy lifecycle → deploy Wave D batch. Morning report at end.
 
 ## Next
 1. Wire SaveButton into app/group-buy/[id]/page.tsx — MUST Read the file first (Edit already bounced on unread file). Import SaveButton, add savedRow query (target_type 'group_order'), put button in a flex row with the "← Group-buys" link (~line 53).
