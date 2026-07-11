@@ -1,48 +1,26 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { inputClass } from "@/components/ui";
 
-type Result = { id: string; name: string; hostel_block: string | null };
-
-// Vouch flow: search same-college profiles (RLS-scoped), add to the space.
-// The insert's RLS WITH CHECK enforces that only members can vouch.
-export default function AddMember({ spaceId, memberIds }: { spaceId: string; memberIds: string[] }) {
+// Sealed vouching (0027): a member generates a single-use invite link and
+// shares it out-of-band. Replaces the old search-profiles-by-name flow —
+// vouching never needed a browsable directory.
+export default function AddMember({ spaceId }: { spaceId: string }) {
   const supabase = createClient();
-  const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [q, setQ] = useState("");
-  const [results, setResults] = useState<Result[]>([]);
-  const [msg, setMsg] = useState<string | null>(null);
+  const [link, setLink] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
 
-  async function search(term: string) {
-    setQ(term);
-    if (term.trim().length < 2) return setResults([]);
-    const { data } = await supabase
-      .from("profiles")
-      .select("id, name, hostel_block")
-      .ilike("name", `%${term.trim()}%`)
-      .limit(8);
-    setResults((data ?? []).filter((r) => !memberIds.includes(r.id)));
-  }
-
-  async function add(profile: Result) {
-    setMsg(null);
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    const { error } = await supabase
-      .from("space_members")
-      .insert({ space_id: spaceId, user_id: profile.id, added_by: user?.id });
-    if (error) setMsg(error.message);
-    else {
-      setMsg(`${profile.name} is in. 🎉`);
-      setResults([]);
-      setQ("");
-      router.refresh();
-    }
+  async function generate() {
+    setBusy(true);
+    setErr(null);
+    const { data, error } = await supabase.rpc("create_space_invite", { sid: spaceId });
+    if (error) setErr("Couldn't create an invite — try again.");
+    else setLink(`${window.location.origin}/spaces/join/${data}`);
+    setBusy(false);
   }
 
   if (!open) {
@@ -51,37 +29,61 @@ export default function AddMember({ spaceId, memberIds }: { spaceId: string; mem
         onClick={() => setOpen(true)}
         className="press rounded-full border border-border bg-card px-4 py-2 text-sm font-semibold hover:bg-muted"
       >
-        ＋ Add someone you trust
+        ＋ Invite someone you trust
       </button>
     );
   }
 
   return (
-    <div className="animate-scale-in flex flex-col gap-2 rounded-2xl border border-border bg-card p-3">
+    <div className="animate-scale-in flex w-full flex-col gap-2 rounded-2xl border border-border bg-card p-3">
       <p className="text-xs text-muted-foreground">
-        Only add people you know belong here — you’re vouching for them.
+        The link admits one person and dies in 7 days. Only share it with someone who belongs here —
+        you’re vouching for them.
       </p>
-      <input
-        value={q}
-        onChange={(e) => search(e.target.value)}
-        placeholder="Search by name…"
-        className={inputClass}
-        autoFocus
-      />
-      {results.map((r) => (
+      {link === null ? (
         <button
-          key={r.id}
-          onClick={() => add(r)}
-          className="press flex items-center justify-between rounded-xl border border-border px-3 py-2 text-left text-sm hover:bg-muted"
+          disabled={busy}
+          onClick={generate}
+          className="press min-h-11 self-start rounded-full bg-primary px-5 text-sm font-semibold text-on-primary hover:bg-primary-strong disabled:opacity-50"
         >
-          <span>
-            <span className="font-medium">{r.name}</span>
-            {r.hostel_block && <span className="text-muted-foreground"> · {r.hostel_block}</span>}
-          </span>
-          <span className="font-semibold text-primary">Add</span>
+          {busy ? "Creating…" : "Create invite link"}
         </button>
-      ))}
-      {msg && <p className="text-sm text-accent">{msg}</p>}
+      ) : (
+        <>
+          <p className="truncate rounded-xl border border-border bg-muted/40 px-3 py-2 font-mono text-xs">{link}</p>
+          <span className="flex flex-wrap gap-2">
+            <a
+              href={`https://wa.me/?text=${encodeURIComponent(`You’re invited — ${link}`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="press flex min-h-11 items-center rounded-full border border-border bg-card px-3 text-sm font-medium hover:bg-muted"
+            >
+              WhatsApp
+            </a>
+            <button
+              onClick={async () => {
+                try {
+                  await navigator.clipboard.writeText(link);
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 2000);
+                } catch {
+                  // clipboard unavailable — the link is visible to copy manually
+                }
+              }}
+              className="press flex min-h-11 items-center rounded-full border border-border bg-card px-3 text-sm font-medium hover:bg-muted"
+            >
+              {copied ? "Copied ✓" : "Copy link"}
+            </button>
+            <button
+              onClick={() => setLink(null)}
+              className="press flex min-h-11 items-center px-2 text-xs text-muted-foreground hover:underline"
+            >
+              New link
+            </button>
+          </span>
+        </>
+      )}
+      {err && <p className="text-sm text-destructive">{err}</p>}
       <button onClick={() => setOpen(false)} className="text-left text-xs text-muted-foreground hover:underline">
         Close
       </button>

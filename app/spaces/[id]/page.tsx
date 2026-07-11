@@ -38,7 +38,7 @@ export default async function SpacePage({ params }: { params: Promise<{ id: stri
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        <AddMember spaceId={id} memberIds={(members ?? []).map((m) => m.user_id)} />
+        <AddMember spaceId={id} />
         <Link
           href={`/marketplace/new?space=${id}`}
           className="press rounded-full bg-primary px-4 py-2 text-sm font-semibold text-on-primary hover:bg-primary-strong"
