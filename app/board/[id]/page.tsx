@@ -4,6 +4,7 @@ import { requireUser } from "@/lib/auth";
 import Gallery from "@/modules/marketplace/gallery";
 import TypeBadge from "@/modules/board/badge";
 import ResolveButton from "@/modules/board/resolve-button";
+import { ThisIsMine, ClaimsPanel } from "@/modules/board/claims";
 import ReportSheet from "@/modules/moderation/report-sheet";
 import ShareButton from "@/components/share-button";
 import SaveButton from "@/components/save-button";
@@ -39,6 +40,17 @@ export default async function PostDetailPage({
     .eq("target_id", post.id)
     .maybeSingle();
 
+  // Phase 30 claims: RLS returns the author's full list, a claimant only
+  // their own row, everyone else nothing.
+  const showClaims = post.type === "found";
+  const { data: claimRows } = showClaims
+    ? await supabase
+        .from("post_claims")
+        .select("id, answer, status, claimant_id, claimant:profiles!post_claims_claimant_id_fkey(name)")
+        .eq("post_id", post.id)
+    : { data: null };
+  const myClaim = (claimRows ?? []).find((c) => c.claimant_id === user.id);
+
   return (
     <main className="animate-fade-up mx-auto flex w-full max-w-lg flex-1 flex-col gap-4 px-4 py-6">
       <div className="flex items-center justify-between">
@@ -58,6 +70,11 @@ export default async function PostDetailPage({
         <TypeBadge type={post.type} />
         {post.status === "resolved" && (
           <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium">Resolved</span>
+        )}
+        {post.status === "claim_pending" && (
+          <span className="rounded-full bg-accent/10 px-2 py-0.5 text-xs font-medium text-accent">
+            Claim accepted — handover pending
+          </span>
         )}
       </div>
 
@@ -92,6 +109,25 @@ export default async function PostDetailPage({
           {author.hostel_block && <p className="text-xs text-muted-foreground">{author.hostel_block}</p>}
         </div>
       </div>
+
+      {showClaims && !isMine && (post.status === "open" || myClaim != null) && (
+        <ThisIsMine
+          postId={post.id}
+          question={post.claim_question}
+          myClaimStatus={myClaim?.status ?? null}
+        />
+      )}
+      {showClaims && isMine && (
+        <ClaimsPanel
+          postId={post.id}
+          claims={(claimRows ?? []).map((c) => ({
+            id: c.id,
+            answer: c.answer,
+            status: c.status,
+            claimant: (c.claimant as unknown as { name: string } | null)?.name ?? "Student",
+          }))}
+        />
+      )}
 
       {isMine && resolvable && <ResolveButton id={post.id} resolved={post.status === "resolved"} />}
     </main>

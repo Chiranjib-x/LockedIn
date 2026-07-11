@@ -87,6 +87,20 @@ export default function PostForm({
         </label>
       )}
 
+      {type === "found" && (
+        <label className="flex flex-col gap-1 text-sm font-medium">
+          Verification question (optional)
+          <input
+            name="claim_question"
+            placeholder="e.g. What's engraved on the back?"
+            className={inputClass}
+          />
+          <span className="text-xs font-normal text-muted-foreground">
+            Claimants must answer this — only you see the answers.
+          </span>
+        </label>
+      )}
+
       <label className="flex flex-col gap-1 text-sm font-medium">
         Details
         <textarea
