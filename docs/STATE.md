@@ -4,12 +4,12 @@
 Build Phase 20 (PWA installability): manifest, icons, service worker, install prompt, iOS meta.
 
 ## Now
-Gate Runner hardening (0022) + unclaim fix (0023) applied and verified on dev. NOT yet deployed to prod — needs user's "deploy".
+All gate work (0022/0023/0024) + free-window feed applied, verified, DEPLOYED (2026-07-11). Phase 21 push is next: google-services.json present in android/app/; waiting on user's "vapid done" (keys into .env.local + Vercel).
 
 ## Next
-1. User says deploy → ship gate changes to prod
-2. Phase 21 (push) — user creates Firebase project first
-3. Roadmap: free-window feed + cab columns; sealed vouching (AddMember enumeration hole); "heading to the gate" broadcast (needs anti-spam decision from user)
+1. Phase 21 (push): push_subscriptions migration (0025), web push in sw.js, native FCM via @capacitor/push-notifications, contextual permission prompts, pg_net trigger → /api/push/dispatch with thin payloads, token cleanup on login/logout; first consumer = attendance nudge
+2. Roadmap: sealed vouching; cab matching columns (destination_slug, depart_flex_minutes)
+3. Play Store: signed AAB + listing (user's $25 dev account)
 
 ## Facts (14.5 additions)
 - Build APK: `cd android && ./gradlew.bat assembleDebug` (Java 21 system, sdk.dir in android/local.properties — gitignored)
