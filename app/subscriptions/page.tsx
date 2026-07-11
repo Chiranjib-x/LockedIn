@@ -10,22 +10,33 @@ function daysUntil(date: string) {
 export default async function SubscriptionsPage() {
   const { supabase, user } = await requireUser();
 
-  // RLS: only pools I own or belong to come back.
-  const { data: subs } = await supabase
+  // Since 0031 discoverable pools are college-visible, so filter to
+  // owner-or-member here — the browse board lives at /subscriptions/browse.
+  const { data: allVisible } = await supabase
     .from("subscriptions")
     .select("*, members:subscription_members(user_id, share_amount, paid_status)")
     .order("renewal_date", { ascending: true });
+  const subs = (allVisible ?? []).filter(
+    (s) =>
+      s.owner_id === user.id ||
+      (s.members as { user_id: string }[]).some((m) => m.user_id === user.id)
+  );
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 px-4 py-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Subscription pools</h1>
-        <Link
-          href="/subscriptions/new"
-          className="press rounded-full bg-primary px-4 py-2 text-sm font-semibold text-on-primary hover:bg-primary-strong"
-        >
-          ＋ New pool
-        </Link>
+        <span className="flex items-center gap-2">
+          <Link href="/subscriptions/browse" className="press flex min-h-11 items-center text-sm font-medium text-primary hover:underline">
+            Browse open pools
+          </Link>
+          <Link
+            href="/subscriptions/new"
+            className="press rounded-full bg-primary px-4 py-2 text-sm font-semibold text-on-primary hover:bg-primary-strong"
+          >
+            ＋ New pool
+          </Link>
+        </span>
       </div>
 
       {!subs?.length ? (

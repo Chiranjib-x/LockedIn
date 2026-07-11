@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { rupees } from "@/modules/marketplace/format";
 import { AddPoolMember, MemberRow, SplitEvenlyButton } from "@/modules/subscriptions/client";
+import { DiscoverToggle, RequestJoin, JoinRequestsPanel } from "@/modules/subscriptions/discovery";
 import { openChat } from "@/modules/chat/actions";
 
 export default async function SubscriptionPage({ params }: { params: Promise<{ id: string }> }) {
@@ -24,6 +25,14 @@ export default async function SubscriptionPage({ params }: { params: Promise<{ i
 
   const owner = sub.owner as { id: string; name: string };
   const isOwner = owner.id === user.id;
+  const isMember = (members ?? []).some((m) => m.user_id === user.id);
+
+  // Phase 31: seat requests (owner sees all on their pool; requester their own).
+  const { data: joinReqs } = await supabase
+    .from("sub_join_requests")
+    .select("id, note, status, requester_id, requester:profiles!sub_join_requests_requester_id_fkey(name)")
+    .eq("subscription_id", id);
+  const myRequest = (joinReqs ?? []).find((r) => r.requester_id === user.id);
 
   async function messageOwner() {
     "use server";
@@ -59,18 +68,31 @@ export default async function SubscriptionPage({ params }: { params: Promise<{ i
       </div>
 
       {isOwner ? (
-        <div className="flex flex-wrap gap-2">
-          <AddPoolMember subId={sub.id} defaultShare={defaultShare} memberIds={[...list.map((m) => m.user_id), owner.id]} />
-          {list.length > 0 && <SplitEvenlyButton subId={sub.id} />}
-        </div>
+        <>
+          <DiscoverToggle subId={sub.id} discoverable={sub.is_discoverable} openSeats={sub.open_seats} />
+          <JoinRequestsPanel
+            requests={(joinReqs ?? [])
+              .filter((r) => r.status === "pending")
+              .map((r) => ({
+                id: r.id,
+                note: r.note,
+                requester: (r.requester as unknown as { name: string } | null)?.name ?? "Student",
+              }))}
+          />
+          <div className="flex flex-wrap gap-2">
+            <AddPoolMember subId={sub.id} defaultShare={defaultShare} memberIds={[...list.map((m) => m.user_id), owner.id]} />
+            {list.length > 0 && <SplitEvenlyButton subId={sub.id} />}
+          </div>
+        </>
+      ) : isMember ? (
+        <form action={messageOwner}>
+          <button type="submit" className="press rounded-full border border-border bg-card px-4 py-2 text-sm font-semibold hover:bg-muted">
+            Message owner 💬
+          </button>
+        </form>
       ) : (
-        list.some((m) => m.user_id === user.id) && (
-          <form action={messageOwner}>
-            <button type="submit" className="press rounded-full border border-border bg-card px-4 py-2 text-sm font-semibold hover:bg-muted">
-              Message owner 💬
-            </button>
-          </form>
-        )
+        sub.is_discoverable &&
+        sub.open_seats > 0 && <RequestJoin subId={sub.id} alreadyAsked={myRequest != null} />
       )}
 
       <section className="flex flex-col gap-2">

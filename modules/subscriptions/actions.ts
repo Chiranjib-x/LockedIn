@@ -95,3 +95,100 @@ export async function splitEvenly(subId: string) {
   }
   revalidatePath(`/subscriptions/${subId}`);
 }
+
+// ── Phase 31: discovery + request-to-join ────────────────────────────────────
+
+export async function setDiscoverable(subId: string, discoverable: boolean, openSeats: number) {
+  const { supabase } = await ctx();
+  // RLS: owner-only update.
+  await supabase
+    .from("subscriptions")
+    .update({ is_discoverable: discoverable, open_seats: discoverable ? Math.max(0, openSeats) : 0 })
+    .eq("id", subId);
+  revalidatePath(`/subscriptions/${subId}`);
+  revalidatePath("/subscriptions/browse");
+}
+
+export async function requestJoin(subId: string, note: string) {
+  const { supabase, user } = await ctx();
+  const { data: profile } = await supabase
+    .from("profiles").select("college_id, name").eq("id", user.id).single();
+  // RLS enforces: discoverable, open seats, not owner/member, one request.
+  const { error } = await supabase.from("sub_join_requests").insert({
+    subscription_id: subId,
+    requester_id: user.id,
+    college_id: profile?.college_id,
+    note: note.trim() || null,
+  });
+  if (error) return "Couldn't send the request — maybe you already asked.";
+  const { data: sub } = await supabase
+    .from("subscriptions").select("owner_id, college_id, service_name").eq("id", subId).single();
+  if (sub) {
+    await supabase.rpc("notify", {
+      uid: sub.owner_id, cid: sub.college_id, ntype: "subscription",
+      msg: `${profile?.name ?? "Someone"} wants a seat in your ${sub.service_name} pool`,
+      nlink: `/subscriptions/${subId}`,
+    });
+  }
+  revalidatePath(`/subscriptions/${subId}`);
+  return null;
+}
+
+// Prorated first cycle: pay only for the days left until renewal, then the
+// normal per-seat share. Both sides see the math in the notification.
+export async function decideJoin(requestId: string, approve: boolean) {
+  const { supabase } = await ctx();
+  const { data: req } = await supabase
+    .from("sub_join_requests")
+    .update({ status: approve ? "approved" : "declined" })
+    .eq("id", requestId)
+    .select("requester_id, subscription_id, college_id")
+    .single();
+  if (!req) return "Couldn't update the request.";
+
+  const { data: sub } = await supabase
+    .from("subscriptions")
+    .select("service_name, total_cost, seats, billing_cycle, renewal_date, open_seats")
+    .eq("id", req.subscription_id)
+    .single();
+  if (!sub) return "Pool vanished.";
+
+  if (!approve) {
+    await supabase.rpc("notify", {
+      uid: req.requester_id, cid: req.college_id, ntype: "subscription",
+      msg: `No seat this time on ${sub.service_name} — the owner declined.`,
+      nlink: "/subscriptions/browse",
+    });
+    revalidatePath(`/subscriptions/${req.subscription_id}`);
+    return null;
+  }
+
+  const perSeat = Math.ceil(Number(sub.total_cost) / sub.seats);
+  const cycleDays = sub.billing_cycle === "monthly" ? 30 : 365;
+  const daysLeft = Math.min(
+    cycleDays,
+    Math.max(0, Math.ceil((new Date(sub.renewal_date).getTime() - Date.now()) / 86400000))
+  );
+  const prorated = Math.ceil((perSeat * daysLeft) / cycleDays);
+
+  const { error } = await supabase.from("subscription_members").insert({
+    subscription_id: req.subscription_id,
+    user_id: req.requester_id,
+    college_id: req.college_id,
+    share_amount: prorated,
+  });
+  if (error) return "Couldn't add them — " + error.message;
+
+  await supabase
+    .from("subscriptions")
+    .update({ open_seats: Math.max(0, (sub.open_seats ?? 1) - 1) })
+    .eq("id", req.subscription_id);
+
+  await supabase.rpc("notify", {
+    uid: req.requester_id, cid: req.college_id, ntype: "subscription",
+    msg: `You're in the ${sub.service_name} pool 🎉 First cycle: ₹${prorated} (${daysLeft}/${cycleDays} days of the ₹${perSeat} share), then ₹${perSeat}.`,
+    nlink: `/subscriptions/${req.subscription_id}`,
+  });
+  revalidatePath(`/subscriptions/${req.subscription_id}`);
+  return null;
+}
