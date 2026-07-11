@@ -9,6 +9,7 @@ import { getRating } from "@/modules/ratings/get-rating";
 import { KarmaBadge } from "@/modules/karma/badge";
 import ReportSheet from "@/modules/moderation/report-sheet";
 import ShareButton from "@/components/share-button";
+import SaveButton from "@/components/save-button";
 
 export default async function ListingDetailPage({
   params,
@@ -34,6 +35,13 @@ export default async function ListingDetailPage({
   };
   const isMine = seller.id === user.id;
   const sellerRating = await getRating(seller.id);
+  const { data: savedRow } = await supabase
+    .from("saves")
+    .select("target_id")
+    .eq("user_id", user.id)
+    .eq("target_type", "listing")
+    .eq("target_id", listing.id)
+    .maybeSingle();
 
   async function startChat() {
     "use server";
@@ -47,6 +55,7 @@ export default async function ListingDetailPage({
           ← Marketplace
         </Link>
         <span className="flex items-center gap-2">
+          <SaveButton targetType="listing" targetId={listing.id} initialSaved={savedRow !== null} />
           <ShareButton path={`/p/listing/${listing.id}`} title={listing.title} />
           {!isMine && <ReportSheet targetType="listing" targetId={listing.id} authorId={seller.id} />}
         </span>

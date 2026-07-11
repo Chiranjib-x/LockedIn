@@ -1,15 +1,20 @@
 # STATE
 
 ## Goal
-Build Phase 20 (PWA installability): manifest, icons, service worker, install prompt, iOS meta.
+User-approved sequence (2026-07-12): Phase 28 (saves+alerts, IN PROGRESS) → Phase 29 (dark mode) → 🚢 ship Wave C → Play Store release → Wave D in plan order. Keep going without asking until user input is genuinely required.
 
 ## Now
-Phase 21 FULLY CLOSED (2026-07-12): native FCM confirmed on the founder's phone ({sent:2} = fcm + webpush fan-out, user-verified). 🚢 Wave B complete: PWA + APK + push.
+MID-PHASE-28 (saves + saved-search alerts), interrupted by /compact. Migration 0029 APPLIED to live DB (saves, saved_searches, matcher triggers confirmed). Files DONE: modules/saves/actions.ts, components/save-button.tsx, modules/search/save-search-button.tsx, app/saved/page.tsx; SaveButton wired into app/marketplace/[id]/page.tsx + app/board/[id]/page.tsx (savedRow maybeSingle query + button beside ShareButton).
 
 ## Next
-1. User housekeeping: rotate the Firebase service-account key (was pasted into chat) — Firebase console → Service accounts → generate new key → update FIREBASE_PRIVATE_KEY/CLIENT_EMAIL in Vercel + .env.local → redeploy
-2. Roadmap: sealed vouching (AddMember enumeration hole, one migration); cab matching columns; Play Store signed AAB + listing
-3. QUANTA 2026 starts tomorrow (July 13): banner flips on automatically; user onboards club Communities
+1. Wire SaveButton into app/group-buy/[id]/page.tsx — MUST Read the file first (Edit already bounced on unread file). Import SaveButton, add savedRow query (target_type 'group_order'), put button in a flex row with the "← Group-buys" link (~line 53).
+2. SaveSearchButton into app/marketplace/page.tsx (module 'marketplace', query=q, filters={category} when set) and app/board/page.tsx (module 'board', filters={type}) — render under FilterBar/BoardFilter.
+3. "Saved 🔖" link on app/profile/page.tsx (after KarmaProgress ~line 67).
+4. Verify: tsc; Playwright dev:3001 (test accts in Facts): save listing → /saved shows → unsave; alerts row on /saved + delete; saved search (girl, q='cycle') → founder posts matching listing → girl notification exists + net._http_response shows push POST; 1h cap = saved_searches.last_notified_at set.
+5. Commit Phase 28; update PROJECT.md tracker; then Phase 29 dark mode (class-based, tokens flip under .dark, toggle persisted, per CLAUDE.md design system), verify, commit; then attempt prod deploy (🚢 Wave C) — if classifier blocks, that's the manual moment: ask user to say deploy.
+6. After Wave C: Play Store release build (signed AAB — needs user's keystore decisions) per approved sequence.
+
+## Session earlier (all committed AND deployed to prod): sealed vouching verified adversarially (aa105cd); vercel.json syd1 region fix = 3-7x faster pages (78c8c95 area); speeder loader (78c8c95); Phase 27 global search (3f5f765) fully verified. Phases 20/21/22/14.5 closed earlier. Migrations 0021-0029 ALL applied.
 
 ## Facts (14.5 additions)
 - Build APK: `cd android && ./gradlew.bat assembleDebug` (Java 21 system, sdk.dir in android/local.properties — gitignored)
@@ -19,6 +24,7 @@ Phase 21 FULLY CLOSED (2026-07-12): native FCM confirmed on the founder's phone 
 ## Constraints
 - Keep the gmail.com seed college until user finishes testing (delete only at real launch).
 - User asked: production launch steps only with explicit go-ahead ("deploy" given 2026-07-09 — done).
+- 2026-07-12, verbatim: "i allow to apply all upcoming migrations without asking me , and now lets move one to next phases until i have to actually do something manually"
 
 ## Decisions
 - DECISION: hand-rolled service worker, no next-pwa — next-pwa predates app router and is unmaintained; ~60 lines covers app-shell cache + offline fallback; no new dependency.

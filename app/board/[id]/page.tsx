@@ -6,6 +6,7 @@ import TypeBadge from "@/modules/board/badge";
 import ResolveButton from "@/modules/board/resolve-button";
 import ReportSheet from "@/modules/moderation/report-sheet";
 import ShareButton from "@/components/share-button";
+import SaveButton from "@/components/save-button";
 
 export default async function PostDetailPage({
   params,
@@ -30,6 +31,13 @@ export default async function PostDetailPage({
   };
   const isMine = author.id === user.id;
   const resolvable = post.type === "lost" || post.type === "found";
+  const { data: savedRow } = await supabase
+    .from("saves")
+    .select("target_id")
+    .eq("user_id", user.id)
+    .eq("target_type", "post")
+    .eq("target_id", post.id)
+    .maybeSingle();
 
   return (
     <main className="animate-fade-up mx-auto flex w-full max-w-lg flex-1 flex-col gap-4 px-4 py-6">
@@ -38,6 +46,7 @@ export default async function PostDetailPage({
           ← Board
         </Link>
         <span className="flex items-center gap-2">
+          <SaveButton targetType="post" targetId={post.id} initialSaved={savedRow !== null} />
           <ShareButton path={`/p/post/${post.id}`} title={post.title} />
           {!isMine && <ReportSheet targetType="post" targetId={post.id} authorId={author.id} />}
         </span>
