@@ -24,13 +24,11 @@ export default async function ChatThreadPage({ params }: { params: Promise<{ id:
     .single();
   if (!conv) notFound();
 
-  const [{ data: other }, { data: messages }, { data: myProfile }] = await Promise.all([
+  const [{ data: participants }, { data: messages }, { data: myProfile }] = await Promise.all([
     supabase
       .from("conversation_participants")
       .select("user_id, profiles(name)")
-      .eq("conversation_id", id)
-      .neq("user_id", user.id)
-      .maybeSingle(),
+      .eq("conversation_id", id),
     supabase
       .from("messages")
       .select("id, sender_id, body, created_at")
@@ -41,7 +39,20 @@ export default async function ChatThreadPage({ params }: { params: Promise<{ id:
 
   await markRead(id);
 
-  const otherName = (other?.profiles as { name: string } | undefined)?.name ?? "Student";
+  // Multi-party (Phase 34): study-group chats title by group name and show
+  // sender names; DMs keep the other person's name.
+  const names = new Map(
+    (participants ?? []).map((p) => [p.user_id, (p.profiles as unknown as { name: string } | null)?.name ?? "Student"])
+  );
+  const others = (participants ?? []).filter((p) => p.user_id !== user.id);
+  const isGroup = conv.context_type === "study_group";
+  let title = names.get(others[0]?.user_id) ?? "Student";
+  if (isGroup && conv.context_id != null) {
+    const { data: g } = await supabase
+      .from("study_groups").select("title, course_code").eq("id", conv.context_id).maybeSingle();
+    if (g) title = `${g.course_code} · ${g.title}`;
+  }
+  const otherName = title;
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col">
@@ -64,6 +75,7 @@ export default async function ChatThreadPage({ params }: { params: Promise<{ id:
         initial={messages ?? []}
         showOpeners={conv.context_type === "listing"}
         myContact={myProfile?.contact_pref ?? null}
+        senderNames={isGroup ? Object.fromEntries(names) : null}
       />
     </main>
   );

@@ -31,6 +31,7 @@ const MODULES = [
   { name: "Deals", short: "Deals", href: "/deals", emoji: "🏷️" },
   { name: "Cab Pooling", short: "Cabs", href: "/cabs", emoji: "🚕" },
   { name: "Timetable", short: "Timetable", href: "/timetable", emoji: "🗓️" },
+  { name: "Study Groups", short: "Study", href: "/study-groups", emoji: "📚" },
 ];
 
 function greeting() {

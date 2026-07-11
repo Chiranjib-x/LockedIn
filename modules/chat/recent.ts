@@ -39,6 +39,22 @@ export async function getChatRows(supabase: Awaited<ReturnType<typeof createClie
   ]);
 
   const otherByConv = new Map((others ?? []).map((o) => [o.conversation_id, o]));
+
+  // Group chats (study_group) list under the group's name, not a member's.
+  const groupConvs = (parts ?? []).filter(
+    (p) => (p.conversations as unknown as { context_type: string | null } | null)?.context_type === "study_group"
+  );
+  const groupTitleByConv = new Map<string, string>();
+  if (groupConvs.length > 0) {
+    const ids = groupConvs
+      .map((p) => (p.conversations as unknown as { context_id: string | null } | null)?.context_id)
+      .filter((x): x is string => x != null);
+    const { data: gs } = await supabase
+      .from("study_groups").select("id, conversation_id, title, course_code").in("id", ids);
+    for (const g of gs ?? []) {
+      if (g.conversation_id != null) groupTitleByConv.set(g.conversation_id, `📚 ${g.course_code} · ${g.title}`);
+    }
+  }
   const lastByConv = new Map<string, { body: string; created_at: string; sender_id: string }>();
   for (const m of lastMsgs ?? []) if (!lastByConv.has(m.conversation_id)) lastByConv.set(m.conversation_id, m);
 
@@ -49,7 +65,7 @@ export async function getChatRows(supabase: Awaited<ReturnType<typeof createClie
       const unread = last ? new Date(last.created_at) > new Date(p.last_read_at) && last.sender_id !== userId : false;
       return {
         id: p.conversation_id,
-        name: other?.profiles?.name ?? "Student",
+        name: groupTitleByConv.get(p.conversation_id) ?? other?.profiles?.name ?? "Student",
         last,
         unread,
         sortKey: last ? new Date(last.created_at).getTime() : 0,

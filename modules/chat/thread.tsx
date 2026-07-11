@@ -23,12 +23,15 @@ export default function Thread({
   initial,
   showOpeners,
   myContact,
+  senderNames = null,
 }: {
   conversationId: string;
   meId: string;
   initial: Msg[];
   showOpeners: boolean;
   myContact: string | null;
+  // present only in multi-party threads (Phase 34) — keys are user ids
+  senderNames?: Record<string, string> | null;
 }) {
   const supabase = createClient();
   const [messages, setMessages] = useState<Msg[]>(initial);
@@ -103,6 +106,9 @@ export default function Thread({
                     mine ? "rounded-br-sm bg-primary text-on-primary" : "rounded-bl-sm bg-card border border-border"
                   }`}
                 >
+                  {!mine && senderNames != null && (
+                    <p className="text-xs font-semibold text-primary">{senderNames[m.sender_id] ?? "Student"}</p>
+                  )}
                   {m.body}
                   <span className={`ml-2 align-bottom text-[10px] ${mine ? "text-on-primary/70" : "text-muted-foreground"}`}>
                     {new Date(m.created_at).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" })}
