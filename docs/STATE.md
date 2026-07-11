@@ -4,12 +4,12 @@
 Build Phase 20 (PWA installability): manifest, icons, service worker, install prompt, iOS meta.
 
 ## Now
-Phase 21a DEPLOYED + pipeline proven (2026-07-11): notification insert → pg_net → prod dispatch → 200 {sent:0,failed:1} on a staged fake sub (net._http_response inspected). Remaining: user's real-phone push test on prod.
+Phase 21a CLOSED (2026-07-11): real push confirmed on the user's phone ({sent:1}, user-verified on lock screen, VIT account chiranjib.dash2024@vitstudent.ac.in). 🚢 Wave B retention core (PWA + Capacitor + web push) is live.
 
 ## Next
-1. User phone test: prod /chats → Enable → send them a chat from a test account → notification lands
-2. Phase 21b native FCM: user downloads Firebase service-account JSON (Project settings → Service accounts → generate key), firebase-admin in dispatch keyed by kind='fcm', @capacitor/push-notifications, APK rebuild
-3. Roadmap: sealed vouching; cab matching columns; Play Store signed AAB
+1. Phase 21b native FCM: user downloads Firebase service-account JSON (Project settings → Service accounts → generate key), firebase-admin in dispatch keyed by kind='fcm', @capacitor/push-notifications, APK rebuild
+2. Roadmap: sealed vouching (AddMember enumeration hole); cab matching columns (destination_slug, depart_flex_minutes); Play Store signed AAB + listing
+3. QUANTA 2026 (July 13–18): banner goes live automatically; user should onboard club Communities before Monday
 
 ## Facts (14.5 additions)
 - Build APK: `cd android && ./gradlew.bat assembleDebug` (Java 21 system, sdk.dir in android/local.properties — gitignored)
