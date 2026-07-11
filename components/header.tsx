@@ -67,6 +67,9 @@ export default async function Header() {
               </Link>
             </>
           )}
+          <Link href="/search" aria-label="Search" className="press flex min-h-11 min-w-11 items-center justify-center text-lg">
+            🔍
+          </Link>
           <NotificationBell supabase={supabase} userId={user.id} />
           <LogoutButton />
         </nav>
