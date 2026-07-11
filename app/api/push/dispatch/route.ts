@@ -20,14 +20,21 @@ const MAX_SUBS = 20;
 // repo). Returns null when the three FIREBASE_* vars aren't configured —
 // fcm subs then count as failed rather than crashing web-push delivery.
 function fcmMessaging() {
-  const projectId = process.env.FIREBASE_PROJECT_ID;
-  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-  const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n");
-  if (projectId == null || clientEmail == null || privateKey == null) return null;
-  const app =
-    getApps()[0] ??
-    initializeApp({ credential: cert({ projectId, clientEmail, privateKey }) });
-  return getMessaging(app);
+  try {
+    const projectId = process.env.FIREBASE_PROJECT_ID;
+    const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+    // tolerate both paste styles: wrapping quotes kept from the JSON, and
+    // literal \n sequences vs real newlines
+    const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/^"|"$/g, "").replace(/\\n/g, "\n");
+    if (projectId == null || clientEmail == null || privateKey == null) return null;
+    const app =
+      getApps()[0] ??
+      initializeApp({ credential: cert({ projectId, clientEmail, privateKey }) });
+    return getMessaging(app);
+  } catch {
+    // bad FCM config must never break web-push delivery for the same notification
+    return null;
+  }
 }
 
 async function prune(endpoint: string) {
