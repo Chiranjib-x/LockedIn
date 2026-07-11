@@ -9,20 +9,21 @@ import SaveSearchButton from "@/modules/search/save-search-button";
 export default async function MarketplacePage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; category?: string; sort?: string }>;
+  searchParams: Promise<{ q?: string; category?: string; sort?: string; ltype?: string }>;
 }) {
   const { supabase, user } = await requireUser();
-  const { q, category, sort } = await searchParams;
+  const { q, category, sort, ltype } = await searchParams;
 
   const blocked = await blockedIds(supabase, user.id);
 
   let query = supabase
     .from("listings")
-    .select("id, title, price, category, images, status")
+    .select("id, title, price, category, images, status, listing_type, rental_status")
     .eq("status", "available")
     .is("space_id", null) // space listings live only inside their space
     .not("seller_id", "in", notInList(blocked));
 
+  if (ltype === "sell" || ltype === "rent") query = query.eq("listing_type", ltype);
   if (category) query = query.eq("category", category);
   if (q) query = query.or(`title.ilike.%${q}%,description.ilike.%${q}%`);
 

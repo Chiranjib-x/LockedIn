@@ -62,7 +62,12 @@ export default async function MyListingsPage() {
                 </div>
               </div>
               <div className="mt-3">
-                <ListingActions id={l.id} sold={l.status === "sold"} />
+                <ListingActions
+                  id={l.id}
+                  sold={l.status === "sold"}
+                  listingType={l.listing_type}
+                  lentOut={l.rental_status === "lent_out"}
+                />
               </div>
             </Card>
           ))}

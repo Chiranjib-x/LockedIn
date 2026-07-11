@@ -71,11 +71,26 @@ export default async function ListingDetailPage({
             {listing.condition && <span className="rounded-full bg-muted px-2 py-0.5">{listing.condition}</span>}
           </p>
         </div>
-        <p className="font-heading text-2xl font-bold text-primary">{rupees(listing.price)}</p>
+        <div className="text-right">
+          <p className="font-heading text-2xl font-bold text-primary">
+            {rupees(listing.price)}
+            {listing.listing_type === "rent" && <span className="text-sm font-medium">/day</span>}
+          </p>
+          {listing.listing_type === "rent" && listing.deposit != null && Number(listing.deposit) > 0 && (
+            <p className="text-xs text-muted-foreground">+ {rupees(Number(listing.deposit))} deposit</p>
+          )}
+        </div>
       </div>
 
       {listing.status === "sold" && (
         <p className="rounded-2xl bg-muted p-3 text-center text-sm font-medium">This item has been sold.</p>
+      )}
+      {listing.listing_type === "rent" && listing.rental_status === "lent_out" && (
+        <p className="rounded-2xl bg-muted p-3 text-center text-sm font-medium">
+          Currently lent out
+          {listing.rental_due != null &&
+            ` — back ${new Date(listing.rental_due).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}`}
+        </p>
       )}
 
       {listing.description && (

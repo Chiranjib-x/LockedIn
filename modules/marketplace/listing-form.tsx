@@ -15,6 +15,9 @@ type Listing = {
   category: string;
   condition: string | null;
   images: string[];
+  listing_type?: "sell" | "rent";
+  price_per_day?: number | null;
+  deposit?: number | null;
 };
 
 export default function ListingForm({
@@ -30,12 +33,29 @@ export default function ListingForm({
 }) {
   const [images, setImages] = useState<string[]>(listing?.images ?? []);
   const [spaceId, setSpaceId] = useState(defaultSpaceId ?? "");
+  const [kind, setKind] = useState<"sell" | "rent">(listing?.listing_type ?? "sell");
 
   return (
     <form action={saveListing} className="flex flex-col gap-4">
       {listing?.id && <input type="hidden" name="id" value={listing.id} />}
       <input type="hidden" name="images" value={JSON.stringify(images)} />
+      <input type="hidden" name="listing_type" value={kind} />
       {!listing?.id && <input type="hidden" name="space_id" value={spaceId} />}
+
+      <div className="grid grid-cols-2 gap-2">
+        {(["sell", "rent"] as const).map((k) => (
+          <button
+            key={k}
+            type="button"
+            onClick={() => setKind(k)}
+            className={`press rounded-2xl border px-3 py-2.5 text-sm font-medium ${
+              kind === k ? "border-primary bg-primary/10 text-primary" : "border-border bg-card"
+            }`}
+          >
+            {k === "sell" ? "💸 Sell it" : "📅 Rent it out"}
+          </button>
+        ))}
+      </div>
 
       {!listing?.id && spaces.length > 0 && (
         <div className="flex flex-col gap-1 text-sm font-medium">
@@ -84,10 +104,23 @@ export default function ListingForm({
       </label>
 
       <div className="flex gap-3">
-        <label className="flex flex-1 flex-col gap-1 text-sm font-medium">
-          Price (₹)
-          <input name="price" type="number" min={0} step="1" required defaultValue={listing?.price} className={inputClass} />
-        </label>
+        {kind === "sell" ? (
+          <label className="flex flex-1 flex-col gap-1 text-sm font-medium">
+            Price (₹)
+            <input name="price" type="number" min={0} step="1" required defaultValue={listing?.price} className={inputClass} />
+          </label>
+        ) : (
+          <>
+            <label className="flex flex-1 flex-col gap-1 text-sm font-medium">
+              ₹ / day
+              <input name="price_per_day" type="number" min={1} step="1" required defaultValue={listing?.price_per_day ?? undefined} className={inputClass} />
+            </label>
+            <label className="flex flex-1 flex-col gap-1 text-sm font-medium">
+              Deposit (₹, optional)
+              <input name="deposit" type="number" min={0} step="1" defaultValue={listing?.deposit ?? undefined} className={inputClass} />
+            </label>
+          </>
+        )}
         <label className="flex flex-1 flex-col gap-1 text-sm font-medium">
           Category
           <select name="category" required defaultValue={listing?.category ?? ""} className={inputClass}>

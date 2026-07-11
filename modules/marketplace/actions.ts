@@ -18,11 +18,14 @@ export async function saveListing(formData: FormData) {
 
   const id = String(formData.get("id") ?? "").trim() || null;
   const title = String(formData.get("title") ?? "").trim();
-  const price = Number(formData.get("price") ?? 0);
   const category = String(formData.get("category") ?? "").trim();
   const images = JSON.parse(String(formData.get("images") ?? "[]")) as string[];
+  const kind = String(formData.get("listing_type") ?? "sell") === "rent" ? "rent" : "sell";
+  const perDay = Number(formData.get("price_per_day") ?? 0);
+  // Rentals mirror ₹/day into price so cards, sorting, and search behave.
+  const price = kind === "rent" ? perDay : Number(formData.get("price") ?? 0);
 
-  if (!title || !category || Number.isNaN(price) || price < 0) {
+  if (!title || !category || Number.isNaN(price) || price < 0 || (kind === "rent" && perDay <= 0)) {
     redirect("/marketplace/new?error=" + encodeURIComponent("Title, category, and a valid price are required."));
   }
 
@@ -35,6 +38,9 @@ export async function saveListing(formData: FormData) {
     category,
     condition: String(formData.get("condition") ?? "").trim() || null,
     images,
+    listing_type: kind,
+    price_per_day: kind === "rent" ? perDay : null,
+    deposit: kind === "rent" ? Number(formData.get("deposit") ?? 0) || null : null,
   };
 
   if (id) {
@@ -58,6 +64,67 @@ export async function saveListing(formData: FormData) {
   revalidatePath("/marketplace");
   revalidatePath("/marketplace/mine");
   redirect("/marketplace/mine");
+}
+
+// ── Phase 32: lend / return ──────────────────────────────────────────────────
+
+export async function lendTo(id: string, borrowerId: string, due: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+  // RLS: seller-only update.
+  const { error } = await supabase
+    .from("listings")
+    .update({ rental_status: "lent_out", lent_to: borrowerId, rental_due: due })
+    .eq("id", id)
+    .eq("listing_type", "rent");
+  if (error) return "Couldn't record the loan.";
+  const { data: l } = await supabase
+    .from("listings").select("title, college_id").eq("id", id).single();
+  if (l) {
+    await supabase.rpc("notify", {
+      uid: borrowerId, cid: l.college_id, ntype: "marketplace",
+      msg: `Borrowed: ${l.title} — due back ${new Date(due).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}`,
+      nlink: `/marketplace/${id}`,
+    });
+  }
+  revalidatePath("/marketplace/mine");
+  revalidatePath(`/marketplace/${id}`);
+  return null;
+}
+
+// Return completes the exchange: transaction row (is_rental) fires the 0011
+// mutual-rating nudge, then the item relists automatically.
+export async function markReturned(id: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+  const { data: l } = await supabase
+    .from("listings")
+    .select("lent_to, college_id, seller_id")
+    .eq("id", id)
+    .single();
+  if (!l || l.seller_id !== user.id || l.lent_to == null) return "Nothing to return.";
+
+  await supabase.from("transactions").insert({
+    college_id: l.college_id,
+    context_type: "marketplace",
+    context_id: id,
+    party_a: user.id,
+    party_b: l.lent_to,
+    is_rental: true,
+  });
+  await supabase
+    .from("listings")
+    .update({ rental_status: "available", lent_to: null, rental_due: null })
+    .eq("id", id);
+  revalidatePath("/marketplace/mine");
+  revalidatePath(`/marketplace/${id}`);
+  return null;
 }
 
 export async function setSold(id: string, sold: boolean) {

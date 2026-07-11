@@ -31,6 +31,7 @@ export default function FilterBar() {
 
   const activeCat = params.get("category");
   const sort = params.get("sort") ?? "new";
+  const ltype = params.get("ltype");
 
   return (
     <div className="flex flex-col gap-3">
@@ -40,6 +41,23 @@ export default function FilterBar() {
         placeholder="Search listings…"
         className="min-h-11 w-full rounded-full border border-border bg-card px-4 text-foreground placeholder:text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring"
       />
+      <div className="grid grid-cols-3 gap-2 text-sm">
+        {[
+          { v: null, label: "Everything" },
+          { v: "sell", label: "💸 For sale" },
+          { v: "rent", label: "📅 For rent" },
+        ].map((t) => (
+          <button
+            key={t.label}
+            onClick={() => apply({ ltype: t.v })}
+            className={`press rounded-full border px-3 py-1.5 font-medium ${
+              ltype === t.v ? "border-primary bg-primary text-on-primary" : "border-border bg-card"
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
       <div className="flex items-center gap-2 overflow-x-auto pb-1">
         <button
           onClick={() => apply({ category: null })}
