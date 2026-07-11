@@ -17,6 +17,52 @@ export function pushSupported() {
   return "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
 }
 
+// Inside the Capacitor Android app: no web PushManager, native FCM instead.
+export function isNativeApp() {
+  return typeof window !== "undefined" &&
+    (window as { Capacitor?: { isNativePlatform?: () => boolean } }).Capacitor?.isNativePlatform?.() === true;
+}
+
+export async function ensureNativePushSubscription(
+  supabase: SupabaseClient
+): Promise<"subscribed" | "denied" | "failed"> {
+  try {
+    const { PushNotifications } = await import("@capacitor/push-notifications");
+    const perm = await PushNotifications.requestPermissions();
+    if (perm.receive !== "granted") return "denied";
+
+    const token = await new Promise<string | null>((resolve) => {
+      const timer = setTimeout(() => resolve(null), 15000);
+      PushNotifications.addListener("registration", (t) => {
+        clearTimeout(timer);
+        resolve(t.value);
+      });
+      PushNotifications.addListener("registrationError", () => {
+        clearTimeout(timer);
+        resolve(null);
+      });
+      PushNotifications.register();
+    });
+    if (token === null) return "failed";
+
+    const { error } = await supabase.rpc("save_push_subscription", {
+      p_endpoint: token,
+      p_keys: null,
+      p_kind: "fcm",
+    });
+
+    // tap on a native notification deep-links via the data.link we send
+    PushNotifications.addListener("pushNotificationActionPerformed", (action) => {
+      const link = (action.notification.data as { link?: string })?.link;
+      if (link != null && link !== "") window.location.assign(link);
+    });
+
+    return error ? "failed" : "subscribed";
+  } catch {
+    return "failed";
+  }
+}
+
 export async function ensurePushSubscription(
   supabase: SupabaseClient
 ): Promise<"subscribed" | "denied" | "unsupported" | "failed"> {

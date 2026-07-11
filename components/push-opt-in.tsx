@@ -2,7 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { ensurePushSubscription, pushSupported } from "@/lib/push/client";
+import {
+  ensureNativePushSubscription,
+  ensurePushSubscription,
+  isNativeApp,
+  pushSupported,
+} from "@/lib/push/client";
 
 const DONE_KEY = "li-push-optin-done";
 
@@ -19,6 +24,10 @@ export default function PushOptIn({ context }: { context: keyof typeof CONTEXT_C
 
   useEffect(() => {
     if (localStorage.getItem(DONE_KEY) !== null) return;
+    if (isNativeApp()) {
+      setShow(true); // native FCM path — web Notification API absent here
+      return;
+    }
     if (!pushSupported() || Notification.permission === "denied") return;
     setShow(true);
   }, []);
@@ -33,7 +42,9 @@ export default function PushOptIn({ context }: { context: keyof typeof CONTEXT_C
         disabled={busy}
         onClick={async () => {
           setBusy(true);
-          await ensurePushSubscription(createClient());
+          const supabase = createClient();
+          if (isNativeApp()) await ensureNativePushSubscription(supabase);
+          else await ensurePushSubscription(supabase);
           localStorage.setItem(DONE_KEY, "1");
           setShow(false);
         }}

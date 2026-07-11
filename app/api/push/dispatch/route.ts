@@ -1,14 +1,34 @@
 import { NextResponse } from "next/server";
 import webpush from "web-push";
+import { cert, getApps, initializeApp } from "firebase-admin/app";
+import { getMessaging } from "firebase-admin/messaging";
 
 // Phase 21a fan-out: pg_net trigger (0025) POSTs { message, link, nid, subs }
 // here; we web-push each subscription. No DB reads — the payload is complete
 // and already tenancy-scoped by notify(). Dead endpoints (404/410) are pruned
 // via the anon-granted prune RPC over PostgREST (no service key, no SDK).
 
-type Sub = { endpoint: string; keys: { p256dh: string; auth: string } | null };
+type Sub = {
+  endpoint: string;
+  keys: { p256dh: string; auth: string } | null;
+  kind?: "webpush" | "fcm";
+};
 
 const MAX_SUBS = 20;
+
+// Phase 21b: FCM via firebase-admin, creds from env (never a JSON file in the
+// repo). Returns null when the three FIREBASE_* vars aren't configured —
+// fcm subs then count as failed rather than crashing web-push delivery.
+function fcmMessaging() {
+  const projectId = process.env.FIREBASE_PROJECT_ID;
+  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+  const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n");
+  if (projectId == null || clientEmail == null || privateKey == null) return null;
+  const app =
+    getApps()[0] ??
+    initializeApp({ credential: cert({ projectId, clientEmail, privateKey }) });
+  return getMessaging(app);
+}
 
 async function prune(endpoint: string) {
   try {
@@ -49,9 +69,41 @@ export async function POST(req: Request) {
   let pruned = 0;
   let failed = 0;
 
+  const messaging = fcmMessaging();
+
   await Promise.allSettled(
     (subs as Sub[]).slice(0, MAX_SUBS).map(async (s) => {
-      if (typeof s?.endpoint !== "string" || s.keys == null) {
+      if (typeof s?.endpoint !== "string") {
+        failed += 1;
+        return;
+      }
+
+      if (s.kind === "fcm") {
+        if (messaging === null) {
+          failed += 1;
+          return;
+        }
+        try {
+          await messaging.send({
+            token: s.endpoint,
+            notification: { title: "LockedIn", body: message },
+            data: { link, nid: String(nid ?? "") },
+            android: { priority: "high" },
+          });
+          sent += 1;
+        } catch (e) {
+          const code = (e as { code?: string }).code ?? "";
+          if (code.includes("registration-token-not-registered") || code.includes("invalid-argument")) {
+            await prune(s.endpoint);
+            pruned += 1;
+          } else {
+            failed += 1;
+          }
+        }
+        return;
+      }
+
+      if (s.keys == null) {
         failed += 1;
         return;
       }

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "59784871335",
+    "project_id": "lockedin-68fee",
+    "storage_bucket": "lockedin-68fee.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:59784871335:android:4f090ab9c6f2eb77af4a82",
+        "android_client_info": {
+          "package_name": "com.lockedin.campus"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9wj0iCUtcT2hCh1dTPxEuJHIAHTX8nqM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
