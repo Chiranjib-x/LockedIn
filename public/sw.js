@@ -5,7 +5,7 @@
 //   - /_next/static/ + /icons/: cache-first (content-hashed / immutable)
 //   - everything else (Supabase, API, HMR): untouched — never cache user data,
 //     so there is nothing user-scoped to purge on logout.
-const CACHE = "lockedin-v1";
+const CACHE = "lockedin-v2";
 const PRECACHE = ["/offline.html", "/icons/icon-192.png"];
 
 self.addEventListener("install", (event) => {
@@ -20,6 +20,40 @@ self.addEventListener("activate", (event) => {
       .keys()
       .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
       .then(() => self.clients.claim())
+  );
+});
+
+// Phase 21a: web push. Payload is JSON from /api/push/dispatch:
+// { title, body, link, nid }.
+self.addEventListener("push", (event) => {
+  let data = { title: "LockedIn", body: "You have a new notification", link: "/notifications" };
+  try {
+    data = { ...data, ...event.data.json() };
+  } catch {
+    // keep defaults on malformed payload
+  }
+  event.waitUntil(
+    self.registration.showNotification(data.title, {
+      body: data.body,
+      icon: "/icons/icon-192.png",
+      badge: "/icons/icon-192.png",
+      data: { link: data.link },
+    })
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const link = event.notification.data?.link ?? "/notifications";
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((tabs) => {
+      const open = tabs.find((t) => "focus" in t);
+      if (open) {
+        open.navigate(link);
+        return open.focus();
+      }
+      return self.clients.openWindow(link);
+    })
   );
 });
 

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requireUser } from "@/lib/auth";
 import { Card } from "@/components/ui";
 import { getChatRows, ago } from "@/modules/chat/recent";
+import PushOptIn from "@/components/push-opt-in";
 
 export default async function ChatsPage() {
   const { supabase, user } = await requireUser();
@@ -10,6 +11,7 @@ export default async function ChatsPage() {
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-3 px-4 py-6">
       <h1 className="text-2xl font-bold">Chats</h1>
+      <PushOptIn context="chats" />
       {!rows.length ? (
         <Card className="mt-2 flex flex-col items-center gap-2 py-10 text-center">
           <span className="text-3xl">💬</span>

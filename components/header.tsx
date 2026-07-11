@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { logout } from "@/app/auth/actions";
+import LogoutButton from "@/components/logout-button";
 
 async function NotificationBell({
   supabase,
@@ -68,14 +68,7 @@ export default async function Header() {
             </>
           )}
           <NotificationBell supabase={supabase} userId={user.id} />
-          <form action={logout}>
-            <button
-              type="submit"
-              className="flex min-h-11 items-center px-2 text-sm text-muted-foreground hover:text-foreground"
-            >
-              Log out
-            </button>
-          </form>
+          <LogoutButton />
         </nav>
       ) : (
         <nav className="flex items-center gap-2 text-sm">

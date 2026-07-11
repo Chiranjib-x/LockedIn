@@ -4,6 +4,7 @@ import { MarkAttendance } from "@/modules/timetable/attendance-marker";
 import { AddClassForm, DeleteEntryButton } from "@/modules/timetable/client";
 import { AttendanceSummary, type CourseAttendance } from "@/modules/timetable/attendance-summary";
 import { DAY_NAMES, dateKey, formatTime, type TimetableEntry } from "@/modules/timetable/helpers";
+import PushOptIn from "@/components/push-opt-in";
 
 export default async function TimetablePage({
   searchParams,
@@ -56,6 +57,8 @@ export default async function TimetablePage({
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-4 py-6">
       <h1 className="animate-fade-up text-2xl font-bold">Timetable</h1>
+
+      <PushOptIn context="timetable" />
 
       <section className="flex flex-col gap-2">
         <h2 className="text-lg font-semibold">Today</h2>
