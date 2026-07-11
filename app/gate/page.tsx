@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { requireUser } from "@/lib/auth";
 import { Card } from "@/components/ui";
-import { ClaimButton, RunnerActions, RequesterActions } from "@/modules/gate/client";
+import { ClaimButton, RunnerActions, RequesterActions, HeadingToGate } from "@/modules/gate/client";
 
 function eta(ts: string) {
   const ms = new Date(ts).getTime() - Date.now();
@@ -106,7 +106,10 @@ export default async function GatePage() {
       )}
 
       <section className="flex flex-col gap-2">
-        <h2 className="text-lg font-semibold">Open at the gate</h2>
+        <div className="flex items-center justify-between gap-2">
+          <h2 className="text-lg font-semibold">Open at the gate</h2>
+          <HeadingToGate gate="Main Gate" />
+        </div>
         {!open.length ? (
           <Card className="flex flex-col items-center gap-2 py-8 text-center">
             <span className="text-3xl">🏃</span>

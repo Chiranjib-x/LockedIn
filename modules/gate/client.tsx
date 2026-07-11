@@ -3,7 +3,28 @@
 import { useState } from "react";
 import { inputClass } from "@/components/ui";
 import UpiPay from "@/components/upi-pay";
-import { claimPickup, unclaimPickup, confirmDelivered, cancelPickup, markDroppedOff } from "./actions";
+import { claimPickup, unclaimPickup, confirmDelivered, cancelPickup, markDroppedOff, announceGateRun } from "./actions";
+
+export function HeadingToGate({ gate }: { gate: string }) {
+  const [msg, setMsg] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  return (
+    <span className="flex flex-col gap-1">
+      <button
+        disabled={busy}
+        onClick={async () => {
+          setBusy(true);
+          setMsg(await announceGateRun(gate));
+          setBusy(false);
+        }}
+        className="press self-start rounded-full border border-primary/40 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary hover:bg-primary/10 disabled:opacity-50"
+      >
+        🏃 {busy ? "Announcing…" : "I’m heading to the gate"}
+      </button>
+      {msg && <p className="text-xs text-muted-foreground">{msg}</p>}
+    </span>
+  );
+}
 
 export function ClaimButton({ id, reward }: { id: string; reward: number }) {
   const [open, setOpen] = useState(false);

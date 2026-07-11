@@ -53,6 +53,17 @@ export async function claimPickup(id: string, upi: string) {
   return (data as string | null) ?? null;
 }
 
+export async function announceGateRun(gate: string) {
+  const { supabase } = await ctx();
+  // announce_gate_run (0024): -1 = rate-limited, else requesters notified.
+  const { data, error } = await supabase.rpc("announce_gate_run", { g: gate });
+  if (error) return "Couldn't announce — try again.";
+  const n = data as number;
+  if (n === -1) return "You announced a run recently — give it 30 minutes.";
+  if (n === 0) return "No parcels expected in the next 90 minutes — thanks anyway!";
+  return `Pinged ${n} ${n === 1 ? "person" : "people"} waiting on parcels 🎉`;
+}
+
 export async function markDroppedOff(id: string) {
   const { supabase, user } = await ctx();
   await supabase

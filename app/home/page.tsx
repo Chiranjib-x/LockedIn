@@ -9,6 +9,7 @@ import RenewalsSoon from "@/modules/feed/renewals-soon";
 import FreshListings from "@/modules/feed/fresh-listings";
 import BoardHighlights from "@/modules/feed/board-highlights";
 import GroupBuysClosing from "@/modules/feed/group-buys-closing";
+import FreeWindow from "@/modules/feed/free-window";
 import QuantaBanner from "@/modules/communities/quanta-banner";
 import { InstallPrompt } from "@/components/pwa";
 
@@ -86,6 +87,10 @@ export default async function HomePage() {
 
       <Suspense fallback={<SkeletonSection />}>
         <NowStrip />
+      </Suspense>
+
+      <Suspense fallback={<SkeletonSection />}>
+        <FreeWindow />
       </Suspense>
 
       <QuantaBanner />

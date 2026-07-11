@@ -30,6 +30,17 @@ export function formatTime(t: string) {
   return `${h12}:${String(m).padStart(2, "0")} ${period}`;
 }
 
+// Free window until the next class starts today. null when a class is
+// ongoing or the user has no timetable; minutes is capped at 180 for
+// relevance ("free all evening" ≈ 3h of actionable window).
+export function getFreeWindow(entries: TimetableEntry[], now: Date): number | null {
+  if (entries.length === 0) return null;
+  const next = getNextClass(entries, now);
+  if (next === null) return 180; // no more classes today
+  if (next.ongoing) return null;
+  return Math.min(next.minutesUntil, 180);
+}
+
 // Next entry today (or later this week) with time-until, for the home "Up
 // Next" card and the Today view's highlight.
 export function getNextClass(entries: TimetableEntry[], now: Date) {
