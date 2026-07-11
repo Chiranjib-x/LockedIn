@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import LogoutButton from "@/components/logout-button";
+import ThemeToggle from "@/components/theme-toggle";
 
 async function NotificationBell({
   supabase,
@@ -67,6 +68,7 @@ export default async function Header() {
               </Link>
             </>
           )}
+          <ThemeToggle />
           <Link href="/search" aria-label="Search" className="press flex min-h-11 min-w-11 items-center justify-center text-lg">
             🔍
           </Link>

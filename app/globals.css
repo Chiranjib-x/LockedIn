@@ -27,10 +27,46 @@
   --font-sans: var(--font-hanken), sans-serif;
 }
 
+/* Dark mode (Phase 29): class-based — the inline head script in layout.tsx
+   sets .dark from localStorage('li-theme'), falling back to system. Every
+   component reads tokens, so flipping the vars flips the app. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* :root.dark outranks the :root emission Tailwind generates from @theme. */
+:root.dark {
+  --color-primary: oklch(0.62 0.17 264);
+  --color-primary-strong: oklch(0.68 0.17 264);
+  --color-on-primary: #ffffff;
+  --color-secondary: oklch(0.62 0.17 264 / 0.16);
+  --color-on-secondary: #f2f1ed;
+  --color-accent: #22c55e;
+  --color-on-accent: #052e16;
+  --color-background: #131316;
+  --color-foreground: #f2f1ed;
+  --color-card: #1c1c21;
+  --color-card-foreground: #f2f1ed;
+  --color-muted: #26262c;
+  --color-muted-foreground: #9a9da6;
+  --color-border: #2b2b32;
+  --color-destructive: #f87171;
+  --color-on-destructive: #450a0a;
+  --color-ring: oklch(0.62 0.17 264);
+}
+
 body {
   background: var(--color-background);
   color: var(--color-foreground);
   font-family: var(--font-sans);
+}
+
+.dark body::before {
+  filter: saturate(0.9) brightness(0.55);
+}
+.dark .glass {
+  border-color: color-mix(in oklch, #ffffff 14%, transparent);
+  box-shadow:
+    0 8px 32px -12px oklch(0 0 0 / 0.5),
+    inset 0 1px 0 0 oklch(1 0 0 / 0.08);
 }
 
 /* Ambient gradient mesh — gives the glass surfaces something to refract.
