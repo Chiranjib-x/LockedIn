@@ -4,11 +4,11 @@
 Build Phase 20 (PWA installability): manifest, icons, service worker, install prompt, iOS meta.
 
 ## Now
-Phase 21a (web push) code-complete + committed (5de1057), build clean. BLOCKED on user: "apply migration 0025" then "deploy". After deploy: user tests real push on phone (prod, /chats or /timetable → Enable), then two-account chat message should push.
+Phase 21a DEPLOYED + pipeline proven (2026-07-11): notification insert → pg_net → prod dispatch → 200 {sent:0,failed:1} on a staged fake sub (net._http_response inspected). Remaining: user's real-phone push test on prod.
 
 ## Next
-1. User back: apply 0025 → verify trigger fan-out (insert notification, then query net._http_response via db_url) → deploy → user's phone push test
-2. Phase 21b native FCM: user downloads Firebase service-account JSON (Project settings → Service accounts), firebase-admin in dispatch route keyed by kind='fcm', @capacitor/push-notifications plugin, APK rebuild
+1. User phone test: prod /chats → Enable → send them a chat from a test account → notification lands
+2. Phase 21b native FCM: user downloads Firebase service-account JSON (Project settings → Service accounts → generate key), firebase-admin in dispatch keyed by kind='fcm', @capacitor/push-notifications, APK rebuild
 3. Roadmap: sealed vouching; cab matching columns; Play Store signed AAB
 
 ## Facts (14.5 additions)
