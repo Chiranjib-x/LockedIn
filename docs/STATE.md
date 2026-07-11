@@ -4,12 +4,12 @@
 Build Phase 20 (PWA installability): manifest, icons, service worker, install prompt, iOS meta.
 
 ## Now
-Phase 21a CLOSED (2026-07-11): real push confirmed on the user's phone ({sent:1}, user-verified on lock screen, VIT account chiranjib.dash2024@vitstudent.ac.in). 🚢 Wave B retention core (PWA + Capacitor + web push) is live.
+Phase 21 FULLY CLOSED (2026-07-12): native FCM confirmed on the founder's phone ({sent:2} = fcm + webpush fan-out, user-verified). 🚢 Wave B complete: PWA + APK + push.
 
 ## Next
-1. Phase 21b native FCM: user downloads Firebase service-account JSON (Project settings → Service accounts → generate key), firebase-admin in dispatch keyed by kind='fcm', @capacitor/push-notifications, APK rebuild
-2. Roadmap: sealed vouching (AddMember enumeration hole); cab matching columns (destination_slug, depart_flex_minutes); Play Store signed AAB + listing
-3. QUANTA 2026 (July 13–18): banner goes live automatically; user should onboard club Communities before Monday
+1. User housekeeping: rotate the Firebase service-account key (was pasted into chat) — Firebase console → Service accounts → generate new key → update FIREBASE_PRIVATE_KEY/CLIENT_EMAIL in Vercel + .env.local → redeploy
+2. Roadmap: sealed vouching (AddMember enumeration hole, one migration); cab matching columns; Play Store signed AAB + listing
+3. QUANTA 2026 starts tomorrow (July 13): banner flips on automatically; user onboards club Communities
 
 ## Facts (14.5 additions)
 - Build APK: `cd android && ./gradlew.bat assembleDebug` (Java 21 system, sdk.dir in android/local.properties — gitignored)
