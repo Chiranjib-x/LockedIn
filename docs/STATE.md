@@ -4,7 +4,7 @@
 User-approved sequence (2026-07-12): Phase 28 (saves+alerts, IN PROGRESS) → Phase 29 (dark mode) → 🚢 ship Wave C → Play Store release → Wave D in plan order. Keep going without asking until user input is genuinely required.
 
 ## Now
-UI REVAMP COMPLETE (2026-07-12): all 5 phases of docs/design/REVAMP-PLAN.md shipped locally (commits d0b109e, 0ed42b8, 6e32a9e, 8624ae8, 97e8e9f, 4467525). Phase 1 auth hero + Hunter License profile; P2 board badges/price pills/gallery dots/sticky CTA/chat bubbles; P3 group-buy glowing timeline + confetti + renewal rings + seat dots + offer chips; P4 cab route pills + match rank-rings + timetable NOW + gate pulse; P5 unified EmptyState across 15 pages + notifications day-grouped w/ type icons. Explore tab wired to /search (was dead placeholder). Play assets reshot. NOT DEPLOYED — classifier blocked; needs user to say "deploy". AAB needs NO rebuild (remote-load wrapper).
+UI REVAMP + QoL PASS DEPLOYED TO PROD (2026-07-12, user said "deploy"; smoke-checked: auth hero tagline + gradient wordmark live). Revamp = 5 phases of docs/design/REVAMP-PLAN.md (d0b109e..97e8e9f) + Play assets reshot (4467525) + QoL d93b9d4 (BackLink on 13 secondary screens, Button disabled state, chat inline send-error w/ draft restore). Explore tab wired to /search. Remaining: user's Play Console steps (docs/playstore/LISTING.md); purple QA image on Casio listing (user deletes in-app, then reshoot 2-marketplace.png). AAB needs NO rebuild (remote-load wrapper).
 
 ## Next
 1. USER: say "deploy" → prod deploy makes /privacy live (required Play listing URL).
