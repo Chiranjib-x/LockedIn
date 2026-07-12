@@ -2,8 +2,21 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { ArrowLeftRight, Hourglass } from "lucide-react";
 import { inputClass } from "@/components/ui";
 import { makeOffer, decideOffer } from "./offer-actions";
+
+function StatusChip({ kind }: { kind: "waiting" | "countered" }) {
+  return kind === "waiting" ? (
+    <span className="inline-flex animate-pulse items-center gap-1 rounded-full bg-tint-amber px-2 py-0.5 text-xs font-semibold text-tint-amber-fg">
+      <Hourglass className="h-3 w-3" strokeWidth={2.4} /> Waiting
+    </span>
+  ) : (
+    <span className="inline-flex items-center gap-1 rounded-full bg-tint-violet px-2 py-0.5 text-xs font-semibold text-tint-violet-fg">
+      <ArrowLeftRight className="h-3 w-3" strokeWidth={2.4} /> Countered
+    </span>
+  );
+}
 
 export type OfferRow = {
   id: string;
@@ -23,8 +36,11 @@ export function BuyerOffer({ listingId, mine }: { listingId: string; mine: Offer
 
   if (mine?.status === "pending") {
     return (
-      <div className="flex items-center justify-between rounded-2xl border border-border bg-card p-3 text-sm">
-        <span>Your offer: <span className="font-semibold">₹{Number(mine.amount).toFixed(0)}</span> — waiting on the seller</span>
+      <div className="flex items-center justify-between gap-2 rounded-2xl border border-border bg-card p-3 text-sm">
+        <span className="flex flex-wrap items-center gap-1.5">
+          <StatusChip kind="waiting" />
+          Your offer: <span className="font-semibold">₹{Number(mine.amount).toFixed(0)}</span>
+        </span>
         <button
           disabled={busy}
           onClick={async () => { setBusy(true); await decideOffer(mine.id, "decline"); router.refresh(); setBusy(false); }}
@@ -38,7 +54,8 @@ export function BuyerOffer({ listingId, mine }: { listingId: string; mine: Offer
   if (mine?.status === "countered") {
     return (
       <div className="flex flex-col gap-2 rounded-2xl border border-primary/40 bg-primary/5 p-3 text-sm">
-        <p>
+        <p className="flex flex-wrap items-center gap-1.5">
+          <StatusChip kind="countered" />
           Seller countered: <span className="font-semibold">₹{Number(mine.counter_amount).toFixed(0)}</span>{" "}
           <span className="text-muted-foreground">(you offered ₹{Number(mine.amount).toFixed(0)})</span>
         </p>
@@ -104,11 +121,14 @@ export function SellerOffers({ offers }: { offers: OfferRow[] }) {
       <h2 className="text-sm font-semibold">Offers</h2>
       {active.map((o) => (
         <div key={o.id} className="flex flex-col gap-2 rounded-xl border border-border bg-card p-3 text-sm">
-          <p>
+          <p className="flex flex-wrap items-center gap-1.5">
             <span className="font-medium">{o.buyer_name}</span> offers{" "}
             <span className="font-semibold">₹{Number(o.amount).toFixed(0)}</span>
             {o.status === "countered" && (
-              <span className="text-muted-foreground"> · you countered ₹{Number(o.counter_amount).toFixed(0)}</span>
+              <>
+                <StatusChip kind="countered" />
+                <span className="text-muted-foreground">₹{Number(o.counter_amount).toFixed(0)}</span>
+              </>
             )}
           </p>
           {o.status === "pending" &&

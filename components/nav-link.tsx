@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CircleUser, Home, type LucideIcon } from "lucide-react";
+import { CircleUser, Compass, Home, type LucideIcon } from "lucide-react";
 
 // Icon is a string key mapped here (not a component prop) because BottomNav is
 // a server component and component functions can't cross the RSC boundary.
 const ICONS: Record<string, LucideIcon> = {
   home: Home,
+  explore: Compass,
   profile: CircleUser,
 };
 

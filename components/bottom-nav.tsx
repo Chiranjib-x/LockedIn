@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Compass, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import ChatTab from "@/modules/chat/chat-tab";
 import { unreadChatCount } from "@/modules/chat/unread";
@@ -17,15 +17,10 @@ export default async function BottomNav() {
 
   const unread = await unreadChatCount(supabase, user.id);
 
-  const dead = "flex min-h-11 flex-col items-center justify-center gap-0.5 text-muted-foreground/60";
-
   return (
     <nav className="glass fixed inset-x-3 bottom-3 z-20 grid grid-cols-5 items-center rounded-3xl px-2 pt-1 pb-2 text-[11px] font-medium">
       <NavLink href="/home" icon="home" label="Home" />
-      <span className={dead} title="Coming soon">
-        <Compass className="h-5 w-5 opacity-60" strokeWidth={2} />
-        Explore
-      </span>
+      <NavLink href="/search" icon="explore" label="Explore" />
       <span className="flex items-center justify-center">
         <Link
           href="/marketplace/new"

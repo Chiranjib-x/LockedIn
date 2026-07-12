@@ -232,6 +232,11 @@ h4 {
   from { background-position: -150% 0; }
   to { background-position: 150% 0; }
 }
+@keyframes confetti-fall {
+  from { transform: translateY(0) rotate(0deg); opacity: 1; }
+  to { transform: translateY(110vh) rotate(540deg); opacity: 0.3; }
+}
+.confetti-piece { animation: confetti-fall 2s cubic-bezier(0.3, 0, 0.8, 1) both; }
 
 .animate-fade-up { animation: fade-up 0.55s var(--ease-out-quint) both; }
 .animate-scale-in { animation: scale-in 0.4s var(--ease-spring) both; }

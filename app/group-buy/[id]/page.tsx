@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { MapPin } from "lucide-react";
 import { notFound } from "next/navigation";
+import Confetti from "@/components/confetti";
 import { requireUser } from "@/lib/auth";
 import { rupees } from "@/modules/marketplace/format";
 import { openChat } from "@/modules/chat/actions";
@@ -72,6 +73,7 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
 
   return (
     <main className="animate-fade-up mx-auto flex w-full max-w-lg flex-1 flex-col gap-4 px-4 py-6">
+      {order.status === "completed" && <Confetti id={`gb-${order.id}`} />}
       <div className="flex items-center justify-between">
         <Link href="/group-buy" className="text-sm text-muted-foreground hover:text-foreground">← Group-buys</Link>
         <SaveButton targetType="group_order" targetId={order.id} initialSaved={savedRow !== null} />
@@ -94,7 +96,15 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
         <div className="flex items-center gap-1">
           {STATUS_STEPS.map((s, i) => (
             <div key={s} className="flex flex-1 flex-col items-center gap-1">
-              <div className={`h-1.5 w-full rounded-full ${i <= stepIdx ? "bg-primary" : "bg-muted"}`} />
+              <div
+                className={`h-1.5 w-full rounded-full ${
+                  i < stepIdx
+                    ? "gradient-brand"
+                    : i === stepIdx
+                      ? "gradient-brand glow-primary animate-pulse"
+                      : "bg-muted"
+                }`}
+              />
               <span className={`text-[10px] font-medium ${i <= stepIdx ? "text-primary" : "text-muted-foreground"}`}>
                 {STEP_LABEL[s]}
               </span>
@@ -162,9 +172,12 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
         />
       )}
       {mine && mine.paid_confirmed && (
-        <p className="rounded-2xl border border-accent/30 bg-accent/10 p-3 text-sm font-medium text-accent">
-          Payment confirmed — you’re all set. 🎉
-        </p>
+        <>
+          <Confetti id={`gb-paid-${mine.id}`} />
+          <p className="rounded-2xl border border-accent/30 bg-accent/10 p-3 text-sm font-medium text-accent">
+            Payment confirmed — you’re all set. 🎉
+          </p>
+        </>
       )}
 
       <section className="flex flex-col gap-2">

@@ -59,7 +59,17 @@ export default async function BrowsePoolsPage() {
                   </div>
                   <div className="shrink-0 text-right">
                     <p className="font-heading font-bold text-primary">{rupees(perSeat)}<span className="text-xs font-normal">/{p.billing_cycle === "monthly" ? "mo" : "yr"}</span></p>
-                    <p className="text-xs text-accent">{p.open_seats} seat{p.open_seats === 1 ? "" : "s"} open</p>
+                    {/* seat dots: ● taken · ○ open */}
+                    <p className="flex items-center justify-end gap-1" title={`${p.open_seats} of ${p.seats} seats open`}>
+                      {Array.from({ length: Math.min(p.seats, 8) }).map((_, i) => (
+                        <span
+                          key={i}
+                          className={`h-2 w-2 rounded-full ${
+                            i < p.seats - p.open_seats ? "bg-muted-foreground/50" : "glow-primary bg-accent"
+                          }`}
+                        />
+                      ))}
+                    </p>
                   </div>
                 </Card>
               </Link>
