@@ -60,6 +60,7 @@ export default async function ProfilePage({
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-6 py-8">
       <HunterCard
         name={profile.name ?? "Student"}
+        verifiedName={profile.verified_name}
         detail={[user.email, profile.batch, profile.hostel_block ? `Block ${profile.hostel_block}` : null]
           .filter(Boolean)
           .join(" · ")}

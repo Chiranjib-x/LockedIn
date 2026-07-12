@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import Thread from "@/modules/chat/thread";
+import VerifiedName from "@/components/verified-name";
 import { markRead } from "@/modules/chat/actions";
 
 const CONTEXT_HINT: Record<string, string> = {
@@ -27,7 +28,7 @@ export default async function ChatThreadPage({ params }: { params: Promise<{ id:
   const [{ data: participants }, { data: messages }, { data: myProfile }] = await Promise.all([
     supabase
       .from("conversation_participants")
-      .select("user_id, profiles(name)")
+      .select("user_id, profiles(name, verified_name)")
       .eq("conversation_id", id),
     supabase
       .from("messages")
@@ -45,6 +46,7 @@ export default async function ChatThreadPage({ params }: { params: Promise<{ id:
     (participants ?? []).map((p) => [p.user_id, (p.profiles as unknown as { name: string } | null)?.name ?? "Student"])
   );
   const others = (participants ?? []).filter((p) => p.user_id !== user.id);
+  const otherVerified = (others[0]?.profiles as unknown as { verified_name: string | null } | null)?.verified_name ?? null;
   const isGroup = conv.context_type === "study_group";
   let title = names.get(others[0]?.user_id) ?? "Student";
   if (isGroup && conv.context_id != null) {
@@ -63,9 +65,10 @@ export default async function ChatThreadPage({ params }: { params: Promise<{ id:
         </div>
         <div>
           <p className="font-semibold leading-tight">{otherName}</p>
-          {conv.context_type && (
-            <p className="text-xs text-muted-foreground">{CONTEXT_HINT[conv.context_type] ?? ""}</p>
-          )}
+          <p className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+            {!isGroup && <VerifiedName name={otherVerified} />}
+            {conv.context_type && <span>{CONTEXT_HINT[conv.context_type] ?? ""}</span>}
+          </p>
         </div>
       </div>
 

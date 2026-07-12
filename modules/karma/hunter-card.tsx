@@ -1,5 +1,6 @@
 import { TIERS, tierFor } from "./tiers";
 import CountUp from "@/components/count-up";
+import VerifiedName from "@/components/verified-name";
 import { RatingBadge } from "@/modules/ratings/stars";
 
 // "Hunter License" — the identity card at the top of Profile (REVAMP-PLAN
@@ -7,11 +8,13 @@ import { RatingBadge } from "@/modules/ratings/stars";
 // Ring shows progress to the next tier; top tier rides at 100%.
 export default function HunterCard({
   name,
+  verifiedName,
   detail,
   karma,
   rating,
 }: {
   name: string;
+  verifiedName?: string | null;
   detail: string;
   karma: number;
   rating: { avg: number | null; count: number };
@@ -59,6 +62,7 @@ export default function HunterCard({
 
       <div className="min-w-0 flex-1">
         <h1 className="truncate text-lg font-bold">{name}</h1>
+        <VerifiedName name={verifiedName} />
         <p className="truncate text-xs text-muted-foreground">{detail}</p>
         <div className="mt-1.5 flex flex-wrap items-center gap-2">
           <span className="glow-primary rounded-full bg-secondary px-2.5 py-0.5 font-heading text-xs font-bold text-primary">

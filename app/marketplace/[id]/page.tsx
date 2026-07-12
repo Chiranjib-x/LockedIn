@@ -10,6 +10,7 @@ import { KarmaBadge } from "@/modules/karma/badge";
 import ReportSheet from "@/modules/moderation/report-sheet";
 import ShareButton from "@/components/share-button";
 import SaveButton from "@/components/save-button";
+import VerifiedName from "@/components/verified-name";
 import { BuyerOffer, SellerOffers, type OfferRow } from "@/modules/marketplace/offer-panel";
 
 export default async function ListingDetailPage({
@@ -22,7 +23,7 @@ export default async function ListingDetailPage({
 
   const { data: listing } = await supabase
     .from("listings")
-    .select("*, seller:profiles!listings_seller_id_fkey(id, name, hostel_block, contact_pref, karma)")
+    .select("*, seller:profiles!listings_seller_id_fkey(id, name, verified_name, hostel_block, contact_pref, karma)")
     .eq("id", id)
     .single();
 
@@ -30,6 +31,7 @@ export default async function ListingDetailPage({
   const seller = listing.seller as {
     id: string;
     name: string;
+    verified_name: string | null;
     hostel_block: string | null;
     contact_pref: string | null;
     karma: number;
@@ -125,7 +127,10 @@ export default async function ListingDetailPage({
             <p className="truncate font-medium">{seller.name || "Student"}</p>
             <KarmaBadge karma={seller.karma ?? 0} />
           </div>
-          <RatingBadge avg={sellerRating.avg} count={sellerRating.count} />
+          <div className="flex flex-wrap items-center gap-2">
+            <VerifiedName name={seller.verified_name} />
+            <RatingBadge avg={sellerRating.avg} count={sellerRating.count} />
+          </div>
         </div>
       </div>
 

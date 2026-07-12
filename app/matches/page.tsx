@@ -7,6 +7,7 @@ import { KarmaBadge } from "@/modules/karma/badge";
 import CountUp from "@/components/count-up";
 import { Target } from "lucide-react";
 import EmptyState from "@/components/empty-state";
+import VerifiedName from "@/components/verified-name";
 
 // Match % as a rank-ring (REVAMP-PLAN Phase 4) — fill fraction = score/100.
 function ScoreRing({ score }: { score: number }) {
@@ -68,7 +69,7 @@ export default async function MatchesPage({
   const [{ data: others }, { data: requests }] = await Promise.all([
     supabase
       .from("match_prefs")
-      .select("*, profile:profiles!match_prefs_user_id_fkey(id, name, hostel_block, batch, contact_pref, karma)")
+      .select("*, profile:profiles!match_prefs_user_id_fkey(id, name, verified_name, hostel_block, batch, contact_pref, karma)")
       .eq("is_opted_in", true)
       .neq("user_id", user.id),
     supabase.from("match_requests").select("*"),
@@ -124,7 +125,7 @@ export default async function MatchesPage({
       ) : (
         <div className="flex flex-col gap-3">
           {ranked.map((m, i) => {
-            const p = m.profile as { id: string; name: string; hostel_block: string | null; batch: string | null; contact_pref: string | null; karma: number };
+            const p = m.profile as { id: string; name: string; verified_name: string | null; hostel_block: string | null; batch: string | null; contact_pref: string | null; karma: number };
             const state = reqState(p.id);
             return (
               <Card key={p.id} className="animate-fade-up" style={{ animationDelay: `${Math.min(i, 8) * 45}ms` }}>
@@ -140,9 +141,12 @@ export default async function MatchesPage({
                       </div>
                       <ScoreRing score={m.score} />
                     </div>
-                    <p className="text-xs text-muted-foreground">
-                      {[p.batch, p.hostel_block].filter(Boolean).join(" · ")}
-                      {m.looking_for !== "both" && <> · wants a {m.looking_for === "roommate" ? "roommate" : "study buddy"}</>}
+                    <p className="flex flex-wrap items-center gap-x-2 text-xs text-muted-foreground">
+                      <VerifiedName name={p.verified_name} />
+                      <span>
+                        {[p.batch, p.hostel_block].filter(Boolean).join(" · ")}
+                        {m.looking_for !== "both" && <> · wants a {m.looking_for === "roommate" ? "roommate" : "study buddy"}</>}
+                      </span>
                     </p>
                     {m.why.length > 0 && (
                       <p className="mt-1.5 flex flex-wrap gap-1.5">
