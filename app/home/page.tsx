@@ -19,7 +19,6 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { requireUser } from "@/lib/auth";
-import { Card } from "@/components/ui";
 import { SkeletonSection } from "@/components/skeleton";
 import NowStrip from "@/modules/feed/now-strip";
 import RecentChats from "@/modules/feed/recent-chats";
@@ -39,13 +38,12 @@ import { InstallPrompt } from "@/components/pwa";
 
 // Tinted tiles per docs/design/directions.png — six token hues cycling, so
 // neighbouring tiles never share a colour and the grid scans by hue.
+// Marketplace + Gate moved up to flagship hero cards; the grid covers the rest.
 const MODULES: { short: string; href: string; icon: LucideIcon; tint: string }[] = [
-  { short: "Market", href: "/marketplace", icon: ShoppingBag, tint: "bg-tint-blue text-tint-blue-fg" },
   { short: "Board", href: "/board", icon: Pin, tint: "bg-tint-rose text-tint-rose-fg" },
   { short: "Group-Buy", href: "/group-buy", icon: Handshake, tint: "bg-tint-amber text-tint-amber-fg" },
   { short: "Pools", href: "/subscriptions", icon: Tv, tint: "bg-tint-teal text-tint-teal-fg" },
   { short: "Match", href: "/matches", icon: Target, tint: "bg-tint-violet text-tint-violet-fg" },
-  { short: "Gate", href: "/gate", icon: Footprints, tint: "bg-tint-green text-tint-green-fg" },
   { short: "Groups", href: "/communities", icon: Users, tint: "bg-tint-blue text-tint-blue-fg" },
   { short: "Toolbox", href: "/toolbox", icon: Wrench, tint: "bg-tint-amber text-tint-amber-fg" },
   { short: "Deals", href: "/deals", icon: Tag, tint: "bg-tint-green text-tint-green-fg" },
@@ -65,18 +63,28 @@ function greeting() {
 
 export default async function HomePage() {
   const { supabase, user } = await requireUser();
-  const [{ data: profile }, { data: mySpaces }] = await Promise.all([
-    supabase
-      .from("profiles")
-      .select("name, colleges(name)")
-      .eq("id", user.id)
-      .single<{ name: string; colleges: { name: string } | null }>(),
-    // RLS: only spaces the user is a member of come back. Everyone else
-    // never sees this section exists.
-    supabase.from("spaces").select("id, name, emoji"),
-  ]);
+  const [{ data: profile }, { data: mySpaces }, { data: openPickups }, { count: listingCount }] =
+    await Promise.all([
+      supabase
+        .from("profiles")
+        .select("name, colleges(name)")
+        .eq("id", user.id)
+        .single<{ name: string; colleges: { name: string } | null }>(),
+      // RLS: only spaces the user is a member of come back. Everyone else
+      // never sees this section exists.
+      supabase.from("spaces").select("id, name, emoji"),
+      // Live flagship stats — both RLS-scoped to the user's college.
+      supabase.from("pickup_requests").select("reward").eq("status", "open"),
+      supabase
+        .from("listings")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "available")
+        .is("space_id", null),
+    ]);
 
   const firstName = profile?.name?.split(" ")[0] ?? "";
+  const gateCount = openPickups?.length ?? 0;
+  const gateRewards = (openPickups ?? []).reduce((s, r) => s + Number(r.reward || 0), 0);
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-4 py-6">
@@ -99,9 +107,82 @@ export default async function HomePage() {
         Search campus…
       </Link>
 
+      {/* Flagship showcase — the features that sell the app get hero cards
+          with live numbers; everything else stays one tap away in the grid. */}
+      <div className="flex flex-col gap-3">
+        <Link href="/gate" className="animate-fade-up press" style={{ animationDelay: "60ms" }}>
+          <div className="glass press-glow flex items-center gap-4 rounded-3xl p-4">
+            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-tint-green text-tint-green-fg">
+              <Footprints className="h-7 w-7" strokeWidth={2} />
+            </span>
+            <div className="min-w-0 flex-1">
+              <h2 className="flex items-center gap-2 font-heading font-bold">
+                Gate Runner
+                {gateCount > 0 && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-tint-green px-2 py-0.5 text-[10px] font-bold text-tint-green-fg">
+                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-current" /> LIVE
+                  </span>
+                )}
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                {gateCount > 0 ? (
+                  <>
+                    {gateCount} deliver{gateCount === 1 ? "y" : "ies"} waiting at the gate
+                    {gateRewards > 0 && <> · <span className="font-semibold text-accent">₹{gateRewards.toFixed(0)} up for grabs</span></>}
+                  </>
+                ) : (
+                  "Your delivery, picked up by someone already at the gate."
+                )}
+              </p>
+              <span className="route-dash mt-2 block w-3/4" />
+            </div>
+            <ArrowRight className="h-4 w-4 shrink-0 text-primary" strokeWidth={2.2} />
+          </div>
+        </Link>
+
+        <Link href="/marketplace" className="animate-fade-up press" style={{ animationDelay: "120ms" }}>
+          <div className="glass press-glow flex items-center gap-4 rounded-3xl p-4">
+            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-tint-blue text-tint-blue-fg">
+              <ShoppingBag className="h-7 w-7" strokeWidth={2} />
+            </span>
+            <div className="min-w-0 flex-1">
+              <h2 className="font-heading font-bold">Marketplace</h2>
+              <p className="text-sm text-muted-foreground">
+                {(listingCount ?? 0) > 0 ? (
+                  <>
+                    <span className="font-semibold text-primary">{listingCount}</span> thing
+                    {listingCount === 1 ? "" : "s"} for sale on campus right now
+                  </>
+                ) : (
+                  "Buy, sell, and rent — students from your college only."
+                )}
+              </p>
+            </div>
+            <ArrowRight className="h-4 w-4 shrink-0 text-primary" strokeWidth={2.2} />
+          </div>
+        </Link>
+
+        {(mySpaces ?? []).map((s) => (
+          <Link key={s.id} href={`/spaces/${s.id}`} className="animate-fade-up press" style={{ animationDelay: "180ms" }}>
+            <div className="urgent-border glass press-glow flex items-center gap-4 rounded-3xl p-4">
+              <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-tint-rose text-2xl">
+                {s.emoji}
+              </span>
+              <div className="min-w-0 flex-1">
+                <h2 className="font-heading font-bold">{s.name}</h2>
+                <p className="text-sm text-muted-foreground">
+                  Members-only space — invisible to everyone else.
+                </p>
+              </div>
+              <ArrowRight className="h-4 w-4 shrink-0 text-primary" strokeWidth={2.2} />
+            </div>
+          </Link>
+        ))}
+      </div>
+
       <div
         className="animate-fade-up grid grid-cols-4 gap-3"
-        style={{ animationDelay: "60ms" }}
+        style={{ animationDelay: "220ms" }}
       >
         {MODULES.map((m) => (
           <Link key={m.short} href={m.href} className="press flex flex-col items-center gap-1">
@@ -124,26 +205,6 @@ export default async function HomePage() {
       </Suspense>
 
       <QuantaBanner />
-
-      {(mySpaces?.length ?? 0) > 0 && (
-        <div className="flex flex-col gap-3">
-          {mySpaces!.map((s) => (
-            <Link key={s.id} href={`/spaces/${s.id}`} className="animate-fade-up press">
-              <Card className="border-primary/30 bg-gradient-to-r from-primary/10 to-accent/5 transition-all duration-150 hover:-translate-y-0.5 hover:border-primary hover:shadow-md">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h2 className="font-semibold">
-                      {s.emoji} {s.name}
-                    </h2>
-                    <p className="text-sm text-muted-foreground">Members-only space</p>
-                  </div>
-                  <ArrowRight className="h-4 w-4 text-primary" strokeWidth={2.2} />
-                </div>
-              </Card>
-            </Link>
-          ))}
-        </div>
-      )}
 
       <Suspense fallback={<SkeletonSection />}>
         <RecentChats />
