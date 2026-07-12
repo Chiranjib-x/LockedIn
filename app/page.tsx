@@ -4,6 +4,7 @@ import {
   ArrowRight,
   CarTaxiFront,
   Footprints,
+  Gamepad2,
   Handshake,
   ShoppingBag,
   Sparkles,
@@ -36,8 +37,14 @@ const PILLARS: {
   {
     icon: Sparkles,
     tint: "bg-tint-rose text-tint-rose-fg",
-    title: "Girls' Closet · Boys' Den",
-    body: "Members-only spaces that are invisible to everyone else. Sell that dress or that GPU inside your own circle — vouched entry only.",
+    title: "Girls' Closet",
+    body: "That lehenga you wore once? Rent it out for the next fest. Dresses, jewellery, heels — rented and sold between girls only, invisible to everyone else.",
+  },
+  {
+    icon: Gamepad2,
+    tint: "bg-tint-blue text-tint-blue-fg",
+    title: "Boys' Den",
+    body: "A boys-only space no one else can see. Rent out the console between sems, sell the keyboard you never use, flip cricket kits and GPU upgrades.",
   },
   {
     icon: CarTaxiFront,
@@ -132,14 +139,14 @@ export default async function Home() {
 
       <p
         className="animate-fade-up mt-10 max-w-md text-xs leading-relaxed text-muted-foreground"
-        style={{ animationDelay: "1000ms" }}
+        style={{ animationDelay: "1110ms" }}
       >
         Also inside: {ALSO.join(" · ")}
       </p>
       <Link
         href="/signup"
         className="animate-fade-up mt-6 text-sm font-semibold text-primary hover:underline"
-        style={{ animationDelay: "1060ms" }}
+        style={{ animationDelay: "1170ms" }}
       >
         Sign up with your college email →
       </Link>

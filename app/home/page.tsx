@@ -181,7 +181,10 @@ export default async function HomePage() {
               <div className="min-w-0 flex-1">
                 <h2 className="font-heading font-bold">{s.name}</h2>
                 <p className="text-sm text-muted-foreground">
-                  Members-only space — invisible to everyone else.
+                  {/* ponytail: name-based copy; per-space tagline column if spaces multiply */}
+                  {s.name.toLowerCase().includes("closet")
+                    ? "Rent out fest fits — dresses, jewellery, heels — girls only."
+                    : "Rent or sell your niche stuff — consoles, kits, gear — boys only."}
                 </p>
               </div>
               <ArrowRight className="h-4 w-4 shrink-0 text-primary" strokeWidth={2.2} />
