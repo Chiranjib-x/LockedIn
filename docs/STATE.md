@@ -4,15 +4,13 @@
 User-approved sequence (2026-07-12): Phase 28 (saves+alerts, IN PROGRESS) → Phase 29 (dark mode) → 🚢 ship Wave C → Play Store release → Wave D in plan order. Keep going without asking until user input is genuinely required.
 
 ## Now
-OVERNIGHT RUN COMPLETE (2026-07-13 morning). Waves C AND D fully shipped to prod: 28 saves/alerts, 29 dark mode, 30 lost&found intel, 31 pool discovery, 32 rent/lend, 33 offers, 34 study groups+multi-party chat, 35 group-buy lifecycle. Migrations 0029-0035 all applied. All phases two/three-account e2e verified, QA data cleaned, prod smoke-checked after each wave deploy. Remaining plan: Play Store release (needs user: keystore + $25 account) → Wave E (36-40 money, deferred until traffic) → Phase 23 courses when study groups/notes demand it.
+PLAY STORE PREP COMPLETE (2026-07-12). Signed AAB built + jarsigner-verified; upload keystore android/lockedin-upload.keystore + android/key.properties (both gitignored — USER MUST BACK UP). /privacy page written, verified on dev, NOT yet on prod (deploy classifier-blocked — needs user to say "deploy"). Listing copy + data-safety answers + user console steps in docs/playstore/LISTING.md; 6 screenshots 1080x1920 + feature graphic 1024x500 in docs/playstore/assets/.
 
 ## Next
-1. Wire SaveButton into app/group-buy/[id]/page.tsx — MUST Read the file first (Edit already bounced on unread file). Import SaveButton, add savedRow query (target_type 'group_order'), put button in a flex row with the "← Group-buys" link (~line 53).
-2. SaveSearchButton into app/marketplace/page.tsx (module 'marketplace', query=q, filters={category} when set) and app/board/page.tsx (module 'board', filters={type}) — render under FilterBar/BoardFilter.
-3. "Saved 🔖" link on app/profile/page.tsx (after KarmaProgress ~line 67).
-4. Verify: tsc; Playwright dev:3001 (test accts in Facts): save listing → /saved shows → unsave; alerts row on /saved + delete; saved search (girl, q='cycle') → founder posts matching listing → girl notification exists + net._http_response shows push POST; 1h cap = saved_searches.last_notified_at set.
-5. Commit Phase 28; update PROJECT.md tracker; then Phase 29 dark mode (class-based, tokens flip under .dark, toggle persisted, per CLAUDE.md design system), verify, commit; then attempt prod deploy (🚢 Wave C) — if classifier blocks, that's the manual moment: ask user to say deploy.
-6. After Wave C: Play Store release build (signed AAB — needs user's keystore decisions) per approved sequence.
+1. USER: say "deploy" → prod deploy makes /privacy live (required Play listing URL).
+2. USER: Play Console steps per docs/playstore/LISTING.md (create $25 account, listing, data safety, upload android/app/build/outputs/bundle/release/app-release.aab).
+3. USER: back up android/lockedin-upload.keystore + android/key.properties off-machine.
+4. Deferred: Wave E (36-40 money) until real traffic; Phase 23 courses when study/notes demand it; rotate Firebase service-account key pasted in chat earlier.
 
 ## Session earlier (all committed AND deployed to prod): sealed vouching verified adversarially (aa105cd); vercel.json syd1 region fix = 3-7x faster pages (78c8c95 area); speeder loader (78c8c95); Phase 27 global search (3f5f765) fully verified. Phases 20/21/22/14.5 closed earlier. Migrations 0021-0029 ALL applied.
 
@@ -41,6 +39,7 @@ OVERNIGHT RUN COMPLETE (2026-07-13 morning). Waves C AND D fully shipped to prod
 - Icon tooling: Pillow 12.3.0 and sharp both available.
 
 ## Done
+- Play Store prep (2026-07-12) — RESULT: `cd android && ./gradlew.bat bundleRelease` → signed AAB (jarsigner: "jar verified.") at android/app/build/outputs/bundle/release/app-release.aab; /privacy renders on dev; assets + LISTING.md in docs/playstore/. Rebuild for later releases: bump versionCode/versionName in android/app/build.gradle first.
 - Prod deploy + QA sweep (2026-07-09) — RESULT: all 12 module pages OK, login OK, domain-reject OK on lockedin-swart-ten.vercel.app.
 - Test boy/girl accounts in respective spaces — RESULT: symmetric isolation verified via UI both ways.
 - Phase 20 PWA (2026-07-09) — RESULT: npm run build clean; Playwright on prod build: sw-registered/offline-fallback/install-card/dismiss-sticky all True.
@@ -50,8 +49,8 @@ OVERNIGHT RUN COMPLETE (2026-07-13 morning). Waves C AND D fully shipped to prod
 - Delete gmail.com seed college + test accounts at real launch (DEPLOY.md item 3).
 - Re-point Girls' Closet/Boys' Den founding members to real hostel reps at launch (DEPLOY.md item 4).
 - Manual phone QA: photo upload, two-account realtime chat, UPI QR (can't automate).
-- Phase 21: thin-push pattern, token delete on login/logout, cache purge on auth change.
-- AddMember profile-enumeration hole → sealed vouching (roadmap step 7).
+- Rotate Firebase service-account key (was pasted into chat during Phase 21b).
+- Header overflows at ≤380px width for moderator accounts (5 icons + Log out) — components/header.tsx:60-77; consider moving Log out to Profile page. Regular users unaffected.
 
 ## Failed attempts
 - Playwright gotcha (recurred twice this project): `button[type=submit]` matches the header's Log out form FIRST on authed pages — always scope to `main button[type=submit]`. Bounces to /login that look like auth bugs are usually this.

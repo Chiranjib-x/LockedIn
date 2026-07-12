@@ -56,6 +56,7 @@
 - [x] Phase 33 — Make-an-offer (0033): offers (one active per buyer/listing via partial unique), panel on listing page + plain-text DM drops (deviation: no special chat cards), counter/accept/decline, seller-accept = one-tap markSoldTo at agreed price.
 - [x] Phase 34 — Study groups + multi-party chat (0034): definer-RPC lifecycle (create wires group+conversation+membership+welcome atomically; capacity-checked join), thread UI group-aware (group titles, sender names), /chats rows named by group, course-code filter. Course cross-links deferred (no courses table).
 - [x] Phase 35 — Group-buy lifecycle + fees (0035): open→locked→ordered→arrived→collecting→done (+cancelled), arrived push carries pickup_location, completion → organizer↔participant transactions (ratings+karma fire), delivery fee even/proportional computed at display time. **🚢 Wave D "Power-User Update" SHIPPED (all five surfaces smoke-checked on prod).**
-- [ ] Phases 23, 36–40 (Wave E money — deliberately deferred until traffic) → Play Store release next
+- [x] Play Store prep (2026-07-12): upload keystore + release signing (gitignored key.properties pattern), signed AAB built + jarsigner-verified, /privacy page, listing copy + data-safety answers + console walkthrough in docs/playstore/LISTING.md, 6 screenshots + feature graphic in docs/playstore/assets/. **Remaining is user-manual: $25 Play Console account + upload (steps in LISTING.md); /privacy needs a prod deploy.**
+- [ ] Phases 23, 36–40 (Wave E money — deliberately deferred until traffic)
 
 Update this tracker when a phase is committed.
