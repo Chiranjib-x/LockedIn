@@ -2,20 +2,29 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { CircleUser, Home, type LucideIcon } from "lucide-react";
+
+// Icon is a string key mapped here (not a component prop) because BottomNav is
+// a server component and component functions can't cross the RSC boundary.
+const ICONS: Record<string, LucideIcon> = {
+  home: Home,
+  profile: CircleUser,
+};
 
 // Bottom-nav tab that highlights when its route is active, so users always know
 // which tab they're on. aria-current pairs the visual state with a semantic one.
 export default function NavLink({
   href,
-  emoji,
+  icon,
   label,
 }: {
   href: string;
-  emoji: string;
+  icon: keyof typeof ICONS;
   label: string;
 }) {
   const pathname = usePathname();
   const active = pathname === href || pathname.startsWith(href + "/");
+  const Icon = ICONS[icon] ?? Home;
 
   return (
     <Link
@@ -25,7 +34,7 @@ export default function NavLink({
         active ? "font-semibold text-primary" : "text-muted-foreground"
       }`}
     >
-      <span className="text-xl leading-none">{emoji}</span>
+      <Icon className="h-5 w-5" strokeWidth={active ? 2.4 : 2} />
       {label}
     </Link>
   );

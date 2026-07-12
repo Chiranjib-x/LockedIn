@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CalendarDays, MapPin } from "lucide-react";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
@@ -69,10 +70,14 @@ export default async function PublicPostPreview({
             )}
           </div>
           <h1 className="text-xl font-bold">{p.title}</h1>
-          {p.location && <p className="text-sm text-muted-foreground">📍 {p.location}</p>}
+          {p.location && (
+            <p className="flex items-center gap-1 text-sm text-muted-foreground">
+              <MapPin className="h-3.5 w-3.5 shrink-0" strokeWidth={2} /> {p.location}
+            </p>
+          )}
           {p.type === "event" && p.event_date && (
-            <p className="text-sm text-muted-foreground">
-              🗓️{" "}
+            <p className="flex items-center gap-1 text-sm text-muted-foreground">
+              <CalendarDays className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />{" "}
               {new Date(p.event_date).toLocaleString("en-IN", {
                 weekday: "short",
                 day: "numeric",

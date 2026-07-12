@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { MapPin } from "lucide-react";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { rupees } from "@/modules/marketplace/format";
@@ -103,8 +104,8 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
       )}
 
       {order.pickup_location != null && (order.status === "arrived" || order.status === "collecting") && (
-        <p className="rounded-2xl border border-accent/30 bg-accent/10 p-3 text-sm font-medium text-accent">
-          📍 Collect from {order.pickup_location}
+        <p className="flex items-center gap-1.5 rounded-2xl border border-accent/30 bg-accent/10 p-3 text-sm font-medium text-accent">
+          <MapPin className="h-4 w-4 shrink-0" strokeWidth={2} /> Collect from {order.pickup_location}
         </p>
       )}
 

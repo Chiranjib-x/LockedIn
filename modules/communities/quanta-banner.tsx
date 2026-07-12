@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { Card } from "@/components/ui";
 
 // ponytail: hardcoded one-off event window, delete after 2026-07-18
@@ -22,7 +23,7 @@ export default function QuantaBanner() {
             <h2 className="font-semibold">Clubs & Chapters Exhibition is on</h2>
             <p className="text-sm text-muted-foreground">Find every club’s stall and page here</p>
           </div>
-          <span className="text-primary">→</span>
+          <ArrowRight className="h-4 w-4 shrink-0 text-primary" strokeWidth={2.2} />
         </div>
       </Card>
     </Link>

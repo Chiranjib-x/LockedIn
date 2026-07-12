@@ -22,9 +22,26 @@
   --color-destructive: #dc2626;
   --color-on-destructive: #ffffff;
   --color-ring: oklch(0.48 0.19 264);
+  /* Gradient endpoint for brand moments (wordmark, karma bar) — pairs with primary. */
+  --color-violet: oklch(0.5 0.19 300);
 
   --font-heading: var(--font-bricolage), sans-serif;
   --font-sans: var(--font-hanken), sans-serif;
+
+  /* Module tile tints (visual refresh) — soft pastel bg + saturated icon fg,
+     per docs/design/directions.png. Six hues cycle across the 12 modules. */
+  --color-tint-blue: oklch(0.93 0.04 264);
+  --color-tint-blue-fg: oklch(0.45 0.16 264);
+  --color-tint-green: oklch(0.93 0.05 155);
+  --color-tint-green-fg: oklch(0.42 0.12 155);
+  --color-tint-amber: oklch(0.94 0.06 85);
+  --color-tint-amber-fg: oklch(0.5 0.12 75);
+  --color-tint-rose: oklch(0.93 0.04 20);
+  --color-tint-rose-fg: oklch(0.5 0.15 20);
+  --color-tint-violet: oklch(0.93 0.04 300);
+  --color-tint-violet-fg: oklch(0.45 0.14 300);
+  --color-tint-teal: oklch(0.93 0.045 200);
+  --color-tint-teal-fg: oklch(0.42 0.1 210);
 }
 
 /* Dark mode (Phase 29): class-based — the inline head script in layout.tsx
@@ -32,25 +49,41 @@
    component reads tokens, so flipping the vars flips the app. */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* :root.dark outranks the :root emission Tailwind generates from @theme. */
+/* :root.dark outranks the :root emission Tailwind generates from @theme.
+   Dark is the showcase — "System window" canvas: deep indigo-black surfaces,
+   electric cobalt accents, luminous hairlines (Solo Leveling direction). */
 :root.dark {
-  --color-primary: oklch(0.62 0.17 264);
-  --color-primary-strong: oklch(0.68 0.17 264);
+  --color-primary: oklch(0.66 0.19 262);
+  --color-primary-strong: oklch(0.72 0.19 262);
   --color-on-primary: #ffffff;
-  --color-secondary: oklch(0.62 0.17 264 / 0.16);
+  --color-secondary: oklch(0.66 0.19 262 / 0.16);
   --color-on-secondary: #f2f1ed;
   --color-accent: #22c55e;
   --color-on-accent: #052e16;
-  --color-background: #131316;
+  --color-background: oklch(0.16 0.02 275);
   --color-foreground: #f2f1ed;
-  --color-card: #1c1c21;
+  --color-card: oklch(0.21 0.025 275);
   --color-card-foreground: #f2f1ed;
-  --color-muted: #26262c;
-  --color-muted-foreground: #9a9da6;
-  --color-border: #2b2b32;
+  --color-muted: oklch(0.26 0.028 275);
+  --color-muted-foreground: oklch(0.68 0.015 275);
+  --color-border: oklch(0.3 0.03 275);
   --color-destructive: #f87171;
   --color-on-destructive: #450a0a;
-  --color-ring: oklch(0.62 0.17 264);
+  --color-ring: oklch(0.66 0.19 262);
+  --color-violet: oklch(0.68 0.17 300);
+
+  --color-tint-blue: oklch(0.26 0.045 264);
+  --color-tint-blue-fg: oklch(0.78 0.11 264);
+  --color-tint-green: oklch(0.26 0.05 155);
+  --color-tint-green-fg: oklch(0.78 0.12 155);
+  --color-tint-amber: oklch(0.27 0.05 85);
+  --color-tint-amber-fg: oklch(0.8 0.11 85);
+  --color-tint-rose: oklch(0.26 0.045 20);
+  --color-tint-rose-fg: oklch(0.78 0.1 20);
+  --color-tint-violet: oklch(0.26 0.045 300);
+  --color-tint-violet-fg: oklch(0.78 0.1 300);
+  --color-tint-teal: oklch(0.26 0.045 200);
+  --color-tint-teal-fg: oklch(0.78 0.1 200);
 }
 
 body {
@@ -59,14 +92,39 @@ body {
   font-family: var(--font-sans);
 }
 
+/* Dark ambient: holographic cobalt + violet blooms instead of the dimmed
+   light-mode mesh — the atmosphere behind the System frames. */
 .dark body::before {
-  filter: saturate(0.9) brightness(0.55);
+  background:
+    radial-gradient(40% 40% at 15% 12%, oklch(0.55 0.19 262 / 0.2), transparent 70%),
+    radial-gradient(38% 38% at 88% 20%, oklch(0.5 0.19 300 / 0.16), transparent 70%),
+    radial-gradient(45% 45% at 75% 92%, oklch(0.55 0.19 262 / 0.14), transparent 70%);
+  filter: saturate(1.1);
 }
+/* System frame: electric hairline on floating glass layers. */
 .dark .glass {
-  border-color: color-mix(in oklch, #ffffff 14%, transparent);
+  border-color: color-mix(in oklch, var(--color-primary) 26%, transparent);
   box-shadow:
-    0 8px 32px -12px oklch(0 0 0 / 0.5),
+    0 8px 32px -12px oklch(0 0 0 / 0.55),
+    0 0 24px -12px color-mix(in oklch, var(--color-primary) 45%, transparent),
     inset 0 1px 0 0 oklch(1 0 0 / 0.08);
+}
+
+/* Luminous accent for primary elements in dark (buttons, nav +, badges). */
+.glow-primary { box-shadow: none; }
+.dark .glow-primary {
+  box-shadow: 0 0 18px -4px color-mix(in oklch, var(--color-primary) 70%, transparent);
+}
+
+/* Brand gradient — wordmark, karma bar fill, primary buttons. */
+.gradient-brand {
+  background-image: linear-gradient(120deg, var(--color-primary), var(--color-violet));
+}
+.gradient-brand-text {
+  background-image: linear-gradient(105deg, var(--color-primary) 20%, var(--color-violet) 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 /* Ambient gradient mesh — gives the glass surfaces something to refract.
@@ -128,6 +186,9 @@ h4 {
   outline: 2px solid var(--color-ring);
   outline-offset: 2px;
   border-radius: 4px;
+}
+.dark :focus-visible {
+  box-shadow: 0 0 16px -2px color-mix(in oklch, var(--color-ring) 60%, transparent);
 }
 
 /* Motion primitives. Shared easing: --ease-out-quint for entrances,

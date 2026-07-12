@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Bookmark } from "lucide-react";
 import { toggleSave } from "@/modules/saves/actions";
 
 // Bookmark toggle for detail pages; optimistic flip, server stamps tenancy.
@@ -21,9 +22,9 @@ export default function SaveButton({
         setSaved(!saved);
         await toggleSave(targetType, targetId, saved);
       }}
-      className="press flex min-h-11 min-w-11 items-center justify-center text-lg"
+      className={`press flex min-h-11 min-w-11 items-center justify-center ${saved ? "text-primary" : "text-foreground/60"}`}
     >
-      {saved ? "🔖" : "📑"}
+      <Bookmark className="h-5 w-5" strokeWidth={2} fill={saved ? "currentColor" : "none"} />
     </button>
   );
 }

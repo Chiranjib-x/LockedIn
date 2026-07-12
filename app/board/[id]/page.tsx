@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CalendarDays, MapPin } from "lucide-react";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import Gallery from "@/modules/marketplace/gallery";
@@ -81,10 +82,14 @@ export default async function PostDetailPage({
       <h1 className="text-2xl font-bold">{post.title}</h1>
 
       <div className="flex flex-col gap-1 text-sm text-muted-foreground">
-        {post.location && <p>📍 {post.location}</p>}
+        {post.location && (
+          <p className="flex items-center gap-1">
+            <MapPin className="h-3.5 w-3.5 shrink-0" strokeWidth={2} /> {post.location}
+          </p>
+        )}
         {post.type === "event" && post.event_date && (
-          <p>
-            🗓️{" "}
+          <p className="flex items-center gap-1">
+            <CalendarDays className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />{" "}
             {new Date(post.event_date).toLocaleString("en-IN", {
               weekday: "short",
               day: "numeric",

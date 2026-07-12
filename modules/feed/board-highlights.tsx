@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CalendarDays, MapPin } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { Card, Section } from "@/components/ui";
 import TypeBadge from "@/modules/board/badge";
@@ -47,13 +48,18 @@ export default async function BoardHighlights() {
               <div className="flex items-center gap-2">
                 <TypeBadge type={p.type} />
                 {p.type === "event" && p.event_date && (
-                  <span className="text-xs text-muted-foreground">
-                    🗓️ {new Date(p.event_date).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" })}
+                  <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <CalendarDays className="h-3 w-3 shrink-0" strokeWidth={2} />
+                    {new Date(p.event_date).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" })}
                   </span>
                 )}
               </div>
               <h3 className="mt-1 truncate font-semibold">{p.title}</h3>
-              {p.location && <p className="truncate text-sm text-muted-foreground">📍 {p.location}</p>}
+              {p.location && (
+                <p className="flex items-center gap-1 truncate text-sm text-muted-foreground">
+                  <MapPin className="h-3.5 w-3.5 shrink-0" strokeWidth={2} /> {p.location}
+                </p>
+              )}
             </Card>
           </Link>
         ))}

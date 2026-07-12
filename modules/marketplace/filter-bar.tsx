@@ -44,8 +44,8 @@ export default function FilterBar() {
       <div className="grid grid-cols-3 gap-2 text-sm">
         {[
           { v: null, label: "Everything" },
-          { v: "sell", label: "💸 For sale" },
-          { v: "rent", label: "📅 For rent" },
+          { v: "sell", label: "For sale" },
+          { v: "rent", label: "For rent" },
         ].map((t) => (
           <button
             key={t.label}

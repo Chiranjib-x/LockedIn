@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Moon, Sun, SunMoon } from "lucide-react";
 
 // Three-state theme: system (default) -> dark -> light -> system.
 // The no-flash script in layout.tsx applies the class before paint;
@@ -24,15 +25,15 @@ export default function ThemeToggle() {
   }
 
   const next = mode === "system" ? "dark" : mode === "dark" ? "light" : "system";
-  const icon = mode === "system" ? "🌗" : mode === "dark" ? "🌙" : "☀️";
+  const Icon = mode === "system" ? SunMoon : mode === "dark" ? Moon : Sun;
 
   return (
     <button
       onClick={() => apply(next)}
       aria-label={`Theme: ${mode} — switch`}
-      className="press flex min-h-11 min-w-11 items-center justify-center text-lg"
+      className="press flex min-h-11 min-w-11 items-center justify-center text-foreground/70 hover:text-foreground"
     >
-      {icon}
+      <Icon className="h-5 w-5" strokeWidth={2} />
     </button>
   );
 }

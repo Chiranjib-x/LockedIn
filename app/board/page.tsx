@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { MapPin } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { Card } from "@/components/ui";
 import BoardFilter from "@/modules/board/board-filter";
@@ -86,7 +87,11 @@ export default async function BoardPage({
                       <span className="ml-auto shrink-0 text-xs text-muted-foreground">{when(p)}</span>
                     </div>
                     <h2 className="mt-1 truncate font-semibold">{p.title}</h2>
-                    {p.location && <p className="truncate text-sm text-muted-foreground">📍 {p.location}</p>}
+                    {p.location && (
+                      <p className="flex items-center gap-1 truncate text-sm text-muted-foreground">
+                        <MapPin className="h-3.5 w-3.5 shrink-0" strokeWidth={2} /> {p.location}
+                      </p>
+                    )}
                   </div>
                 </div>
               </Card>

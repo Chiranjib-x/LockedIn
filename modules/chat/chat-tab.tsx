@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { MessageCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 // Chats tab with a realtime unread badge. Server seeds the initial count; a
@@ -42,7 +43,7 @@ export default function ChatTab({ meId, initialUnread }: { meId: string; initial
         active ? "font-semibold text-primary" : "text-muted-foreground"
       }`}
     >
-      <span className="text-xl leading-none">💬</span>
+      <MessageCircle className="h-5 w-5" strokeWidth={active ? 2.4 : 2} />
       Chats
       {count > 0 && (
         <span className="absolute top-0 right-4 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 font-heading text-[10px] font-bold text-on-destructive">

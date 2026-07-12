@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PackageOpen } from "lucide-react";
 import { rupees } from "./format";
 
 export type ListingCardData = {
@@ -30,7 +31,9 @@ export default function ListingCard({ listing, index = 0 }: { listing: ListingCa
             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-4xl">📦</div>
+          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-tint-blue to-tint-teal">
+            <PackageOpen className="h-10 w-10 text-tint-blue-fg/60" strokeWidth={1.6} />
+          </div>
         )}
         {listing.status === "sold" && (
           <div className="absolute inset-0 flex items-center justify-center bg-foreground/40">

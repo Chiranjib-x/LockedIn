@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Compass, Plus } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import ChatTab from "@/modules/chat/chat-tab";
 import { unreadChatCount } from "@/modules/chat/unread";
@@ -20,22 +21,22 @@ export default async function BottomNav() {
 
   return (
     <nav className="glass fixed inset-x-3 bottom-3 z-20 grid grid-cols-5 items-center rounded-3xl px-2 pt-1 pb-2 text-[11px] font-medium">
-      <NavLink href="/home" emoji="🏠" label="Home" />
+      <NavLink href="/home" icon="home" label="Home" />
       <span className={dead} title="Coming soon">
-        <span className="text-xl leading-none opacity-60 grayscale">🧭</span>
+        <Compass className="h-5 w-5 opacity-60" strokeWidth={2} />
         Explore
       </span>
       <span className="flex items-center justify-center">
         <Link
           href="/marketplace/new"
-          className="press flex h-12 w-12 items-center justify-center rounded-full bg-primary text-2xl leading-none text-on-primary shadow-lg shadow-primary/30"
+          className="press gradient-brand glow-primary flex h-12 w-12 items-center justify-center rounded-full text-on-primary shadow-lg shadow-primary/30"
           aria-label="Post a listing"
         >
-          +
+          <Plus className="h-6 w-6" strokeWidth={2.4} />
         </Link>
       </span>
       <ChatTab meId={user.id} initialUnread={unread} />
-      <NavLink href="/profile" emoji="👤" label="Profile" />
+      <NavLink href="/profile" icon="profile" label="Profile" />
     </nav>
   );
 }

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CalendarDays, MapPin, Megaphone } from "lucide-react";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { Card } from "@/components/ui";
@@ -54,7 +55,7 @@ export default async function CommunityPage({ params }: { params: Promise<{ id: 
           href={`/board/new?community=${id}`}
           className="press flex min-h-11 items-center justify-center rounded-full border border-primary/40 bg-primary/5 px-5 text-sm font-semibold text-primary"
         >
-          📣 Post an update or event
+          <Megaphone className="mr-1.5 h-4 w-4" strokeWidth={2} /> Post an update or event
         </Link>
       )}
 
@@ -74,13 +75,18 @@ export default async function CommunityPage({ params }: { params: Promise<{ id: 
                 <div className="flex items-center gap-2">
                   <TypeBadge type={p.type} />
                   {p.type === "event" && p.event_date && (
-                    <span className="text-xs text-muted-foreground">
-                      🗓️ {new Date(p.event_date).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" })}
+                    <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <CalendarDays className="h-3 w-3 shrink-0" strokeWidth={2} />
+                      {new Date(p.event_date).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" })}
                     </span>
                   )}
                 </div>
                 <h3 className="mt-1 font-semibold">{p.title}</h3>
-                {p.location && <p className="text-sm text-muted-foreground">📍 {p.location}</p>}
+                {p.location && (
+                  <p className="flex items-center gap-1 text-sm text-muted-foreground">
+                    <MapPin className="h-3.5 w-3.5 shrink-0" strokeWidth={2} /> {p.location}
+                  </p>
+                )}
               </Card>
             </Link>
           ))

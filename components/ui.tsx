@@ -29,7 +29,7 @@ export function Button({
   variant?: "primary" | "secondary" | "accent";
 }) {
   const styles = {
-    primary: "shine bg-primary text-on-primary hover:bg-primary-strong",
+    primary: "shine gradient-brand glow-primary text-on-primary hover:brightness-110",
     secondary: "border border-border bg-card text-foreground hover:bg-muted",
     accent: "shine bg-accent text-on-accent hover:opacity-90",
   }[variant];

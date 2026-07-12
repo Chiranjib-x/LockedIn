@@ -4,7 +4,7 @@
 User-approved sequence (2026-07-12): Phase 28 (saves+alerts, IN PROGRESS) → Phase 29 (dark mode) → 🚢 ship Wave C → Play Store release → Wave D in plan order. Keep going without asking until user input is genuinely required.
 
 ## Now
-PLAY STORE PREP COMPLETE (2026-07-12). Signed AAB built + jarsigner-verified; upload keystore android/lockedin-upload.keystore + android/key.properties (both gitignored — USER MUST BACK UP). /privacy page written, verified on dev, NOT yet on prod (deploy classifier-blocked — needs user to say "deploy"). Listing copy + data-safety answers + user console steps in docs/playstore/LISTING.md; 6 screenshots 1080x1920 + feature graphic 1024x500 in docs/playstore/assets/.
+UI VISUAL REFRESH COMPLETE (2026-07-12, user-directed "full visual refresh + Solo Leveling style"). lucide-react icons replace all chrome emoji; header = gradient wordmark + avatar/karma chip (Log out moved to Profile); home = search bar + tinted module tiles; dark mode = "System" aesthetic (indigo-black canvas oklch hue 275, electric primary, glow tokens, violet mesh); karma bar = cobalt→violet gradient. Play assets reshot with new UI. /privacy deployed earlier. AAB needs NO rebuild for UI (remote-load wrapper).
 
 ## Next
 1. USER: say "deploy" → prod deploy makes /privacy live (required Play listing URL).
@@ -26,6 +26,8 @@ PLAY STORE PREP COMPLETE (2026-07-12). Signed AAB built + jarsigner-verified; up
 - 2026-07-12 night, verbatim: "keep working , i am going to sleep , automatically go on to next phases when finished with a single phases , u have all my permissions for all upcoming requests , I will check back tommorow morning"
 
 ## Decisions
+- DECISION: lucide-react for UI chrome; emoji stays in user content + empty-state illustrations; typographic arrows stay in text links — why: mockup-grade "designed" feel without losing playfulness.
+- DECISION: Solo Leveling "System" aesthetic owns dark mode (indigo-black + electric glow via .glow-primary/.gradient-brand utilities + --color-violet token); light mode stays warm cream — why: user directive 2026-07-12; karma is a leveling system, dark mode showcases it.
 - DECISION: hand-rolled service worker, no next-pwa — next-pwa predates app router and is unmaintained; ~60 lines covers app-shell cache + offline fallback; no new dependency.
 - DECISION: app/manifest.ts (Next-native MetadataRoute.Manifest) over public/manifest.json — auto-linked, typed.
 - DECISION: SW caches only static assets + offline page, never user data — avoids logout-purge complexity; revisit at Phase 21 push.

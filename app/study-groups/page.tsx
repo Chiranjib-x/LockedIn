@@ -1,3 +1,4 @@
+import { MapPin } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { Card } from "@/components/ui";
 import { KarmaBadge } from "@/modules/karma/badge";
@@ -70,7 +71,11 @@ export default async function StudyGroupsPage({
                     </span>
                     <h2 className="mt-1 font-semibold">{g.title}</h2>
                     {g.description && <p className="text-sm text-muted-foreground">{g.description}</p>}
-                    {g.meet_info && <p className="text-xs text-muted-foreground">📍 {g.meet_info}</p>}
+                    {g.meet_info && (
+                      <p className="flex items-center gap-1 text-xs text-muted-foreground">
+                        <MapPin className="h-3 w-3 shrink-0" strokeWidth={2} /> {g.meet_info}
+                      </p>
+                    )}
                   </div>
                   <JoinLeaveButton
                     gid={g.id}

@@ -1,5 +1,23 @@
 import Link from "next/link";
 import { Suspense } from "react";
+import {
+  ArrowRight,
+  BookOpen,
+  CalendarDays,
+  CarTaxiFront,
+  Footprints,
+  Handshake,
+  MapPin,
+  Pin,
+  Search,
+  ShoppingBag,
+  Tag,
+  Target,
+  Tv,
+  Users,
+  Wrench,
+  type LucideIcon,
+} from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { Card } from "@/components/ui";
 import { SkeletonSection } from "@/components/skeleton";
@@ -19,19 +37,21 @@ import { InstallPrompt } from "@/components/pwa";
 // is its own Suspense boundary + owns its error handling internally, so one
 // broken section streams in empty instead of blanking the page.
 
-const MODULES = [
-  { name: "Marketplace", short: "Market", href: "/marketplace", emoji: "🛍️" },
-  { name: "Lost & Found + Notices", short: "Board", href: "/board", emoji: "📌" },
-  { name: "Group-Buy", short: "Group-Buy", href: "/group-buy", emoji: "🤝" },
-  { name: "Subscriptions", short: "Pools", href: "/subscriptions", emoji: "📺" },
-  { name: "Roommate Match", short: "Match", href: "/matches", emoji: "🎯" },
-  { name: "Gate Runner", short: "Gate", href: "/gate", emoji: "🏃" },
-  { name: "Communities", short: "Groups", href: "/communities", emoji: "🫂" },
-  { name: "Toolbox", short: "Toolbox", href: "/toolbox", emoji: "🧰" },
-  { name: "Deals", short: "Deals", href: "/deals", emoji: "🏷️" },
-  { name: "Cab Pooling", short: "Cabs", href: "/cabs", emoji: "🚕" },
-  { name: "Timetable", short: "Timetable", href: "/timetable", emoji: "🗓️" },
-  { name: "Study Groups", short: "Study", href: "/study-groups", emoji: "📚" },
+// Tinted tiles per docs/design/directions.png — six token hues cycling, so
+// neighbouring tiles never share a colour and the grid scans by hue.
+const MODULES: { short: string; href: string; icon: LucideIcon; tint: string }[] = [
+  { short: "Market", href: "/marketplace", icon: ShoppingBag, tint: "bg-tint-blue text-tint-blue-fg" },
+  { short: "Board", href: "/board", icon: Pin, tint: "bg-tint-rose text-tint-rose-fg" },
+  { short: "Group-Buy", href: "/group-buy", icon: Handshake, tint: "bg-tint-amber text-tint-amber-fg" },
+  { short: "Pools", href: "/subscriptions", icon: Tv, tint: "bg-tint-teal text-tint-teal-fg" },
+  { short: "Match", href: "/matches", icon: Target, tint: "bg-tint-violet text-tint-violet-fg" },
+  { short: "Gate", href: "/gate", icon: Footprints, tint: "bg-tint-green text-tint-green-fg" },
+  { short: "Groups", href: "/communities", icon: Users, tint: "bg-tint-blue text-tint-blue-fg" },
+  { short: "Toolbox", href: "/toolbox", icon: Wrench, tint: "bg-tint-amber text-tint-amber-fg" },
+  { short: "Deals", href: "/deals", icon: Tag, tint: "bg-tint-green text-tint-green-fg" },
+  { short: "Cabs", href: "/cabs", icon: CarTaxiFront, tint: "bg-tint-rose text-tint-rose-fg" },
+  { short: "Timetable", href: "/timetable", icon: CalendarDays, tint: "bg-tint-violet text-tint-violet-fg" },
+  { short: "Study", href: "/study-groups", icon: BookOpen, tint: "bg-tint-teal text-tint-teal-fg" },
 ];
 
 function greeting() {
@@ -65,10 +85,19 @@ export default async function HomePage() {
         <h1 className="text-3xl font-bold">{firstName || "Hey"}</h1>
         {profile?.colleges?.name && (
           <span className="mt-2 inline-flex items-center gap-1 rounded-full border border-border bg-card px-3 py-1 text-xs font-medium text-muted-foreground">
-            📍 {profile.colleges.name}
+            <MapPin className="h-3 w-3" strokeWidth={2.2} /> {profile.colleges.name}
           </span>
         )}
       </div>
+
+      <Link
+        href="/search"
+        className="animate-fade-up press flex min-h-11 items-center gap-2.5 rounded-full border border-border bg-card px-4 text-sm text-muted-foreground"
+        style={{ animationDelay: "40ms" }}
+      >
+        <Search className="h-4 w-4" strokeWidth={2.2} />
+        Search campus…
+      </Link>
 
       <div
         className="animate-fade-up grid grid-cols-4 gap-3"
@@ -76,8 +105,8 @@ export default async function HomePage() {
       >
         {MODULES.map((m) => (
           <Link key={m.short} href={m.href} className="press flex flex-col items-center gap-1">
-            <span className="flex h-14 w-14 items-center justify-center rounded-2xl border border-border bg-card text-2xl">
-              {m.emoji}
+            <span className={`flex h-14 w-14 items-center justify-center rounded-2xl ${m.tint}`}>
+              <m.icon className="h-6 w-6" strokeWidth={2} />
             </span>
             <span className="text-[11px] font-medium text-muted-foreground">{m.short}</span>
           </Link>
@@ -108,7 +137,7 @@ export default async function HomePage() {
                     </h2>
                     <p className="text-sm text-muted-foreground">Members-only space</p>
                   </div>
-                  <span className="text-primary">→</span>
+                  <ArrowRight className="h-4 w-4 text-primary" strokeWidth={2.2} />
                 </div>
               </Card>
             </Link>

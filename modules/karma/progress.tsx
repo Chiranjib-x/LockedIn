@@ -16,7 +16,10 @@ export function KarmaProgress({ karma }: { karma: number }) {
   return (
     <div className="flex flex-col gap-1">
       <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
-        <div className="h-full rounded-full bg-primary transition-all duration-500" style={{ width: `${pct}%` }} />
+        <div
+          className="gradient-brand glow-primary h-full rounded-full transition-all duration-500"
+          style={{ width: `${pct}%` }}
+        />
       </div>
       <p className="text-xs text-muted-foreground">
         {next.min - karma} karma to {next.emoji} {next.name}
