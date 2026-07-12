@@ -1,5 +1,6 @@
 import { requireUser } from "@/lib/auth";
 import { inputClass } from "@/components/ui";
+import BackLink from "@/components/back-link";
 import { SubmitButton } from "@/components/submit-button";
 import { createPickup } from "@/modules/gate/actions";
 
@@ -15,6 +16,7 @@ export default async function NewPickupPage({
 
   return (
     <main className="animate-fade-up mx-auto flex w-full max-w-lg flex-1 flex-col gap-5 px-4 py-6">
+      <BackLink href="/gate" label="Gate pickups" />
       <h1 className="text-2xl font-bold">Get it picked up</h1>
       <p className="text-sm text-muted-foreground">
         Someone already heading to the gate grabs your delivery. You reward them — everyone wins.

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Bookmark } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { Card, Section } from "@/components/ui";
+import BackLink from "@/components/back-link";
 import EmptyState from "@/components/empty-state";
 import { rupees } from "@/modules/marketplace/format";
 import TypeBadge from "@/modules/board/badge";
@@ -36,6 +37,7 @@ export default async function SavedPage() {
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-5 px-4 py-6">
+      <BackLink href="/profile" label="Profile" />
       <h1 className="text-2xl font-bold">Saved</h1>
 
       {total === 0 && (

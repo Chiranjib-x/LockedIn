@@ -1,5 +1,6 @@
 import { requireUser } from "@/lib/auth";
 import { inputClass } from "@/components/ui";
+import BackLink from "@/components/back-link";
 import { SubmitButton } from "@/components/submit-button";
 import { Toggle } from "@/components/toggle";
 import { savePrefs } from "@/modules/matcher/actions";
@@ -23,6 +24,7 @@ export default async function PrefsPage({
 
   return (
     <main className="animate-fade-up mx-auto flex w-full max-w-lg flex-1 flex-col gap-5 px-4 py-6">
+      <BackLink href="/matches" label="Matches" />
       <div>
         <h1 className="text-2xl font-bold">Your living & study style</h1>
         <p className="text-sm text-muted-foreground">Honest answers get better matches.</p>

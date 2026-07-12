@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ShoppingBag } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { Card } from "@/components/ui";
+import BackLink from "@/components/back-link";
 import EmptyState from "@/components/empty-state";
 import ListingActions from "@/modules/marketplace/listing-actions";
 import { rupees } from "@/modules/marketplace/format";
@@ -16,6 +17,7 @@ export default async function MyListingsPage() {
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 px-4 py-6">
+      <BackLink href="/marketplace" label="Marketplace" />
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">My listings</h1>
         <Link

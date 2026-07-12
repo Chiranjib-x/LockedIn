@@ -1,4 +1,5 @@
 import { requireUser } from "@/lib/auth";
+import BackLink from "@/components/back-link";
 import PostForm from "@/modules/board/post-form";
 
 export default async function NewPostPage({
@@ -19,6 +20,7 @@ export default async function NewPostPage({
 
   return (
     <main className="animate-fade-up mx-auto flex w-full max-w-lg flex-1 flex-col gap-5 px-4 py-6">
+      <BackLink href={communityName ? `/communities/${community}` : "/board"} label={communityName ? "Community" : "Board"} />
       <h1 className="text-2xl font-bold">{communityName ? "Post an update" : "Post to the board"}</h1>
       <PostForm error={error} communityId={communityName ? community : undefined} communityName={communityName} />
     </main>

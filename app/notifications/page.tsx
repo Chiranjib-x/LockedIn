@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { Card } from "@/components/ui";
+import BackLink from "@/components/back-link";
 import EmptyState from "@/components/empty-state";
 
 // Per-type icon + tint, matching the module hues (REVAMP-PLAN Phase 5).
@@ -62,6 +63,7 @@ export default async function NotificationsPage() {
 
   return (
     <main className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-4 px-4 py-6">
+      <BackLink href="/home" label="Home" />
       <h1 className="text-2xl font-bold">Notifications</h1>
 
       {!items?.length ? (

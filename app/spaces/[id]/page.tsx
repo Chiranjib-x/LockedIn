@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { Card } from "@/components/ui";
+import BackLink from "@/components/back-link";
 import ListingCard from "@/modules/marketplace/listing-card";
 import AddMember from "@/modules/spaces/add-member";
 
@@ -27,6 +28,7 @@ export default async function SpacePage({ params }: { params: Promise<{ id: stri
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 px-4 py-6">
+      <BackLink href="/home" label="Home" />
       <div className="animate-fade-up">
         <h1 className="text-2xl font-bold">
           {space.emoji} {space.name}

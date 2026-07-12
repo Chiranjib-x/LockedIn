@@ -35,7 +35,7 @@ export function Button({
   }[variant];
   return (
     <button
-      className={`min-h-11 rounded-full px-5 py-2 text-sm font-semibold transition-all duration-150 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${styles} ${className}`}
+      className={`min-h-11 rounded-full px-5 py-2 text-sm font-semibold transition-all duration-150 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50 ${styles} ${className}`}
       {...props}
     >
       {children}

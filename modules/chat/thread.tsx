@@ -38,6 +38,7 @@ export default function Thread({
   const [messages, setMessages] = useState<Msg[]>(initial);
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
+  const [sendError, setSendError] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -77,8 +78,10 @@ export default function Thread({
     setSending(false);
     if (error) {
       setMessages((prev) => prev.filter((m) => m.id !== temp.id));
-      alert(error.message);
+      setText(trimmed); // give the draft back instead of losing it
+      setSendError("Couldn’t send — check your connection and try again.");
     } else {
+      setSendError(null);
       setMessages((prev) => prev.map((m) => (m.id === temp.id ? (data as Msg) : m)));
     }
   }
@@ -132,6 +135,11 @@ export default function Thread({
         </div>
       )}
 
+      {sendError && (
+        <p className="px-4 pb-1 text-xs text-destructive" role="alert">
+          {sendError}
+        </p>
+      )}
       <div className="glass sticky bottom-0 flex items-center gap-2 border-t border-border px-3 py-2">
         {myContact && (
           <button

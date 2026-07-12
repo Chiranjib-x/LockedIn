@@ -1,5 +1,6 @@
 import { requireUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import BackLink from "@/components/back-link";
 import ListingForm from "@/modules/marketplace/listing-form";
 
 export default async function EditListingPage({
@@ -18,6 +19,7 @@ export default async function EditListingPage({
 
   return (
     <main className="animate-fade-up mx-auto flex w-full max-w-lg flex-1 flex-col gap-5 px-4 py-6">
+      <BackLink href={`/marketplace/${id}`} label="Listing" />
       <h1 className="text-2xl font-bold">Edit listing</h1>
       <ListingForm listing={listing} error={error} />
     </main>

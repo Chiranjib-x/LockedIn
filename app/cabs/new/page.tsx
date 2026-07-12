@@ -1,5 +1,6 @@
 import { requireUser } from "@/lib/auth";
 import { inputClass } from "@/components/ui";
+import BackLink from "@/components/back-link";
 import { SubmitButton } from "@/components/submit-button";
 import { createTrip } from "@/modules/cabs/actions";
 
@@ -13,6 +14,7 @@ export default async function NewTripPage({
 
   return (
     <main className="animate-fade-up mx-auto flex w-full max-w-lg flex-1 flex-col gap-5 px-4 py-6">
+      <BackLink href="/cabs" label="Cab pooling" />
       <h1 className="text-2xl font-bold">Post a trip</h1>
       {error && (
         <p className="rounded-xl border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">{error}</p>
