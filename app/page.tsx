@@ -2,9 +2,12 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
   ArrowRight,
+  CarTaxiFront,
   Footprints,
+  Handshake,
   ShoppingBag,
   Sparkles,
+  Tv,
   type LucideIcon,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
@@ -36,16 +39,32 @@ const PILLARS: {
     title: "Girls' Closet · Boys' Den",
     body: "Members-only spaces that are invisible to everyone else. Sell that dress or that GPU inside your own circle — vouched entry only.",
   },
+  {
+    icon: CarTaxiFront,
+    tint: "bg-tint-amber text-tint-amber-fg",
+    title: "Cab Pooling",
+    body: "Airport run at 4 AM? Find students leaving the same day and split the fare instead of eating it alone.",
+  },
+  {
+    icon: Handshake,
+    tint: "bg-tint-violet text-tint-violet-fg",
+    title: "Group-Buys",
+    body: "One Domino's order, eight people, delivery fee split eight ways — with a live tracker for who's paid and where to collect.",
+  },
+  {
+    icon: Tv,
+    tint: "bg-tint-teal text-tint-teal-fg",
+    title: "Netflix & Spotify Pools",
+    body: "Share subscriptions with your floor and split the cost. Prorated joining, renewal countdowns, zero awkward reminders.",
+  },
 ];
 
 const ALSO = [
   "Lost & found",
-  "Group-buys",
-  "Cab pooling",
-  "Split subscriptions",
   "Roommate match",
   "Study groups",
   "Timetable & bunk math",
+  "Campus communities",
 ];
 
 export default async function Home() {
@@ -113,14 +132,14 @@ export default async function Home() {
 
       <p
         className="animate-fade-up mt-10 max-w-md text-xs leading-relaxed text-muted-foreground"
-        style={{ animationDelay: "700ms" }}
+        style={{ animationDelay: "1000ms" }}
       >
         Also inside: {ALSO.join(" · ")}
       </p>
       <Link
         href="/signup"
         className="animate-fade-up mt-6 text-sm font-semibold text-primary hover:underline"
-        style={{ animationDelay: "760ms" }}
+        style={{ animationDelay: "1060ms" }}
       >
         Sign up with your college email →
       </Link>

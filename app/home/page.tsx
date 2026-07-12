@@ -38,16 +38,15 @@ import { InstallPrompt } from "@/components/pwa";
 
 // Tinted tiles per docs/design/directions.png — six token hues cycling, so
 // neighbouring tiles never share a colour and the grid scans by hue.
-// Marketplace + Gate moved up to flagship hero cards; the grid covers the rest.
+// Marketplace + Gate are flagship hero cards; Cabs/Group-Buy/Pools are the
+// live-stat row. The grid covers the rest (Pools tile kept for "my pools").
 const MODULES: { short: string; href: string; icon: LucideIcon; tint: string }[] = [
   { short: "Board", href: "/board", icon: Pin, tint: "bg-tint-rose text-tint-rose-fg" },
-  { short: "Group-Buy", href: "/group-buy", icon: Handshake, tint: "bg-tint-amber text-tint-amber-fg" },
   { short: "Pools", href: "/subscriptions", icon: Tv, tint: "bg-tint-teal text-tint-teal-fg" },
   { short: "Match", href: "/matches", icon: Target, tint: "bg-tint-violet text-tint-violet-fg" },
   { short: "Groups", href: "/communities", icon: Users, tint: "bg-tint-blue text-tint-blue-fg" },
   { short: "Toolbox", href: "/toolbox", icon: Wrench, tint: "bg-tint-amber text-tint-amber-fg" },
   { short: "Deals", href: "/deals", icon: Tag, tint: "bg-tint-green text-tint-green-fg" },
-  { short: "Cabs", href: "/cabs", icon: CarTaxiFront, tint: "bg-tint-rose text-tint-rose-fg" },
   { short: "Timetable", href: "/timetable", icon: CalendarDays, tint: "bg-tint-violet text-tint-violet-fg" },
   { short: "Study", href: "/study-groups", icon: BookOpen, tint: "bg-tint-teal text-tint-teal-fg" },
 ];
@@ -81,6 +80,17 @@ export default async function HomePage() {
         .eq("status", "available")
         .is("space_id", null),
     ]);
+
+  // Second-tier live stats (cabs / group-buys / pools) — head counts only.
+  const [{ count: tripCount }, { count: orderCount }, { count: poolCount }] = await Promise.all([
+    supabase.from("trips").select("id", { count: "exact", head: true }).eq("status", "open"),
+    supabase.from("group_orders").select("id", { count: "exact", head: true }).eq("status", "open"),
+    supabase
+      .from("subscriptions")
+      .select("id", { count: "exact", head: true })
+      .eq("is_discoverable", true)
+      .gt("open_seats", 0),
+  ]);
 
   const firstName = profile?.name?.split(" ")[0] ?? "";
   const gateCount = openPickups?.length ?? 0;
@@ -178,6 +188,25 @@ export default async function HomePage() {
             </div>
           </Link>
         ))}
+
+        {/* Second-tier live stats: cabs · group-buys · pools */}
+        <div className="animate-fade-up grid grid-cols-3 gap-3" style={{ animationDelay: "200ms" }}>
+          {[
+            { href: "/cabs", icon: CarTaxiFront, tint: "bg-tint-rose text-tint-rose-fg", n: tripCount ?? 0, label: (tripCount ?? 0) === 1 ? "trip to join" : "trips to join" },
+            { href: "/group-buy", icon: Handshake, tint: "bg-tint-amber text-tint-amber-fg", n: orderCount ?? 0, label: (orderCount ?? 0) === 1 ? "order open" : "orders open" },
+            { href: "/subscriptions/browse", icon: Tv, tint: "bg-tint-teal text-tint-teal-fg", n: poolCount ?? 0, label: (poolCount ?? 0) === 1 ? "pool w/ seats" : "pools w/ seats" },
+          ].map((s) => (
+            <Link key={s.href} href={s.href} className="press">
+              <div className="glass press-glow flex flex-col items-center gap-1 rounded-3xl px-2 py-3 text-center">
+                <span className={`flex h-9 w-9 items-center justify-center rounded-xl ${s.tint}`}>
+                  <s.icon className="h-4.5 w-4.5" strokeWidth={2} />
+                </span>
+                <span className="font-heading text-lg leading-tight font-bold text-primary">{s.n}</span>
+                <span className="text-[10px] leading-tight font-medium text-muted-foreground">{s.label}</span>
+              </div>
+            </Link>
+          ))}
+        </div>
       </div>
 
       <div
