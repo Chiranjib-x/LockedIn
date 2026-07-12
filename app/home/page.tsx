@@ -194,7 +194,7 @@ export default async function HomePage() {
           {[
             { href: "/cabs", icon: CarTaxiFront, tint: "bg-tint-rose text-tint-rose-fg", n: tripCount ?? 0, label: (tripCount ?? 0) === 1 ? "trip to join" : "trips to join" },
             { href: "/group-buy", icon: Handshake, tint: "bg-tint-amber text-tint-amber-fg", n: orderCount ?? 0, label: (orderCount ?? 0) === 1 ? "order open" : "orders open" },
-            { href: "/subscriptions/browse", icon: Tv, tint: "bg-tint-teal text-tint-teal-fg", n: poolCount ?? 0, label: (poolCount ?? 0) === 1 ? "pool w/ seats" : "pools w/ seats" },
+            { href: "/subscriptions/browse", icon: Tv, tint: "bg-tint-teal text-tint-teal-fg", n: poolCount ?? 0, label: (poolCount ?? 0) === 1 ? "Netflix/Spotify seat" : "Netflix/Spotify seats" },
           ].map((s) => (
             <Link key={s.href} href={s.href} className="press">
               <div className="glass press-glow flex flex-col items-center gap-1 rounded-3xl px-2 py-3 text-center">
