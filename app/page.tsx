@@ -6,6 +6,7 @@ import {
   Footprints,
   Gamepad2,
   Handshake,
+  MessageCircle,
   ShoppingBag,
   Sparkles,
   Tv,
@@ -33,6 +34,12 @@ const PILLARS: {
     tint: "bg-tint-blue text-tint-blue-fg",
     title: "Campus Marketplace",
     body: "Buy, sell, and rent only with verified students from your college. Haggle in chat, meet at the mess. No strangers, no scams.",
+  },
+  {
+    icon: MessageCircle,
+    tint: "bg-tint-violet text-tint-violet-fg",
+    title: "Chat, Built In",
+    body: "Haggle on listings, make offers, coordinate pickups — and every study group and group-buy gets its own room. Your number stays private until you choose to share it.",
   },
   {
     icon: Sparkles,
