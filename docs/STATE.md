@@ -4,7 +4,7 @@
 User-approved sequence (2026-07-12): Phase 28 (saves+alerts, IN PROGRESS) → Phase 29 (dark mode) → 🚢 ship Wave C → Play Store release → Wave D in plan order. Keep going without asking until user input is genuinely required.
 
 ## Now
-UI VISUAL REFRESH COMPLETE (2026-07-12, user-directed "full visual refresh + Solo Leveling style"). lucide-react icons replace all chrome emoji; header = gradient wordmark + avatar/karma chip (Log out moved to Profile); home = search bar + tinted module tiles; dark mode = "System" aesthetic (indigo-black canvas oklch hue 275, electric primary, glow tokens, violet mesh); karma bar = cobalt→violet gradient. Play assets reshot with new UI. /privacy deployed earlier. AAB needs NO rebuild for UI (remote-load wrapper).
+UI REVAMP COMPLETE (2026-07-12): all 5 phases of docs/design/REVAMP-PLAN.md shipped locally (commits d0b109e, 0ed42b8, 6e32a9e, 8624ae8, 97e8e9f, 4467525). Phase 1 auth hero + Hunter License profile; P2 board badges/price pills/gallery dots/sticky CTA/chat bubbles; P3 group-buy glowing timeline + confetti + renewal rings + seat dots + offer chips; P4 cab route pills + match rank-rings + timetable NOW + gate pulse; P5 unified EmptyState across 15 pages + notifications day-grouped w/ type icons. Explore tab wired to /search (was dead placeholder). Play assets reshot. NOT DEPLOYED — classifier blocked; needs user to say "deploy". AAB needs NO rebuild (remote-load wrapper).
 
 ## Next
 1. USER: say "deploy" → prod deploy makes /privacy live (required Play listing URL).
