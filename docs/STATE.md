@@ -4,7 +4,7 @@
 User-approved sequence (2026-07-12): Phase 28 (saves+alerts, IN PROGRESS) → Phase 29 (dark mode) → 🚢 ship Wave C → Play Store release → Wave D in plan order. Keep going without asking until user input is genuinely required.
 
 ## Now
-UI REVAMP + QoL PASS DEPLOYED TO PROD (2026-07-12, user said "deploy"; smoke-checked: auth hero tagline + gradient wordmark live). Revamp = 5 phases of docs/design/REVAMP-PLAN.md (d0b109e..97e8e9f) + Play assets reshot (4467525) + QoL d93b9d4 (BackLink on 13 secondary screens, Button disabled state, chat inline send-error w/ draft restore). Explore tab wired to /search. Remaining: user's Play Console steps (docs/playstore/LISTING.md); purple QA image on Casio listing (user deletes in-app, then reshoot 2-marketplace.png). AAB needs NO rebuild (remote-load wrapper).
+MARKETING HOME DEPLOYED (facd019, 2026-07-13: flagship hero cards w/ live gate/marketplace stats + landing three-pillar showcase; prod smoke-checked — all three pillar strings live). A transient local DNS outage for api.vercel.com delayed the deploy ~10 min (recovered on its own). Earlier: UI REVAMP + QoL PASS DEPLOYED TO PROD (2026-07-12, user said "deploy"; smoke-checked: auth hero tagline + gradient wordmark live). Revamp = 5 phases of docs/design/REVAMP-PLAN.md (d0b109e..97e8e9f) + Play assets reshot (4467525) + QoL d93b9d4 (BackLink on 13 secondary screens, Button disabled state, chat inline send-error w/ draft restore). Explore tab wired to /search. Remaining: user's Play Console steps (docs/playstore/LISTING.md); purple QA image on Casio listing (user deletes in-app, then reshoot 2-marketplace.png). AAB needs NO rebuild (remote-load wrapper).
 
 ## Next
 1. USER: say "deploy" → prod deploy makes /privacy live (required Play listing URL).
