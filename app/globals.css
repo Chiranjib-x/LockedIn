@@ -116,6 +116,19 @@ body {
   box-shadow: 0 0 18px -4px color-mix(in oklch, var(--color-primary) 70%, transparent);
 }
 
+/* Tap feedback that glows (dark) on top of the .press scale. */
+.dark .press-glow:active {
+  box-shadow: 0 0 22px -4px color-mix(in oklch, var(--color-primary) 65%, transparent);
+}
+
+/* Urgency frame — gradient border for time-critical cards (class <15 min away). */
+.urgent-border {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--color-card), var(--color-card)) padding-box,
+    linear-gradient(120deg, var(--color-primary), var(--color-violet)) border-box;
+}
+
 /* Brand gradient — wordmark, karma bar fill, primary buttons. */
 .gradient-brand {
   background-image: linear-gradient(120deg, var(--color-primary), var(--color-violet));

@@ -141,11 +141,11 @@ export default async function ListingDetailPage({
         </>
       ) : (
         listing.status === "available" && (
-          <>
+          <div className="glass sticky bottom-24 z-10 flex flex-col gap-2 rounded-3xl p-3">
             <form action={startChat}>
               <button
                 type="submit"
-                className="press flex min-h-12 w-full items-center justify-center rounded-full bg-primary px-6 font-semibold text-on-primary shadow-lg shadow-primary/25"
+                className="press shine gradient-brand glow-primary flex min-h-12 w-full items-center justify-center rounded-full px-6 font-semibold text-on-primary"
               >
                 Chat with seller
               </button>
@@ -153,7 +153,7 @@ export default async function ListingDetailPage({
             {listing.listing_type !== "rent" && (
               <BuyerOffer listingId={listing.id} mine={myOffer ?? null} />
             )}
-          </>
+          </div>
         )
       )}
     </main>

@@ -105,7 +105,7 @@ export default async function HomePage() {
       >
         {MODULES.map((m) => (
           <Link key={m.short} href={m.href} className="press flex flex-col items-center gap-1">
-            <span className={`flex h-14 w-14 items-center justify-center rounded-2xl ${m.tint}`}>
+            <span className={`press-glow flex h-14 w-14 items-center justify-center rounded-2xl ${m.tint}`}>
               <m.icon className="h-6 w-6" strokeWidth={2} />
             </span>
             <span className="text-[11px] font-medium text-muted-foreground">{m.short}</span>

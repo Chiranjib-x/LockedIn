@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { SendHorizontal } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 type Msg = { id: string; sender_id: string; body: string; created_at: string };
@@ -103,7 +104,7 @@ export default function Thread({
               <div className={`flex ${mine ? "justify-end" : "justify-start"}`}>
                 <div
                   className={`max-w-[78%] rounded-2xl px-3 py-2 text-[15px] ${
-                    mine ? "rounded-br-sm bg-primary text-on-primary" : "rounded-bl-sm bg-card border border-border"
+                    mine ? "gradient-brand rounded-br-sm text-on-primary" : "rounded-bl-sm border border-border bg-card"
                   }`}
                 >
                   {!mine && senderNames != null && (
@@ -152,10 +153,10 @@ export default function Thread({
         <button
           onClick={() => send(text)}
           disabled={sending || !text.trim()}
-          className="press flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary text-on-primary disabled:opacity-40"
+          className="press gradient-brand glow-primary flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-on-primary disabled:opacity-40"
           aria-label="Send"
         >
-          ↑
+          <SendHorizontal className="h-5 w-5" strokeWidth={2.2} />
         </button>
       </div>
     </div>

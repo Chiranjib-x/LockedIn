@@ -25,10 +25,12 @@ export function UpNextCard({
 
   return (
     <Link href={`/timetable/${encodeURIComponent(entry.course_code)}`} className="animate-fade-up press">
-      <Card className="border-primary/30 bg-primary/5">
+      <Card className={ongoing || minutesUntil < 15 ? "urgent-border glow-primary" : "border-primary/30 bg-primary/5"}>
         <div className="flex items-center justify-between">
           <span className="text-xs font-bold tracking-wide text-primary uppercase">Up next</span>
-          <span className="rounded-full bg-primary px-2.5 py-0.5 text-xs font-semibold text-on-primary">{timeLabel}</span>
+          <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold text-on-primary ${ongoing || minutesUntil < 15 ? "gradient-brand glow-primary" : "bg-primary"}`}>
+            {timeLabel}
+          </span>
         </div>
         <h2 className="mt-1 text-lg font-bold">{entry.title}</h2>
         <p className="text-sm text-muted-foreground">

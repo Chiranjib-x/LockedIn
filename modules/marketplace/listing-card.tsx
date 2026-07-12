@@ -36,26 +36,26 @@ export default function ListingCard({ listing, index = 0 }: { listing: ListingCa
           </div>
         )}
         {listing.status === "sold" && (
-          <div className="absolute inset-0 flex items-center justify-center bg-foreground/40">
+          <div className="absolute inset-0 flex items-center justify-center bg-foreground/30 backdrop-blur-[2px]">
             <span className="rounded-full bg-card px-3 py-1 text-sm font-semibold">Sold</span>
           </div>
         )}
         {listing.listing_type === "rent" && listing.rental_status === "lent_out" && (
-          <div className="absolute inset-0 flex items-center justify-center bg-foreground/40">
+          <div className="absolute inset-0 flex items-center justify-center bg-foreground/30 backdrop-blur-[2px]">
             <span className="rounded-full bg-card px-3 py-1 text-sm font-semibold">Lent out</span>
           </div>
         )}
         {listing.listing_type === "rent" && (
-          <span className="absolute top-2 left-2 rounded-full bg-secondary px-2 py-0.5 text-xs font-semibold text-on-secondary">
+          <span className="absolute top-2 left-2 rounded-full bg-tint-teal px-2 py-0.5 text-xs font-semibold text-tint-teal-fg">
             Rent
           </span>
         )}
+        <span className="glass absolute right-2 bottom-2 rounded-full px-2.5 py-0.5 font-heading text-sm font-bold text-primary">
+          {rupees(listing.price)}
+          {listing.listing_type === "rent" && <span className="text-[10px] font-medium">/day</span>}
+        </span>
       </div>
       <p className="mt-2 truncate text-sm font-medium">{listing.title}</p>
-      <p className="font-heading font-bold text-primary">
-        {rupees(listing.price)}
-        {listing.listing_type === "rent" && <span className="text-xs font-medium">/day</span>}
-      </p>
       <p className="text-xs text-muted-foreground">{listing.category}</p>
     </Link>
   );

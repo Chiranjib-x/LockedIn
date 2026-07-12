@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { MessageCirclePlus } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { Card } from "@/components/ui";
 import { getChatRows, ago } from "@/modules/chat/recent";
@@ -13,12 +14,20 @@ export default async function ChatsPage() {
       <h1 className="text-2xl font-bold">Chats</h1>
       <PushOptIn context="chats" />
       {!rows.length ? (
-        <Card className="mt-2 flex flex-col items-center gap-2 py-10 text-center">
-          <span className="text-3xl">💬</span>
+        <Card className="mt-2 flex flex-col items-center gap-3 py-10 text-center">
+          <span className="flex h-16 w-16 items-center justify-center rounded-full bg-tint-blue">
+            <MessageCirclePlus className="h-8 w-8 text-tint-blue-fg" strokeWidth={1.8} />
+          </span>
           <p className="font-medium">No chats yet</p>
           <p className="text-sm text-muted-foreground">
             Message a seller from any listing to start a conversation.
           </p>
+          <Link
+            href="/marketplace"
+            className="press mt-1 rounded-full bg-primary px-5 py-2 text-sm font-semibold text-on-primary"
+          >
+            Browse the marketplace
+          </Link>
         </Card>
       ) : (
         <div className="flex flex-col gap-2">
