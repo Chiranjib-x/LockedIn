@@ -8,14 +8,17 @@ import {
   JoinForm,
   LeaveButton,
   OrganizerControls,
+  LogisticsForm,
   PayPanel,
   ConfirmPaidButton,
 } from "@/modules/groupbuy/client";
 
-const STATUS_STEPS = ["open", "closed", "collecting", "completed"] as const;
+const STATUS_STEPS = ["open", "closed", "ordered", "arrived", "collecting", "completed"] as const;
 const STEP_LABEL: Record<string, string> = {
   open: "Joining",
-  closed: "Ordering",
+  closed: "Locked",
+  ordered: "Ordered",
+  arrived: "Arrived",
   collecting: "Collecting",
   completed: "Done",
 };
@@ -56,6 +59,16 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
   const collected = (items ?? []).filter((it) => it.paid_confirmed).reduce((s, it) => s + Number(it.amount_owed), 0);
   const stepIdx = STATUS_STEPS.indexOf(order.status);
 
+  // Phase 35 fee split — computed at display time (never persisted), so it
+  // self-corrects as people join/leave; same philosophy as cab fare splits.
+  const fee = order.delivery_fee == null ? 0 : Number(order.delivery_fee);
+  const n = items?.length ?? 0;
+  const feeShare = (amount: number) => {
+    if (fee <= 0 || n === 0) return 0;
+    if (order.split_mode === "proportional" && total > 0) return Math.ceil((amount / total) * fee);
+    return Math.ceil(fee / n);
+  };
+
   return (
     <main className="animate-fade-up mx-auto flex w-full max-w-lg flex-1 flex-col gap-4 px-4 py-6">
       <div className="flex items-center justify-between">
@@ -71,17 +84,29 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
         </p>
       </div>
 
-      {/* status steps */}
-      <div className="flex items-center gap-1">
-        {STATUS_STEPS.map((s, i) => (
-          <div key={s} className="flex flex-1 flex-col items-center gap-1">
-            <div className={`h-1.5 w-full rounded-full ${i <= stepIdx ? "bg-primary" : "bg-muted"}`} />
-            <span className={`text-[10px] font-medium ${i <= stepIdx ? "text-primary" : "text-muted-foreground"}`}>
-              {STEP_LABEL[s]}
-            </span>
-          </div>
-        ))}
-      </div>
+      {/* status timeline */}
+      {order.status === "cancelled" ? (
+        <p className="rounded-2xl border border-destructive/30 bg-destructive/10 p-3 text-center text-sm font-medium text-destructive">
+          This order was cancelled.
+        </p>
+      ) : (
+        <div className="flex items-center gap-1">
+          {STATUS_STEPS.map((s, i) => (
+            <div key={s} className="flex flex-1 flex-col items-center gap-1">
+              <div className={`h-1.5 w-full rounded-full ${i <= stepIdx ? "bg-primary" : "bg-muted"}`} />
+              <span className={`text-[10px] font-medium ${i <= stepIdx ? "text-primary" : "text-muted-foreground"}`}>
+                {STEP_LABEL[s]}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {order.pickup_location != null && (order.status === "arrived" || order.status === "collecting") && (
+        <p className="rounded-2xl border border-accent/30 bg-accent/10 p-3 text-sm font-medium text-accent">
+          📍 Collect from {order.pickup_location}
+        </p>
+      )}
 
       {order.description && <p className="whitespace-pre-wrap text-[15px] text-foreground/90">{order.description}</p>}
 
@@ -92,7 +117,15 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
       )}
 
       {isOrganizer ? (
-        <OrganizerControls orderId={order.id} status={order.status} />
+        <>
+          <OrganizerControls orderId={order.id} status={order.status} />
+          <LogisticsForm
+            orderId={order.id}
+            pickup={order.pickup_location}
+            fee={order.delivery_fee == null ? null : Number(order.delivery_fee)}
+            splitMode={order.split_mode ?? "even"}
+          />
+        </>
       ) : (
         mine && (
           <form action={messageOrganizer}>
@@ -107,11 +140,20 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
         <JoinForm orderId={order.id} unitPrice={order.unit_price != null ? Number(order.unit_price) : null} />
       )}
 
+      {fee > 0 && (
+        <p className="rounded-2xl border border-border bg-card p-3 text-sm text-muted-foreground">
+          🚚 Delivery fee {rupees(fee)} split {order.split_mode === "proportional" ? "by order value" : "evenly"}
+          {mine && feeShare(Number(mine.amount_owed)) > 0 && (
+            <> — your share {rupees(feeShare(Number(mine.amount_owed)))}</>
+          )}
+        </p>
+      )}
+
       {mine && order.status === "collecting" && !mine.paid_confirmed && (
         <PayPanel
           itemId={mine.id}
           orderId={order.id}
-          amount={Number(mine.amount_owed)}
+          amount={Number(mine.amount_owed) + feeShare(Number(mine.amount_owed))}
           upiId={order.upi_id}
           payeeName={organizer.name}
           paidMarked={mine.paid_marked}

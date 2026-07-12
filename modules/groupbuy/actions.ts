@@ -70,11 +70,29 @@ export async function leaveOrder(orderId: string) {
   revalidatePath(`/group-buy/${orderId}`);
 }
 
-export async function setOrderStatus(orderId: string, status: "open" | "closed" | "collecting" | "completed") {
+export async function setOrderStatus(
+  orderId: string,
+  status: "open" | "closed" | "ordered" | "arrived" | "collecting" | "completed" | "cancelled"
+) {
   const { supabase } = await ctx();
   await supabase.from("group_orders").update({ status }).eq("id", orderId); // RLS: organizer only
   revalidatePath(`/group-buy/${orderId}`);
   revalidatePath("/group-buy");
+}
+
+// Phase 35: organizer sets pickup point + delivery fee + split mode.
+export async function updateLogistics(orderId: string, formData: FormData) {
+  const { supabase } = await ctx();
+  const feeRaw = String(formData.get("delivery_fee") ?? "").trim();
+  await supabase
+    .from("group_orders")
+    .update({
+      pickup_location: String(formData.get("pickup_location") ?? "").trim() || null,
+      delivery_fee: feeRaw ? Number(feeRaw) : null,
+      split_mode: String(formData.get("split_mode") ?? "even") === "proportional" ? "proportional" : "even",
+    })
+    .eq("id", orderId); // RLS: organizer only
+  revalidatePath(`/group-buy/${orderId}`);
 }
 
 export async function markPaid(itemId: string, orderId: string) {

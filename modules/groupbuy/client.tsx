@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { inputClass } from "@/components/ui";
 import UpiPay from "@/components/upi-pay";
-import { joinOrder, leaveOrder, setOrderStatus, markPaid, confirmPaid } from "./actions";
+import { joinOrder, leaveOrder, setOrderStatus, markPaid, confirmPaid, updateLogistics } from "./actions";
 
 export function JoinForm({ orderId, unitPrice }: { orderId: string; unitPrice: number | null }) {
   const [qty, setQty] = useState(1);
@@ -59,9 +59,14 @@ export function LeaveButton({ orderId }: { orderId: string }) {
   );
 }
 
-const NEXT: Record<string, { to: "closed" | "collecting" | "completed"; label: string }> = {
-  open: { to: "closed", label: "Close joining" },
-  closed: { to: "collecting", label: "Start collecting money" },
+const NEXT: Record<
+  string,
+  { to: "closed" | "ordered" | "arrived" | "collecting" | "completed"; label: string }
+> = {
+  open: { to: "closed", label: "Lock joining" },
+  closed: { to: "ordered", label: "Order placed 📦" },
+  ordered: { to: "arrived", label: "It's arrived 📍" },
+  arrived: { to: "collecting", label: "Start collecting money" },
   collecting: { to: "completed", label: "Mark completed 🎉" },
 };
 
@@ -77,7 +82,7 @@ export function OrganizerControls({ orderId, status }: { orderId: string; status
           {next.label}
         </button>
       )}
-      {status !== "open" && status !== "completed" && (
+      {status === "closed" && (
         <button
           onClick={() => setOrderStatus(orderId, "open")}
           className="press rounded-full border border-border px-4 py-2 text-sm font-medium hover:bg-muted"
@@ -85,7 +90,68 @@ export function OrganizerControls({ orderId, status }: { orderId: string; status
           Reopen
         </button>
       )}
+      {status !== "completed" && status !== "cancelled" && (
+        <button
+          onClick={() => { if (confirm("Cancel this order for everyone?")) setOrderStatus(orderId, "cancelled"); }}
+          className="press rounded-full border border-destructive/40 px-4 py-2 text-sm font-medium text-destructive hover:bg-destructive/10"
+        >
+          Cancel
+        </button>
+      )}
     </div>
+  );
+}
+
+export function LogisticsForm({
+  orderId,
+  pickup,
+  fee,
+  splitMode,
+}: {
+  orderId: string;
+  pickup: string | null;
+  fee: number | null;
+  splitMode: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const action = updateLogistics.bind(null, orderId);
+  if (!open) {
+    return (
+      <button
+        onClick={() => setOpen(true)}
+        className="press self-start rounded-full border border-border px-4 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted"
+      >
+        ⚙️ Pickup & fees{pickup != null || fee != null ? " ✓" : ""}
+      </button>
+    );
+  }
+  return (
+    <form
+      action={action}
+      onSubmit={() => setOpen(false)}
+      className="animate-scale-in flex flex-col gap-2 rounded-2xl border border-border bg-card p-3 text-sm"
+    >
+      <label className="flex flex-col gap-1 font-medium">
+        Pickup location (sent with the “arrived” ping)
+        <input name="pickup_location" defaultValue={pickup ?? ""} placeholder="e.g. H-Block 214" className={inputClass} />
+      </label>
+      <span className="flex gap-2">
+        <label className="flex flex-1 flex-col gap-1 font-medium">
+          Delivery fee (₹)
+          <input name="delivery_fee" type="number" min={0} defaultValue={fee ?? ""} className={inputClass} />
+        </label>
+        <label className="flex flex-1 flex-col gap-1 font-medium">
+          Split
+          <select name="split_mode" defaultValue={splitMode} className={inputClass}>
+            <option value="even">Evenly</option>
+            <option value="proportional">By order value</option>
+          </select>
+        </label>
+      </span>
+      <button type="submit" className="press min-h-11 self-start rounded-full bg-primary px-5 font-semibold text-on-primary">
+        Save
+      </button>
+    </form>
   );
 }
 
