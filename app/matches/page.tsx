@@ -5,6 +5,8 @@ import { scoreMatch, lookingForCompatible, type Prefs } from "@/modules/matcher/
 import ConnectButton from "@/modules/matcher/connect-button";
 import { KarmaBadge } from "@/modules/karma/badge";
 import CountUp from "@/components/count-up";
+import { Target } from "lucide-react";
+import EmptyState from "@/components/empty-state";
 
 // Match % as a rank-ring (REVAMP-PLAN Phase 4) — fill fraction = score/100.
 function ScoreRing({ score }: { score: number }) {
@@ -114,13 +116,11 @@ export default async function MatchesPage({
       </div>
 
       {!ranked.length ? (
-        <Card className="mt-2 flex flex-col items-center gap-2 py-10 text-center">
-          <span className="text-3xl">🌱</span>
-          <p className="font-medium">No one here yet</p>
+        <EmptyState icon={Target} tint="violet" title="No one here yet">
           <p className="text-sm text-muted-foreground">
             You&rsquo;re early — matches appear as more students opt in.
           </p>
-        </Card>
+        </EmptyState>
       ) : (
         <div className="flex flex-col gap-3">
           {ranked.map((m, i) => {

@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { Footprints } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { Card } from "@/components/ui";
 import { ClaimButton, RunnerActions, RequesterActions, HeadingToGate } from "@/modules/gate/client";
+import EmptyState from "@/components/empty-state";
 
 function eta(ts: string) {
   const ms = new Date(ts).getTime() - Date.now();
@@ -112,13 +114,11 @@ export default async function GatePage() {
           <HeadingToGate gate="Main Gate" />
         </div>
         {!open.length ? (
-          <Card className="flex flex-col items-center gap-2 py-8 text-center">
-            <span className="text-3xl">🏃</span>
-            <p className="font-medium">Nothing waiting right now</p>
+          <EmptyState icon={Footprints} tint="green" title="Nothing waiting right now">
             <p className="text-sm text-muted-foreground">
               Heading to the gate? Check back — someone’s biryani always needs a hero.
             </p>
-          </Card>
+          </EmptyState>
         ) : (
           open.map((r) => (
             <Card key={r.id} className="animate-fade-up flex flex-col gap-2">

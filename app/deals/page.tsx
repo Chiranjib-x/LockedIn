@@ -1,5 +1,7 @@
+import { Tag } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { Card } from "@/components/ui";
+import EmptyState from "@/components/empty-state";
 
 export default async function DealsPage() {
   const { supabase } = await requireUser();
@@ -17,10 +19,9 @@ export default async function DealsPage() {
       </div>
 
       {!merchants?.length ? (
-        <Card className="flex flex-col items-center gap-2 py-10 text-center">
-          <span className="text-3xl">🏷️</span>
-          <p className="text-sm text-muted-foreground">No active deals yet — check back soon.</p>
-        </Card>
+        <EmptyState icon={Tag} tint="green" title="No active deals yet">
+          <p className="text-sm text-muted-foreground">Check back soon.</p>
+        </EmptyState>
       ) : (
         <div className="flex flex-col gap-3">
           {merchants.map((m, i) => (

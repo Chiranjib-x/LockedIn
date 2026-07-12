@@ -1,6 +1,7 @@
-import { MapPin } from "lucide-react";
+import { BookOpen, MapPin } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { Card } from "@/components/ui";
+import EmptyState from "@/components/empty-state";
 import { KarmaBadge } from "@/modules/karma/badge";
 import { CreateGroupForm, JoinLeaveButton } from "@/modules/study/client";
 
@@ -49,11 +50,9 @@ export default async function StudyGroupsPage({
       </form>
 
       {!groups?.length ? (
-        <Card className="mt-2 flex flex-col items-center gap-2 py-10 text-center">
-          <span className="text-3xl">📚</span>
-          <p className="font-medium">{code ? `Nothing for ${code}` : "No study groups yet"}</p>
+        <EmptyState icon={BookOpen} tint="teal" title={code ? `Nothing for ${code}` : "No study groups yet"}>
           <p className="text-sm text-muted-foreground">Start one — misery loves company, especially before end-sems.</p>
-        </Card>
+        </EmptyState>
       ) : (
         <div className="flex flex-col gap-3">
           {groups.map((g) => {

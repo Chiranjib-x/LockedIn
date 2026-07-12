@@ -1,8 +1,10 @@
 import Link from "next/link";
+import { Tv } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { Card } from "@/components/ui";
 import { rupees } from "@/modules/marketplace/format";
 import { KarmaBadge } from "@/modules/karma/badge";
+import EmptyState from "@/components/empty-state";
 
 // Phase 31 discovery board: pools that opened their seats to campus.
 // service_name is freeform text, so there are no category chips — plain
@@ -37,11 +39,9 @@ export default async function BrowsePoolsPage() {
       </p>
 
       {list.length === 0 ? (
-        <Card className="mt-2 flex flex-col items-center gap-2 py-10 text-center">
-          <span className="text-3xl">📺</span>
-          <p className="font-medium">No open pools right now</p>
+        <EmptyState icon={Tv} tint="teal" title="No open pools right now">
           <p className="text-sm text-muted-foreground">Own a subscription? List your spare seats.</p>
-        </Card>
+        </EmptyState>
       ) : (
         <div className="flex flex-col gap-3">
           {list.map((p) => {

@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { CarTaxiFront } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { Card, inputClass } from "@/components/ui";
+import EmptyState from "@/components/empty-state";
 
 const STATUS_LABEL: Record<string, string> = {
   open: "Open",
@@ -70,11 +72,9 @@ export default async function CabsPage({
       </form>
 
       {!trips?.length ? (
-        <Card className="mt-2 flex flex-col items-center gap-2 py-10 text-center">
-          <span className="text-3xl">🚕</span>
-          <p className="font-medium">No trips found</p>
+        <EmptyState icon={CarTaxiFront} tint="rose" title="No trips found">
           <p className="text-sm text-muted-foreground">Post one and split the fare with people headed the same way.</p>
-        </Card>
+        </EmptyState>
       ) : (
         <div className="flex flex-col gap-3">
           {trips.map((t, i) => {

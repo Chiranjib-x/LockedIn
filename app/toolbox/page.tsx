@@ -1,5 +1,7 @@
+import { Wrench } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { Card } from "@/components/ui";
+import EmptyState from "@/components/empty-state";
 
 export default async function ToolboxPage() {
   const { supabase } = await requireUser();
@@ -17,10 +19,9 @@ export default async function ToolboxPage() {
       </div>
 
       {!items?.length ? (
-        <Card className="flex flex-col items-center gap-2 py-10 text-center">
-          <span className="text-3xl">🧰</span>
-          <p className="text-sm text-muted-foreground">Nothing here yet — check back soon.</p>
-        </Card>
+        <EmptyState icon={Wrench} tint="amber" title="Nothing here yet">
+          <p className="text-sm text-muted-foreground">Check back soon.</p>
+        </EmptyState>
       ) : (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {items.map((item, i) => (

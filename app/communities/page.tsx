@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { Users } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { Card } from "@/components/ui";
+import EmptyState from "@/components/empty-state";
 import { ApproveButtons } from "@/modules/communities/client";
 import QuantaBanner from "@/modules/communities/quanta-banner";
 
@@ -77,13 +79,11 @@ export default async function CommunitiesPage({
       )}
 
       {!approved.length ? (
-        <Card className="mt-2 flex flex-col items-center gap-2 py-10 text-center">
-          <span className="text-3xl">🫂</span>
-          <p className="font-medium">No communities yet</p>
+        <EmptyState icon={Users} tint="blue" title="No communities yet">
           <p className="text-sm text-muted-foreground">
             F1, football, Valorant, quizzing — propose the group you wish existed.
           </p>
-        </Card>
+        </EmptyState>
       ) : (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {approved.map((c, i) => {

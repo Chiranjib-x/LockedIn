@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { Bookmark } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { Card, Section } from "@/components/ui";
+import EmptyState from "@/components/empty-state";
 import { rupees } from "@/modules/marketplace/format";
 import TypeBadge from "@/modules/board/badge";
 import { deleteSavedSearch } from "@/modules/saves/actions";
@@ -37,13 +39,11 @@ export default async function SavedPage() {
       <h1 className="text-2xl font-bold">Saved</h1>
 
       {total === 0 && (
-        <Card className="flex flex-col items-center gap-2 py-10 text-center">
-          <span className="text-3xl">🔖</span>
-          <p className="font-medium">Nothing saved yet</p>
+        <EmptyState icon={Bookmark} tint="blue" title="Nothing saved yet">
           <p className="text-sm text-muted-foreground">
             Bookmark listings and posts, or save a search to get alerted when it appears.
           </p>
-        </Card>
+        </EmptyState>
       )}
 
       {(searches?.length ?? 0) > 0 && (

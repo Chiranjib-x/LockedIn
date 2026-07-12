@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { MapPin } from "lucide-react";
+import { MapPin, Pin } from "lucide-react";
 import { requireUser } from "@/lib/auth";
+import EmptyState from "@/components/empty-state";
 import { Card } from "@/components/ui";
 import BoardFilter from "@/modules/board/board-filter";
 import TypeBadge from "@/modules/board/badge";
@@ -59,13 +60,11 @@ export default async function BoardPage({
       <SaveSearchButton module="board" query={q ?? ""} filters={type ? { type } : {}} />
 
       {!posts?.length ? (
-        <Card className="mt-2 flex flex-col items-center gap-2 py-10 text-center">
-          <span className="text-3xl">📌</span>
-          <p className="font-medium">{q || type ? "Nothing matches" : "The board is empty"}</p>
+        <EmptyState icon={Pin} tint="rose" title={q || type ? "Nothing matches" : "The board is empty"}>
           <p className="text-sm text-muted-foreground">
             {q || type ? "Try different filters." : "Lost something? Found something? Post it."}
           </p>
-        </Card>
+        </EmptyState>
       ) : (
         <div className="flex flex-col gap-3">
           {posts.map((p, i) => (

@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { ShoppingBag } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { Card } from "@/components/ui";
+import EmptyState from "@/components/empty-state";
 import ListingActions from "@/modules/marketplace/listing-actions";
 import { rupees } from "@/modules/marketplace/format";
 
@@ -25,14 +27,12 @@ export default async function MyListingsPage() {
       </div>
 
       {!listings?.length ? (
-        <Card className="flex flex-col items-center gap-2 py-10 text-center">
-          <span className="text-3xl">🛍️</span>
-          <p className="font-medium">No listings yet</p>
+        <EmptyState icon={ShoppingBag} tint="blue" title="No listings yet">
           <p className="text-sm text-muted-foreground">Post your first item — it takes a minute.</p>
           <Link href="/marketplace/new" className="mt-2 text-sm font-semibold text-primary hover:underline">
             Post a listing →
           </Link>
-        </Card>
+        </EmptyState>
       ) : (
         <div className="flex flex-col gap-3">
           {listings.map((l, i) => (

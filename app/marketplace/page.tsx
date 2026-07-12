@@ -1,6 +1,7 @@
 import Link from "next/link";
+import { Search } from "lucide-react";
 import { requireUser } from "@/lib/auth";
-import { Card } from "@/components/ui";
+import EmptyState from "@/components/empty-state";
 import FilterBar from "@/modules/marketplace/filter-bar";
 import ListingCard from "@/modules/marketplace/listing-card";
 import { blockedIds, notInList } from "@/modules/moderation/blocks";
@@ -46,13 +47,11 @@ export default async function MarketplacePage({
       <SaveSearchButton module="marketplace" query={q ?? ""} filters={category ? { category } : {}} />
 
       {!listings?.length ? (
-        <Card className="mt-2 flex flex-col items-center gap-2 py-10 text-center">
-          <span className="text-3xl">🔍</span>
-          <p className="font-medium">{q || category ? "Nothing matches" : "No listings yet"}</p>
+        <EmptyState icon={Search} tint="blue" title={q || category ? "Nothing matches" : "No listings yet"}>
           <p className="text-sm text-muted-foreground">
             {q || category ? "Try a different search or category." : "Be the first to post something."}
           </p>
-        </Card>
+        </EmptyState>
       ) : (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           {listings.map((l, i) => (

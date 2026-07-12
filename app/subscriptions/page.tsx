@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { Tv } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { Card } from "@/components/ui";
 import { rupees } from "@/modules/marketplace/format";
+import EmptyState from "@/components/empty-state";
 
 function daysUntil(date: string) {
   return Math.ceil((new Date(date).getTime() - Date.now()) / 86400000);
@@ -40,13 +42,11 @@ export default async function SubscriptionsPage() {
       </div>
 
       {!subs?.length ? (
-        <Card className="mt-2 flex flex-col items-center gap-2 py-10 text-center">
-          <span className="text-3xl">📺</span>
-          <p className="font-medium">No pools yet</p>
+        <EmptyState icon={Tv} tint="teal" title="No pools yet">
           <p className="text-sm text-muted-foreground">
             Split Netflix, Spotify, or any subscription with people you trust.
           </p>
-        </Card>
+        </EmptyState>
       ) : (
         <div className="flex flex-col gap-3">
           {subs.map((s, i) => {

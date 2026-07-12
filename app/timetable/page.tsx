@@ -1,5 +1,7 @@
+import { CalendarDays } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { Card } from "@/components/ui";
+import EmptyState from "@/components/empty-state";
 import { MarkAttendance } from "@/modules/timetable/attendance-marker";
 import { AddClassForm, DeleteEntryButton } from "@/modules/timetable/client";
 import { AttendanceSummary, type CourseAttendance } from "@/modules/timetable/attendance-summary";
@@ -63,10 +65,9 @@ export default async function TimetablePage({
       <section className="flex flex-col gap-2">
         <h2 className="text-lg font-semibold">Today</h2>
         {!todayEntries.length ? (
-          <Card className="flex flex-col items-center gap-1 py-8 text-center">
-            <span className="text-3xl">📭</span>
-            <p className="text-sm text-muted-foreground">No classes today.</p>
-          </Card>
+          <EmptyState icon={CalendarDays} tint="violet" title="No classes today">
+            <p className="text-sm text-muted-foreground">Enjoy it — or add your week below.</p>
+          </EmptyState>
         ) : (
           todayEntries.map((e) => {
             const hm = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;

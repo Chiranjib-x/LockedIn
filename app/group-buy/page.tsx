@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { Handshake } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { Card } from "@/components/ui";
+import EmptyState from "@/components/empty-state";
 
 const STATUS_LABEL: Record<string, string> = {
   open: "Open",
@@ -41,13 +43,11 @@ export default async function GroupBuyPage() {
       </div>
 
       {!orders?.length ? (
-        <Card className="mt-2 flex flex-col items-center gap-2 py-10 text-center">
-          <span className="text-3xl">🤝</span>
-          <p className="font-medium">No open group-buys</p>
+        <EmptyState icon={Handshake} tint="amber" title="No open group-buys">
           <p className="text-sm text-muted-foreground">
             Pooling an order splits the delivery fee — start one and share it.
           </p>
-        </Card>
+        </EmptyState>
       ) : (
         <div className="flex flex-col gap-3">
           {orders.map((o, i) => {
