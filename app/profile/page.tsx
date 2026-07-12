@@ -4,11 +4,10 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { inputClass } from "@/components/ui";
 import { SubmitButton } from "@/components/submit-button";
-import { RatingBadge } from "@/modules/ratings/stars";
 import { getRating } from "@/modules/ratings/get-rating";
 import { ArrowRight, Bookmark } from "lucide-react";
-import { KarmaBadge } from "@/modules/karma/badge";
 import { KarmaProgress } from "@/modules/karma/progress";
+import HunterCard from "@/modules/karma/hunter-card";
 import LogoutButton from "@/components/logout-button";
 
 async function updateProfile(formData: FormData) {
@@ -59,14 +58,14 @@ export default async function ProfilePage({
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-6 py-8">
-      <h1 className="text-2xl font-bold">Your profile</h1>
-      <p className="text-sm text-muted-foreground">
-        {user.email} · {profile.colleges?.name}
-      </p>
-      <div className="flex flex-wrap items-center gap-2">
-        <KarmaBadge karma={profile.karma ?? 0} showPoints />
-        <RatingBadge avg={rating.avg} count={rating.count} />
-      </div>
+      <HunterCard
+        name={profile.name ?? "Student"}
+        detail={[user.email, profile.batch, profile.hostel_block ? `Block ${profile.hostel_block}` : null]
+          .filter(Boolean)
+          .join(" · ")}
+        karma={profile.karma ?? 0}
+        rating={rating}
+      />
       <KarmaProgress karma={profile.karma ?? 0} />
       <Link
         href="/saved"
