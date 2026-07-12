@@ -98,7 +98,10 @@ export async function ensurePushSubscription(
 export async function disablePush(supabase: SupabaseClient) {
   if (!pushSupported()) return;
   try {
-    const reg = await navigator.serviceWorker.ready;
+    // getRegistration(), never .ready — .ready hangs forever when no SW is
+    // registered (always in dev), which held logout hostage.
+    const reg = await navigator.serviceWorker.getRegistration();
+    if (reg == null) return;
     const sub = await reg.pushManager.getSubscription();
     if (sub !== null) {
       await supabase.rpc("prune_push_subscription", { p_endpoint: sub.endpoint });

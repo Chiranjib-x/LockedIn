@@ -16,7 +16,11 @@ export default function LogoutButton() {
       disabled={busy}
       onClick={async () => {
         setBusy(true);
-        await disablePush(createClient());
+        // Push cleanup is best-effort — never let it block logout (3s cap).
+        await Promise.race([
+          disablePush(createClient()),
+          new Promise((r) => setTimeout(r, 3000)),
+        ]);
         await logout();
       }}
       className="press flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-destructive/40 px-4 text-sm font-semibold text-destructive hover:bg-destructive/10 disabled:opacity-50"
