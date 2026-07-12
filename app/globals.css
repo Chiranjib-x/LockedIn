@@ -238,6 +238,20 @@ h4 {
 }
 .confetti-piece { animation: confetti-fall 2s cubic-bezier(0.3, 0, 0.8, 1) both; }
 
+/* Animated dashed route line (cabs, gate) — dashes travel origin → destination. */
+@keyframes dash-travel {
+  to { background-position: 14px 0; }
+}
+.route-dash {
+  height: 2px;
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--color-primary) 0 6px,
+    transparent 6px 14px
+  );
+  animation: dash-travel 0.9s linear infinite;
+}
+
 .animate-fade-up { animation: fade-up 0.55s var(--ease-out-quint) both; }
 .animate-scale-in { animation: scale-in 0.4s var(--ease-spring) both; }
 .animate-sheet-up { animation: sheet-up 0.35s var(--ease-out-quint) both; }

@@ -66,7 +66,7 @@ export default async function StudyGroupsPage({
               <Card key={g.id} className="flex flex-col gap-2">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <span className="rounded-full bg-secondary px-2 py-0.5 text-xs font-semibold text-on-secondary">
+                    <span className="rounded-full bg-tint-violet px-2 py-0.5 font-mono text-xs font-semibold tracking-wide text-tint-violet-fg">
                       {g.course_code}
                     </span>
                     <h2 className="mt-1 font-semibold">{g.title}</h2>
@@ -85,7 +85,12 @@ export default async function StudyGroupsPage({
                   />
                 </div>
                 <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                  {members.length}/{g.capacity} in ·
+                  <span className="flex items-center gap-1" title={`${members.length}/${g.capacity} in`}>
+                    {Array.from({ length: Math.min(g.capacity, 8) }).map((_, si) => (
+                      <span key={si} className={`h-2 w-2 rounded-full ${si < members.length ? "bg-primary" : "bg-muted"}`} />
+                    ))}
+                  </span>
+                  ·
                   {members.slice(0, 4).map((m) => (
                     <span key={m.user_id} className="flex items-center gap-1">
                       {m.profile?.name ?? "Student"} <KarmaBadge karma={m.profile?.karma ?? 0} />

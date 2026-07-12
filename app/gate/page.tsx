@@ -71,7 +71,8 @@ export default async function GatePage() {
             return (
               <Card key={r.id} className="animate-fade-up flex flex-col gap-2">
                 <div className="flex items-center gap-2">
-                  <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${STATUS_BADGE[r.status] ?? "bg-muted"}`}>
+                  <span className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-semibold ${STATUS_BADGE[r.status] ?? "bg-muted"}`}>
+                    {r.status !== "delivered" && <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-current" />}
                     {r.status === "open" ? "Waiting for a runner" : r.status === "claimed" ? (iAmRequester ? `${r.runner?.name ?? "Someone"} is on it` : "You're on it") : "Delivered"}
                   </span>
                   <span className="ml-auto text-xs text-muted-foreground">{eta(r.expected_at)}</span>
@@ -122,7 +123,7 @@ export default async function GatePage() {
           open.map((r) => (
             <Card key={r.id} className="animate-fade-up flex flex-col gap-2">
               <div className="flex items-center gap-2">
-                <span className="rounded-full bg-accent/10 px-2 py-0.5 text-xs font-semibold text-accent">
+                <span className="glow-primary rounded-full bg-accent px-2.5 py-0.5 font-heading text-xs font-bold text-on-accent">
                   ₹{Number(r.reward).toFixed(0)} reward
                 </span>
                 <span className="ml-auto text-xs text-muted-foreground">{eta(r.expected_at)}</span>

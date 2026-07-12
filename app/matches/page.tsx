@@ -4,6 +4,34 @@ import { Card } from "@/components/ui";
 import { scoreMatch, lookingForCompatible, type Prefs } from "@/modules/matcher/score";
 import ConnectButton from "@/modules/matcher/connect-button";
 import { KarmaBadge } from "@/modules/karma/badge";
+import CountUp from "@/components/count-up";
+
+// Match % as a rank-ring (REVAMP-PLAN Phase 4) — fill fraction = score/100.
+function ScoreRing({ score }: { score: number }) {
+  const R = 20;
+  const C = 2 * Math.PI * R;
+  return (
+    <span className="relative h-12 w-12 shrink-0">
+      <svg viewBox="0 0 48 48" className="h-full w-full -rotate-90">
+        <circle cx="24" cy="24" r={R} fill="none" stroke="var(--color-muted)" strokeWidth="3.5" />
+        <circle
+          cx="24" cy="24" r={R} fill="none"
+          stroke="url(#rank-ring-m)" strokeWidth="3.5" strokeLinecap="round"
+          strokeDasharray={`${C * (score / 100)} ${C}`}
+        />
+        <defs>
+          <linearGradient id="rank-ring-m" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="var(--color-primary)" />
+            <stop offset="100%" stopColor="var(--color-violet)" />
+          </linearGradient>
+        </defs>
+      </svg>
+      <span className="absolute inset-0 flex items-center justify-center font-heading text-xs font-bold text-primary">
+        <CountUp value={score} />%
+      </span>
+    </span>
+  );
+}
 
 export default async function MatchesPage({
   searchParams,
@@ -110,14 +138,20 @@ export default async function MatchesPage({
                         <p className="truncate font-semibold">{p.name}</p>
                         <KarmaBadge karma={p.karma ?? 0} />
                       </div>
-                      <span className="shrink-0 font-heading text-lg font-bold text-primary">{m.score}%</span>
+                      <ScoreRing score={m.score} />
                     </div>
                     <p className="text-xs text-muted-foreground">
                       {[p.batch, p.hostel_block].filter(Boolean).join(" · ")}
                       {m.looking_for !== "both" && <> · wants a {m.looking_for === "roommate" ? "roommate" : "study buddy"}</>}
                     </p>
                     {m.why.length > 0 && (
-                      <p className="mt-1 text-sm text-accent">{m.why.join(" · ")}</p>
+                      <p className="mt-1.5 flex flex-wrap gap-1.5">
+                        {m.why.map((w: string) => (
+                          <span key={w} className="rounded-full bg-tint-green px-2 py-0.5 text-xs font-medium text-tint-green-fg">
+                            {w}
+                          </span>
+                        ))}
+                      </p>
                     )}
                     {m.bio && <p className="mt-1 line-clamp-2 text-sm text-foreground/80">{m.bio}</p>}
                     <div className="mt-2 flex items-center gap-2">

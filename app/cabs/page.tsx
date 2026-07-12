@@ -90,9 +90,22 @@ export default async function CabsPage({
                     {joined && <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium">You’re in</span>}
                     <span className="ml-auto text-xs text-muted-foreground">{timeLabel(t.depart_at)}</span>
                   </div>
-                  <h2 className="mt-1 font-semibold">{t.origin} → {t.destination}</h2>
-                  <p className="text-sm text-muted-foreground">
-                    by {(t.creator as { name: string })?.name ?? "someone"} · {takenSeats}/{t.seats} seats taken
+                  <div className="mt-1.5 flex items-center gap-2">
+                    <span className="max-w-[38%] truncate rounded-full bg-tint-blue px-2.5 py-0.5 text-sm font-semibold text-tint-blue-fg">
+                      {t.origin}
+                    </span>
+                    <span className="route-dash min-w-4 flex-1" />
+                    <span className="max-w-[38%] truncate rounded-full bg-tint-green px-2.5 py-0.5 text-sm font-semibold text-tint-green-fg">
+                      {t.destination}
+                    </span>
+                  </div>
+                  <p className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
+                    by {(t.creator as { name: string })?.name ?? "someone"} ·
+                    <span className="flex items-center gap-1" title={`${takenSeats}/${t.seats} seats taken`}>
+                      {Array.from({ length: Math.min(t.seats, 8) }).map((_, si) => (
+                        <span key={si} className={`h-2 w-2 rounded-full ${si < takenSeats ? "bg-muted-foreground/50" : "glow-primary bg-accent"}`} />
+                      ))}
+                    </span>
                   </p>
                 </Card>
               </Link>

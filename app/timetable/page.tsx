@@ -68,11 +68,21 @@ export default async function TimetablePage({
             <p className="text-sm text-muted-foreground">No classes today.</p>
           </Card>
         ) : (
-          todayEntries.map((e) => (
-            <Card key={e.id} className="flex flex-col gap-2">
+          todayEntries.map((e) => {
+            const hm = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+            const ongoing = e.starts_at.slice(0, 5) <= hm && hm < e.ends_at.slice(0, 5);
+            return (
+            <Card key={e.id} className={`flex flex-col gap-2 ${ongoing ? "urgent-border glow-primary" : ""}`}>
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
-                  <p className="font-semibold">{e.title}</p>
+                  <p className="flex items-center gap-2 font-semibold">
+                    {e.title}
+                    {ongoing && (
+                      <span className="gradient-brand animate-pulse rounded-full px-2 py-0.5 text-[10px] font-bold text-on-primary">
+                        NOW
+                      </span>
+                    )}
+                  </p>
                   <p className="text-sm text-muted-foreground">
                     {formatTime(e.starts_at)}–{formatTime(e.ends_at)} · {e.course_code}
                     {e.venue && <> · {e.venue}</>}
@@ -85,7 +95,8 @@ export default async function TimetablePage({
                 current={(recordByCourseDate.get(`${e.course_code}|${todayKey}`) as "present" | "absent" | "cancelled") ?? null}
               />
             </Card>
-          ))
+            );
+          })
         )}
       </section>
 
