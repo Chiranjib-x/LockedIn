@@ -3,6 +3,7 @@ import { signup } from "@/app/auth/actions";
 import { inputClass } from "@/components/ui";
 import { SubmitButton } from "@/components/submit-button";
 import AuthHero from "@/modules/auth/hero";
+import GoogleAuthButton from "@/components/google-auth-button";
 
 export default async function SignupPage({
   searchParams,
@@ -39,6 +40,12 @@ export default async function SignupPage({
           />
           <SubmitButton pendingLabel="Creating…">Create account</SubmitButton>
         </form>
+        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+          <span className="h-px flex-1 bg-border" />
+          or
+          <span className="h-px flex-1 bg-border" />
+        </div>
+        <GoogleAuthButton />
         <p className="text-sm text-muted-foreground">
           Already have an account?{" "}
           <Link href="/login" className="font-medium text-primary underline">

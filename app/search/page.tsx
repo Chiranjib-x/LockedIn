@@ -6,13 +6,14 @@ import TypeBadge from "@/modules/board/badge";
 import { KarmaBadge } from "@/modules/karma/badge";
 import { openChat } from "@/modules/chat/actions";
 import SearchInput from "@/modules/search/search-input";
+import VerifiedName from "@/components/verified-name";
 
 // Phase 27: one search bar across everything. Full-text via the 0028
-// tsvector indexes; people via trigram ilike. College scoping is RLS's job —
-// these queries never mention college_id. Results are grouped per type
-// (recency-ordered within groups; ts_rank mixing deferred until groups
-// prove insufficient). No Courses tab: the courses table (Phase 23) was
-// deliberately never built.
+// tsvector indexes. College scoping is RLS's job — these queries never
+// mention college_id. Results are grouped per type (recency-ordered within
+// groups; ts_rank mixing deferred until groups prove insufficient).
+// People are EXACT-username-only (0037): you can't browse or name-search
+// students to cold-DM them — you must already know their @username.
 
 const TABS = [
   { key: "all", label: "All" },
@@ -25,7 +26,7 @@ const TABS = [
 type Listing = { id: string; title: string; price: number; category: string; status: string };
 type Post = { id: string; title: string; type: string; status: string };
 type Order = { id: string; title: string; category: string; status: string };
-type Person = { id: string; name: string; hostel_block: string | null; karma: number };
+type Person = { id: string; name: string; verified_name: string | null; username: string; hostel_block: string | null; karma: number };
 
 export default async function SearchPage({
   searchParams,
@@ -70,11 +71,7 @@ export default async function SearchPage({
             .limit(10)
         : Promise.resolve({ data: [] }),
       want("people")
-        ? supabase
-            .from("profiles")
-            .select("id, name, hostel_block, karma")
-            .ilike("name", `%${query}%`)
-            .limit(10)
+        ? supabase.rpc("find_by_username", { uname: query.replace(/^@/, "") })
         : Promise.resolve({ data: [] }),
     ]);
     listings = (l.data ?? []) as Listing[];
@@ -105,6 +102,12 @@ export default async function SearchPage({
           </Link>
         ))}
       </div>
+
+      {active === "people" && (
+        <p className="text-xs text-muted-foreground">
+          People are found by their exact @username — ask them for it.
+        </p>
+      )}
 
       {query.length < 2 ? (
         <Card className="flex flex-col items-center gap-2 py-10 text-center">
@@ -185,9 +188,11 @@ export default async function SearchPage({
                         <p className="truncate font-medium">{person.name || "Student"}</p>
                         <KarmaBadge karma={person.karma ?? 0} />
                       </div>
-                      {person.hostel_block && (
-                        <p className="text-xs text-muted-foreground">{person.hostel_block}</p>
-                      )}
+                      <p className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                        <VerifiedName name={person.verified_name} />
+                        <span>@{person.username}</span>
+                        {person.hostel_block && <span>{person.hostel_block}</span>}
+                      </p>
                     </div>
                     <form action={message}>
                       <button

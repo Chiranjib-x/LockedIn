@@ -69,7 +69,7 @@ export default async function MatchesPage({
   const [{ data: others }, { data: requests }] = await Promise.all([
     supabase
       .from("match_prefs")
-      .select("*, profile:profiles!match_prefs_user_id_fkey(id, name, verified_name, hostel_block, batch, contact_pref, karma)")
+      .select("*, profile:profiles!match_prefs_user_id_fkey(id, name, verified_name, hostel_block, batch, karma)")
       .eq("is_opted_in", true)
       .neq("user_id", user.id),
     supabase.from("match_requests").select("*"),
@@ -125,7 +125,7 @@ export default async function MatchesPage({
       ) : (
         <div className="flex flex-col gap-3">
           {ranked.map((m, i) => {
-            const p = m.profile as { id: string; name: string; verified_name: string | null; hostel_block: string | null; batch: string | null; contact_pref: string | null; karma: number };
+            const p = m.profile as { id: string; name: string; verified_name: string | null; hostel_block: string | null; batch: string | null; karma: number };
             const state = reqState(p.id);
             return (
               <Card key={p.id} className="animate-fade-up" style={{ animationDelay: `${Math.min(i, 8) * 45}ms` }}>

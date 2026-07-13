@@ -25,7 +25,7 @@ export default async function ChatThreadPage({ params }: { params: Promise<{ id:
     .single();
   if (!conv) notFound();
 
-  const [{ data: participants }, { data: messages }, { data: myProfile }] = await Promise.all([
+  const [{ data: participants }, { data: messages }] = await Promise.all([
     supabase
       .from("conversation_participants")
       .select("user_id, profiles(name, verified_name)")
@@ -35,7 +35,6 @@ export default async function ChatThreadPage({ params }: { params: Promise<{ id:
       .select("id, sender_id, body, created_at")
       .eq("conversation_id", id)
       .order("created_at", { ascending: true }),
-    supabase.from("profiles").select("contact_pref").eq("id", user.id).single(),
   ]);
 
   await markRead(id);
@@ -77,7 +76,6 @@ export default async function ChatThreadPage({ params }: { params: Promise<{ id:
         meId={user.id}
         initial={messages ?? []}
         showOpeners={conv.context_type === "listing"}
-        myContact={myProfile?.contact_pref ?? null}
         senderNames={isGroup ? Object.fromEntries(names) : null}
       />
     </main>

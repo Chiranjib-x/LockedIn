@@ -20,7 +20,7 @@ export default async function PostDetailPage({
 
   const { data: post } = await supabase
     .from("posts")
-    .select("*, author:profiles!posts_author_id_fkey(id, name, hostel_block, contact_pref)")
+    .select("*, author:profiles!posts_author_id_fkey(id, name, hostel_block)")
     .eq("id", id)
     .single();
 
@@ -29,7 +29,6 @@ export default async function PostDetailPage({
     id: string;
     name: string;
     hostel_block: string | null;
-    contact_pref: string | null;
   };
   const isMine = author.id === user.id;
   const resolvable = post.type === "lost" || post.type === "found";

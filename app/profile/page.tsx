@@ -18,19 +18,28 @@ async function updateProfile(formData: FormData) {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
+  const username = String(formData.get("username") ?? "").trim().toLowerCase();
   const { error } = await supabase
     .from("profiles")
     .update({
       name: String(formData.get("name") ?? "").trim(),
+      username,
       batch: String(formData.get("batch") ?? "").trim() || null,
       hostel_block: String(formData.get("hostel_block") ?? "").trim() || null,
       room: String(formData.get("room") ?? "").trim() || null,
-      contact_pref: String(formData.get("contact_pref") ?? "").trim() || null,
     })
     .eq("id", user.id);
 
+  // DB is the trust boundary: unique index + format check own these rules.
+  const friendly =
+    error?.code === "23505"
+      ? "That username is taken — pick another."
+      : error?.code === "23514"
+        ? "Usernames are 3–20 characters: lowercase letters, numbers, underscores."
+        : error?.message;
+
   revalidatePath("/profile");
-  redirect("/profile" + (error ? "?error=" + encodeURIComponent(error.message) : "?saved=1"));
+  redirect("/profile" + (friendly ? "?error=" + encodeURIComponent(friendly) : "?saved=1"));
 }
 
 export default async function ProfilePage({
@@ -61,7 +70,7 @@ export default async function ProfilePage({
       <HunterCard
         name={profile.name ?? "Student"}
         verifiedName={profile.verified_name}
-        detail={[user.email, profile.batch, profile.hostel_block ? `Block ${profile.hostel_block}` : null]
+        detail={[`@${profile.username}`, user.email, profile.batch, profile.hostel_block ? `Block ${profile.hostel_block}` : null]
           .filter(Boolean)
           .join(" · ")}
         karma={profile.karma ?? 0}
@@ -89,6 +98,19 @@ export default async function ProfilePage({
           <input name="name" defaultValue={profile.name} required className={field} />
         </label>
         <label className="text-sm font-medium">
+          Username <span className="font-normal text-muted-foreground">(unique — people need it to find you)</span>
+          <input
+            name="username"
+            defaultValue={profile.username}
+            required
+            minLength={3}
+            maxLength={20}
+            pattern="[a-z0-9_]+"
+            title="Lowercase letters, numbers, underscores"
+            className={field}
+          />
+        </label>
+        <label className="text-sm font-medium">
           Batch <span className="font-normal text-muted-foreground">(e.g. 2027)</span>
           <input name="batch" defaultValue={profile.batch ?? ""} className={field} />
         </label>
@@ -99,10 +121,6 @@ export default async function ProfilePage({
         <label className="text-sm font-medium">
           Room <span className="font-normal text-muted-foreground">(optional)</span>
           <input name="room" defaultValue={profile.room ?? ""} className={field} />
-        </label>
-        <label className="text-sm font-medium">
-          Contact <span className="font-normal text-muted-foreground">(e.g. WhatsApp number — shared only when you choose)</span>
-          <input name="contact_pref" defaultValue={profile.contact_pref ?? ""} className={field} />
         </label>
         <SubmitButton pendingLabel="Saving…" className="mt-2">
           Save

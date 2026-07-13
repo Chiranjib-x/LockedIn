@@ -4,7 +4,7 @@
 User-approved sequence (2026-07-12): Phase 28 (saves+alerts, IN PROGRESS) → Phase 29 (dark mode) → 🚢 ship Wave C → Play Store release → Wave D in plan order. Keep going without asking until user input is genuinely required.
 
 ## Now
-MARKETING + LOGOUT FIX DEPLOYED (2026-07-13). Landing now 6 pillars (gate/marketplace/spaces + cabs/group-buy/pools bc3a3cc); home has flagship hero cards (facd019) + live-stats row (cabs/group-buy/pools counts). Logout hang FIXED (f3394ba): disablePush awaited navigator.serviceWorker.ready which NEVER settles without a registered SW (always dev, briefly prod) → logout stuck on "Logging out…". Fix: getRegistration() (returns immediately) + 3s Promise.race cap in LogoutButton. Prod smoke-checked: all 6 pillar strings live. Earlier: UI REVAMP + QoL PASS DEPLOYED TO PROD. (2026-07-12, user said "deploy"; smoke-checked: auth hero tagline + gradient wordmark live). Revamp = 5 phases of docs/design/REVAMP-PLAN.md (d0b109e..97e8e9f) + Play assets reshot (4467525) + QoL d93b9d4 (BackLink on 13 secondary screens, Button disabled state, chat inline send-error w/ draft restore). Explore tab wired to /search. Remaining: user's Play Console steps (docs/playstore/LISTING.md); purple QA image on Casio listing (user deletes in-app, then reshoot 2-marketplace.png). AAB needs NO rebuild (remote-load wrapper).
+PRIVACY PASS + GOOGLE AUTH built, uncommitted (2026-07-13): migration 0037 APPLIED (unique usernames backfilled 9/9, contact_pref dropped, find_by_username RPC); people search is exact-username-only; chat 📱 contact-share removed; UPI deep link replaced with copy-VPA + QR (NPCI blocks P2P intent links — deep link declined every time); Google OAuth button on login/signup + /auth/callback route (needs Supabase Dashboard provider setup by user). Earlier: MARKETING + LOGOUT FIX DEPLOYED (2026-07-13). Landing now 6 pillars (gate/marketplace/spaces + cabs/group-buy/pools bc3a3cc); home has flagship hero cards (facd019) + live-stats row (cabs/group-buy/pools counts). Logout hang FIXED (f3394ba): disablePush awaited navigator.serviceWorker.ready which NEVER settles without a registered SW (always dev, briefly prod) → logout stuck on "Logging out…". Fix: getRegistration() (returns immediately) + 3s Promise.race cap in LogoutButton. Prod smoke-checked: all 6 pillar strings live. Earlier: UI REVAMP + QoL PASS DEPLOYED TO PROD. (2026-07-12, user said "deploy"; smoke-checked: auth hero tagline + gradient wordmark live). Revamp = 5 phases of docs/design/REVAMP-PLAN.md (d0b109e..97e8e9f) + Play assets reshot (4467525) + QoL d93b9d4 (BackLink on 13 secondary screens, Button disabled state, chat inline send-error w/ draft restore). Explore tab wired to /search. Remaining: user's Play Console steps (docs/playstore/LISTING.md); purple QA image on Casio listing (user deletes in-app, then reshoot 2-marketplace.png). AAB needs NO rebuild (remote-load wrapper).
 
 ## Next
 1. USER: say "deploy" → prod deploy makes /privacy live (required Play listing URL).
@@ -20,6 +20,11 @@ MARKETING + LOGOUT FIX DEPLOYED (2026-07-13). Landing now 6 pillars (gate/market
 
 
 ## Constraints
+- 2026-07-13, verbatim: "i dont want anyone to share their whatsapp number like so easily , better to remove that feature"
+- 2026-07-13, verbatim: "I dont want people to start using this app to text anyone they want by searching their name on it"
+- 2026-07-13, verbatim: "everyone must have a username which must be unique to them else they cant set it , and to contact them , one should know their unique username"
+- 2026-07-13, verbatim: "their should be a feature that stops people from faking their actual names , as we need to be able to get their actual info"
+- 2026-07-13, verbatim: "the app should not be misused for illegal reasons"
 - Keep the gmail.com seed college until user finishes testing (delete only at real launch).
 - User asked: production launch steps only with explicit go-ahead ("deploy" given 2026-07-09 — done).
 - 2026-07-12, verbatim: "i allow to apply all upcoming migrations without asking me , and now lets move one to next phases until i have to actually do something manually"
@@ -48,12 +53,15 @@ MARKETING + LOGOUT FIX DEPLOYED (2026-07-13). Landing now 6 pillars (gate/market
 - Migration 0021 applied + Phases 20/22 deployed (2026-07-10) — RESULT: prod /p/listing + /p/post 200 with data + CTA, leak-check clean (no seller/contact), og images 200 image/png, anon on /marketplace/<id> renders login form (Next streams RSC redirects as 200 + original URL — check content, not status, when probing gates).
 
 ## Open items
+- DEFERRED DROP: profiles.contact_pref was re-added to the live DB (2026-07-13) after dropping it in 0037 broke PROD (old build still `select`s it → every listing/post detail 404'd "Nothing here"). Column is now present + null, unused by new code. After prod deploys the new build, drop it in a 0038 migration. Until then the WhatsApp-removal is app-layer only on new code; OLD prod build still exposes contact_pref.
 - Delete gmail.com seed college + test accounts at real launch (DEPLOY.md item 3).
 - Re-point Girls' Closet/Boys' Den founding members to real hostel reps at launch (DEPLOY.md item 4).
-- Manual phone QA: photo upload, two-account realtime chat, UPI QR (can't automate).
+- Manual phone QA: photo upload, two-account realtime chat, UPI QR (can't automate). UPI flow REWORKED 2026-07-13 (copy-VPA + QR, deep link removed) — needs fresh phone QA.
+- USER: enable Google provider in Supabase Dashboard (Client ID/Secret from Google Cloud Console; redirect URI https://<project-ref>.supabase.co/auth/v1/callback) — OAuth button is live in UI but fails until then.
 - Rotate Firebase service-account key (was pasted into chat during Phase 21b).
 - Header overflows at ≤380px width for moderator accounts (5 icons + Log out) — components/header.tsx:60-77; consider moving Log out to Profile page. Regular users unaffected.
 
 ## Failed attempts
+- MIGRATION ORDERING (2026-07-13): dropping profiles.contact_pref in 0037 while PROD still ran old code that `select`s it → PostgREST errored on the column → listing/board detail pages got null → notFound() "Nothing here", matches went empty. Lesson: expand/contract — never drop a column until every deployed build has stopped reading it. Fix: re-added column, deferred the drop to post-deploy. Same trap applies to any future column/enum removal.
 - Playwright gotcha (recurred twice this project): `button[type=submit]` matches the header's Log out form FIRST on authed pages — always scope to `main button[type=submit]`. Bounces to /login that look like auth bugs are usually this.
 - RLS gotcha: UPDATE policies without WITH CHECK re-check USING against the NEW row — any transition that removes the actor's own claim to the row (e.g. runner_id = null) silently updates 0 rows. Use a security definer function for such transitions (claim_pickup / unclaim_pickup / trip_seats_taken pattern).

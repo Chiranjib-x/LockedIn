@@ -23,7 +23,7 @@ export default async function ListingDetailPage({
 
   const { data: listing } = await supabase
     .from("listings")
-    .select("*, seller:profiles!listings_seller_id_fkey(id, name, verified_name, hostel_block, contact_pref, karma)")
+    .select("*, seller:profiles!listings_seller_id_fkey(id, name, verified_name, hostel_block, karma)")
     .eq("id", id)
     .single();
 
@@ -33,7 +33,6 @@ export default async function ListingDetailPage({
     name: string;
     verified_name: string | null;
     hostel_block: string | null;
-    contact_pref: string | null;
     karma: number;
   };
   const isMine = seller.id === user.id;

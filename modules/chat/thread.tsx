@@ -23,14 +23,12 @@ export default function Thread({
   meId,
   initial,
   showOpeners,
-  myContact,
   senderNames = null,
 }: {
   conversationId: string;
   meId: string;
   initial: Msg[];
   showOpeners: boolean;
-  myContact: string | null;
   // present only in multi-party threads (Phase 34) — keys are user ids
   senderNames?: Record<string, string> | null;
 }) {
@@ -141,16 +139,6 @@ export default function Thread({
         </p>
       )}
       <div className="glass sticky bottom-0 flex items-center gap-2 border-t border-border px-3 py-2">
-        {myContact && (
-          <button
-            onClick={() => send(`📱 My contact: ${myContact}`)}
-            title="Share my contact"
-            className="press shrink-0 text-xl"
-            aria-label="Share my contact"
-          >
-            📱
-          </button>
-        )}
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
