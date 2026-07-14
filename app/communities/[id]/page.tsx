@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { CalendarDays, MapPin, Megaphone } from "lucide-react";
+import { CalendarDays, MapPin, Megaphone, Sparkles } from "lucide-react";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { Card } from "@/components/ui";
 import TypeBadge from "@/modules/board/badge";
-import { JoinLeaveButton } from "@/modules/communities/client";
+import { JoinLeaveButton, InterestButton } from "@/modules/communities/client";
+import { openChat } from "@/modules/chat/actions";
 
 export default async function CommunityPage({ params }: { params: Promise<{ id: string }> }) {
   const { supabase, user } = await requireUser();
@@ -13,7 +14,7 @@ export default async function CommunityPage({ params }: { params: Promise<{ id: 
   const { data: community } = await supabase.from("communities").select("*").eq("id", id).single();
   if (!community || !community.is_approved) notFound();
 
-  const [{ data: members }, { data: posts }] = await Promise.all([
+  const [{ data: members }, { data: posts }, { data: interests }] = await Promise.all([
     supabase
       .from("community_members")
       .select("user_id, role, profile:profiles!community_members_user_id_fkey(name)")
@@ -24,10 +25,17 @@ export default async function CommunityPage({ params }: { params: Promise<{ id: 
       .eq("community_id", id)
       .order("created_at", { ascending: false })
       .limit(30),
+    // RLS: a regular viewer gets only their own row; a moderator gets all leads.
+    supabase
+      .from("community_interests")
+      .select("user_id, created_at, profile:profiles!community_interests_user_id_fkey(name)")
+      .eq("community_id", id),
   ]);
 
   const me = members?.find((m) => m.user_id === user.id);
   const mods = (members ?? []).filter((m) => m.role === "moderator");
+  const isMod = me?.role === "moderator";
+  const iAmInterested = (interests ?? []).some((x) => x.user_id === user.id);
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 px-4 py-6">
@@ -43,20 +51,50 @@ export default async function CommunityPage({ params }: { params: Promise<{ id: 
             {mods.map((m) => (m.profile as unknown as { name: string })?.name).filter(Boolean).join(", ") || "the community"}
           </p>
         </div>
-        <JoinLeaveButton id={id} joined={!!me} />
+        <div className="flex shrink-0 flex-col items-end gap-2">
+          <JoinLeaveButton id={id} joined={!!me} />
+          {!me && <InterestButton id={id} interested={iAmInterested} />}
+        </div>
       </div>
 
       {community.description && (
         <p className="text-[15px] leading-relaxed text-foreground/90">{community.description}</p>
       )}
 
-      {me?.role === "moderator" && (
+      {isMod && (
         <Link
           href={`/board/new?community=${id}`}
           className="press flex min-h-11 items-center justify-center rounded-full border border-primary/40 bg-primary/5 px-5 text-sm font-semibold text-primary"
         >
           <Megaphone className="mr-1.5 h-4 w-4" strokeWidth={2} /> Post an update or event
         </Link>
+      )}
+
+      {isMod && (interests?.length ?? 0) > 0 && (
+        <section className="flex flex-col gap-2">
+          <h2 className="flex items-center gap-2 text-lg font-semibold">
+            <Sparkles className="h-5 w-5 text-primary" strokeWidth={2} /> Interested · {interests!.length}
+          </h2>
+          <p className="text-xs text-muted-foreground">Students who tapped “I’m interested” — reach out to recruit them.</p>
+          {interests!.map((it) => {
+            async function message() {
+              "use server";
+              await openChat(it.user_id, null, null);
+            }
+            return (
+              <Card key={it.user_id} className="flex items-center justify-between gap-2">
+                <span className="truncate font-medium">
+                  {(it.profile as unknown as { name: string } | null)?.name ?? "Student"}
+                </span>
+                <form action={message}>
+                  <button type="submit" className="press min-h-9 shrink-0 rounded-full border border-border px-4 text-sm font-medium hover:bg-muted">
+                    Message
+                  </button>
+                </form>
+              </Card>
+            );
+          })}
+        </section>
       )}
 
       <section className="flex flex-col gap-2">

@@ -19,7 +19,7 @@ export default async function EventsPage() {
   // Upcoming events, soonest first. Past events drop off the list.
   const { data: events } = await supabase
     .from("posts")
-    .select("id, title, images, location, event_date, status")
+    .select("id, title, images, location, event_date, status, community:communities(id, name, emoji)")
     .eq("type", "event")
     .gte("event_date", startOfDay)
     .not("author_id", "in", notInList(blocked))
@@ -70,6 +70,14 @@ export default async function EventsPage() {
                       </p>
                     )}
                     <h2 className="mt-1 truncate font-semibold">{e.title}</h2>
+                    {(() => {
+                      const club = e.community as unknown as { name: string; emoji: string } | null;
+                      return club ? (
+                        <p className="truncate text-xs font-medium text-primary">
+                          {club.emoji} {club.name}
+                        </p>
+                      ) : null;
+                    })()}
                     {e.location && (
                       <p className="flex items-center gap-1 truncate text-sm text-muted-foreground">
                         <MapPin className="h-3.5 w-3.5 shrink-0" strokeWidth={2} /> {e.location}

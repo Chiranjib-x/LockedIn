@@ -1,7 +1,30 @@
 "use client";
 
 import { useState } from "react";
-import { joinCommunity, leaveCommunity, approveCommunity, rejectCommunity } from "./actions";
+import { joinCommunity, leaveCommunity, approveCommunity, rejectCommunity, expressInterest, withdrawInterest } from "./actions";
+
+// Soft "I'm interested" lead — the booth CTA (no phone numbers). Distinct from
+// joining; the club gets a list of interested students to follow up in-app.
+export function InterestButton({ id, interested }: { id: string; interested: boolean }) {
+  const [busy, setBusy] = useState(false);
+  const [on, setOn] = useState(interested);
+  return (
+    <button
+      disabled={busy}
+      onClick={async () => {
+        setBusy(true);
+        await (on ? withdrawInterest(id) : expressInterest(id));
+        setOn(!on);
+        setBusy(false);
+      }}
+      className={`press rounded-full border px-4 py-2 text-sm font-medium disabled:opacity-50 ${
+        on ? "border-accent/40 bg-accent/10 text-accent" : "border-border bg-card hover:bg-muted"
+      }`}
+    >
+      {busy ? "…" : on ? "Interested ✓" : "I’m interested"}
+    </button>
+  );
+}
 
 export function JoinLeaveButton({ id, joined }: { id: string; joined: boolean }) {
   const [busy, setBusy] = useState(false);

@@ -6,17 +6,19 @@ import { SubmitButton } from "@/components/submit-button";
 import ImageUpload from "@/components/image-upload";
 import { createPost } from "./actions";
 
-const BOARD_TYPES = [
-  { value: "lost", label: "Lost", emoji: "😿", hint: "Where did you last see it?" },
-  { value: "found", label: "Found", emoji: "🎉", hint: "Where did you find it?" },
-  { value: "notice", label: "Notice", emoji: "📢", hint: "Relevant place (optional)" },
-] as const;
+const TYPE_META: Record<string, { label: string; emoji: string; hint: string }> = {
+  lost: { label: "Lost", emoji: "😿", hint: "Where did you last see it?" },
+  found: { label: "Found", emoji: "🎉", hint: "Where did you find it?" },
+  notice: { label: "Notice", emoji: "📢", hint: "Relevant place (optional)" },
+  event: { label: "Event", emoji: "🎪", hint: "Venue" },
+};
 
-const HINT: Record<string, string> = {
-  lost: "Where did you last see it?",
-  found: "Where did you find it?",
-  notice: "Relevant place (optional)",
-  event: "Venue",
+// Which post types each surface offers. Clubs post updates (notice) or events;
+// the plain board is lost/found/notice; /events/new is event only.
+const TYPE_SETS: Record<string, string[]> = {
+  board: ["lost", "found", "notice"],
+  community: ["notice", "event"],
+  event: ["event"],
 };
 
 export default function PostForm({
@@ -28,9 +30,10 @@ export default function PostForm({
   error?: string;
   communityId?: string;
   communityName?: string;
-  kind?: "board" | "event";
+  kind?: "board" | "event" | "community";
 }) {
-  const [type, setType] = useState<string>(kind === "event" ? "event" : communityId ? "notice" : "lost");
+  const shown = TYPE_SETS[kind] ?? TYPE_SETS.board;
+  const [type, setType] = useState<string>(shown[0]);
   const [images, setImages] = useState<string[]>([]);
 
   return (
@@ -51,19 +54,19 @@ export default function PostForm({
         </p>
       )}
 
-      {kind === "board" && (
-        <div className="grid grid-cols-3 gap-2">
-          {BOARD_TYPES.map((t) => (
+      {shown.length > 1 && (
+        <div className={`grid gap-2 ${shown.length === 2 ? "grid-cols-2" : "grid-cols-3"}`}>
+          {shown.map((t) => (
             <button
-              key={t.value}
+              key={t}
               type="button"
-              onClick={() => setType(t.value)}
+              onClick={() => setType(t)}
               className={`press flex flex-col items-center gap-1 rounded-2xl border px-2 py-3 text-sm font-medium ${
-                type === t.value ? "border-primary bg-primary/10 text-primary" : "border-border bg-card"
+                type === t ? "border-primary bg-primary/10 text-primary" : "border-border bg-card"
               }`}
             >
-              <span className="text-xl">{t.emoji}</span>
-              {t.label}
+              <span className="text-xl">{TYPE_META[t].emoji}</span>
+              {TYPE_META[t].label}
             </button>
           ))}
         </div>
@@ -86,7 +89,7 @@ export default function PostForm({
 
       <label className="flex flex-col gap-1 text-sm font-medium">
         {type === "notice" ? "Location (optional)" : type === "event" ? "Venue" : "Location"}
-        <input name="location" placeholder={HINT[type]} className={inputClass} />
+        <input name="location" placeholder={TYPE_META[type].hint} className={inputClass} />
       </label>
 
       {type === "event" && (

@@ -20,6 +20,7 @@ const TABS = [
   { key: "all", label: "All" },
   { key: "market", label: "Marketplace" },
   { key: "board", label: "Board" },
+  { key: "clubs", label: "Clubs" },
   { key: "groupbuy", label: "Group-buys" },
   { key: "people", label: "People" },
 ] as const;
@@ -28,6 +29,7 @@ type Listing = { id: string; title: string; price: number; category: string; sta
 type Post = { id: string; title: string; type: string; status: string };
 type Order = { id: string; title: string; category: string; status: string };
 type Person = { id: string; name: string; verified_name: string | null; username: string; hostel_block: string | null; karma: number };
+type Club = { id: string; name: string; emoji: string; category: string; description: string | null };
 
 export default async function SearchPage({
   searchParams,
@@ -44,11 +46,12 @@ export default async function SearchPage({
   let posts: Post[] = [];
   let orders: Order[] = [];
   let people: Person[] = [];
+  let clubs: Club[] = [];
   // No query yet → Explore is a browse surface: show the freshest listings.
   let browse: ListingCardData[] = [];
 
   if (query.length >= 2) {
-    const [l, p, o, u] = await Promise.all([
+    const [l, p, o, u, cl] = await Promise.all([
       want("market")
         ? supabase
             .from("listings")
@@ -76,11 +79,20 @@ export default async function SearchPage({
       want("people")
         ? supabase.rpc("find_by_username", { uname: query.replace(/^@/, "") })
         : Promise.resolve({ data: [] }),
+      want("clubs")
+        ? supabase
+            .from("communities")
+            .select("id, name, emoji, category, description")
+            .eq("is_approved", true)
+            .ilike("name", `%${query}%`)
+            .limit(10)
+        : Promise.resolve({ data: [] }),
     ]);
     listings = (l.data ?? []) as Listing[];
     posts = (p.data ?? []) as Post[];
     orders = (o.data ?? []) as Order[];
     people = (u.data ?? []) as Person[];
+    clubs = (cl.data ?? []) as Club[];
   } else {
     const { data } = await supabase
       .from("listings")
@@ -92,7 +104,7 @@ export default async function SearchPage({
     browse = (data ?? []) as ListingCardData[];
   }
 
-  const total = listings.length + posts.length + orders.length + people.length;
+  const total = listings.length + posts.length + orders.length + people.length + clubs.length;
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 px-4 py-6">
@@ -173,6 +185,25 @@ export default async function SearchPage({
                   <Card className="flex items-center justify-between gap-2">
                     <p className="min-w-0 truncate font-semibold">{p.title}</p>
                     <TypeBadge type={p.type} />
+                  </Card>
+                </Link>
+              ))}
+            </section>
+          )}
+
+          {clubs.length > 0 && (
+            <section className="flex flex-col gap-2">
+              <h2 className="text-lg font-semibold">Clubs</h2>
+              {clubs.map((cl) => (
+                <Link key={cl.id} href={`/communities/${cl.id}`} className="press">
+                  <Card className="flex items-center gap-3">
+                    <span className="text-2xl">{cl.emoji}</span>
+                    <div className="min-w-0">
+                      <p className="truncate font-semibold">{cl.name}</p>
+                      <p className="truncate text-xs text-muted-foreground">
+                        {cl.description || cl.category}
+                      </p>
+                    </div>
                   </Card>
                 </Link>
               ))}

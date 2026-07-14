@@ -20,7 +20,7 @@ export default async function PostDetailPage({
 
   const { data: post } = await supabase
     .from("posts")
-    .select("*, author:profiles!posts_author_id_fkey(id, name, hostel_block)")
+    .select("*, author:profiles!posts_author_id_fkey(id, name, hostel_block), community:communities(id, name, emoji)")
     .eq("id", id)
     .single();
 
@@ -30,6 +30,7 @@ export default async function PostDetailPage({
     name: string;
     hostel_block: string | null;
   };
+  const club = post.community as unknown as { id: string; name: string; emoji: string } | null;
   const isMine = author.id === user.id;
   const resolvable = post.type === "lost" || post.type === "found";
   const { data: savedRow } = await supabase
@@ -79,6 +80,15 @@ export default async function PostDetailPage({
       </div>
 
       <h1 className="text-2xl font-bold">{post.title}</h1>
+
+      {club && (
+        <Link
+          href={`/communities/${club.id}`}
+          className="press inline-flex w-fit items-center gap-1.5 rounded-full border border-primary/30 bg-primary/5 px-3 py-1 text-sm font-semibold text-primary"
+        >
+          {club.emoji} {club.name}
+        </Link>
+      )}
 
       <div className="flex flex-col gap-1 text-sm text-muted-foreground">
         {post.location && (

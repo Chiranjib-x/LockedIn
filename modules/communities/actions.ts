@@ -59,3 +59,15 @@ export async function rejectCommunity(id: string) {
   await supabase.from("communities").delete().eq("id", id); // RLS: founder or proposer-pending
   revalidatePath("/communities");
 }
+
+export async function expressInterest(id: string) {
+  const { supabase, user } = await ctx();
+  await supabase.from("community_interests").insert({ community_id: id, user_id: user.id });
+  revalidatePath(`/communities/${id}`);
+}
+
+export async function withdrawInterest(id: string) {
+  const { supabase, user } = await ctx();
+  await supabase.from("community_interests").delete().eq("community_id", id).eq("user_id", user.id);
+  revalidatePath(`/communities/${id}`);
+}
