@@ -16,6 +16,7 @@ import {
   Target,
   Tv,
   Users,
+  Users2,
   Wrench,
   type LucideIcon,
 } from "lucide-react";
@@ -48,6 +49,7 @@ const MODULES: { short: string; href: string; icon: LucideIcon; tint: string }[]
   { short: "Pools", href: "/subscriptions", icon: Tv, tint: "bg-tint-teal text-tint-teal-fg" },
   { short: "Match", href: "/matches", icon: Target, tint: "bg-tint-violet text-tint-violet-fg" },
   { short: "Clubs", href: "/communities", icon: Users, tint: "bg-tint-blue text-tint-blue-fg" },
+  { short: "Crews", href: "/crews", icon: Users2, tint: "bg-tint-rose text-tint-rose-fg" },
   { short: "Toolbox", href: "/toolbox", icon: Wrench, tint: "bg-tint-amber text-tint-amber-fg" },
   { short: "Deals", href: "/deals", icon: Tag, tint: "bg-tint-green text-tint-green-fg" },
   { short: "Timetable", href: "/timetable", icon: CalendarDays, tint: "bg-tint-violet text-tint-violet-fg" },
