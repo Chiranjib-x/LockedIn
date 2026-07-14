@@ -39,6 +39,7 @@ export async function unlinkMyId(): Promise<void> {
 
 export type CheckinResult = {
   attendee_name: string | null;
+  email: string | null;
   is_new: boolean;
   error?: string;
 };
@@ -57,8 +58,12 @@ export async function recordCheckin(postId: string, code: string): Promise<Check
       : error.message.includes("empty code")
         ? "That scan was empty — try again."
         : "Couldn’t record that check-in.";
-    return { attendee_name: null, is_new: false, error: msg };
+    return { attendee_name: null, email: null, is_new: false, error: msg };
   }
   const row = Array.isArray(data) ? data[0] : data;
-  return { attendee_name: row?.attendee_name ?? null, is_new: !!row?.is_new };
+  return {
+    attendee_name: row?.attendee_name ?? null,
+    email: row?.email ?? null,
+    is_new: !!row?.is_new,
+  };
 }

@@ -19,16 +19,11 @@ export default async function EventCheckinPage({ params }: { params: Promise<{ i
   const { data: prof } = await supabase.from("profiles").select("is_moderator").eq("id", user.id).single();
   if (post.author_id !== user.id && !prof?.is_moderator) notFound();
 
-  const { data: rows } = await supabase
-    .from("event_checkins")
-    .select("code, attendee:profiles!event_checkins_attendee_id_fkey(name)")
-    .eq("post_id", id)
-    .order("created_at", { ascending: false });
-
-  const initial = (rows ?? []).map((r) => ({
-    code: r.code,
-    name: (r.attendee as unknown as { name: string } | null)?.name ?? null,
-  }));
+  // event_roster() (0043): organizer/moderator-only, includes attendee emails.
+  const { data: rows } = await supabase.rpc("event_roster", { p_post_id: id });
+  const initial = ((rows ?? []) as { code: string; name: string | null; email: string | null }[]).map(
+    (r) => ({ code: r.code, name: r.name, email: r.email })
+  );
 
   return (
     <main className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-4 px-4 py-6">
