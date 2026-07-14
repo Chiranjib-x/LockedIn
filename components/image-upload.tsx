@@ -3,6 +3,30 @@
 import { useState, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
 
+// Downscale to <=1280px longest side + re-encode JPEG — typically 3–5x smaller,
+// stretching the storage quota. Also strips EXIF (incl. GPS geotags) as a side
+// effect. Falls back to the original file on any failure or if it isn't smaller.
+async function compressImage(file: File): Promise<Blob> {
+  const MAX = 1280;
+  try {
+    const bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });
+    const scale = Math.min(1, MAX / Math.max(bitmap.width, bitmap.height));
+    const w = Math.max(1, Math.round(bitmap.width * scale));
+    const h = Math.max(1, Math.round(bitmap.height * scale));
+    const canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return file;
+    ctx.drawImage(bitmap, 0, 0, w, h);
+    bitmap.close?.();
+    const blob = await new Promise<Blob | null>((res) => canvas.toBlob(res, "image/jpeg", 0.82));
+    return blob && blob.size < file.size ? blob : file;
+  } catch {
+    return file;
+  }
+}
+
 // Reusable multi-image uploader. Uploads to a Storage bucket under {uid}/...,
 // reports the resulting public URLs via onChange. Reused by Lost & Found later.
 // ponytail: no crop/reorder yet — add when a module needs it.
@@ -44,15 +68,23 @@ export default function ImageUpload({
     const uploaded: string[] = [];
     for (const file of Array.from(files).slice(0, room)) {
       if (!file.type.startsWith("image/")) continue;
-      if (file.size > 5 * 1024 * 1024) {
+      if (file.size > 25 * 1024 * 1024) {
+        setError("That image is too large to process.");
+        continue;
+      }
+      const source = await compressImage(file);
+      // After downscaling a phone photo is well under this; only a giant that
+      // failed to compress trips it.
+      if (source.size > 5 * 1024 * 1024) {
         setError("Each image must be under 5 MB.");
         continue;
       }
-      const ext = file.name.split(".").pop() || "jpg";
+      const compressed = source !== file;
+      const ext = compressed ? "jpg" : file.name.split(".").pop() || "jpg";
       const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
       const { error: upErr } = await supabase.storage
         .from(bucket)
-        .upload(path, file, { cacheControl: "3600" });
+        .upload(path, source, { cacheControl: "3600", contentType: compressed ? "image/jpeg" : file.type });
       if (upErr) {
         setError(upErr.message);
         continue;
