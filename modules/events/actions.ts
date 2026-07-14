@@ -1,6 +1,41 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { revalidatePath } from "next/cache";
+
+// Link the caller's OWN ID card. The stored value is the exact barcode string,
+// so it matches byte-for-byte when an organizer scans the same card at check-in
+// (typing it by hand would not — students can't know their barcode's encoding).
+export async function linkMyId(code: string): Promise<{ ok: boolean; error?: string }> {
+  const clean = code.trim();
+  if (!clean) return { ok: false, error: "That scan was empty — try again." };
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "Not signed in." };
+  const { error } = await supabase.from("profiles").update({ roll_number: clean }).eq("id", user.id);
+  if (error) {
+    return {
+      ok: false,
+      error: error.code === "23505"
+        ? "That ID is already linked to another account."
+        : "Couldn’t link that ID.",
+    };
+  }
+  revalidatePath("/profile");
+  return { ok: true };
+}
+
+export async function unlinkMyId(): Promise<void> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return;
+  await supabase.from("profiles").update({ roll_number: null }).eq("id", user.id);
+  revalidatePath("/profile");
+}
 
 export type CheckinResult = {
   attendee_name: string | null;
