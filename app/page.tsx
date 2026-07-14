@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import {
   ArrowRight,
   CarTaxiFront,
+  Download,
   Footprints,
   Gamepad2,
   Handshake,
@@ -124,6 +125,17 @@ export default async function Home() {
       >
         Get started <ArrowRight className="h-4 w-4" strokeWidth={2.4} />
       </Link>
+
+      <a
+        href="/download"
+        className="animate-fade-up mt-3 flex min-h-11 items-center gap-2 rounded-full border border-border bg-card/70 px-6 text-sm font-semibold backdrop-blur transition-all duration-150 hover:-translate-y-0.5 hover:border-primary"
+        style={{ animationDelay: "300ms" }}
+      >
+        <Download className="h-4 w-4" strokeWidth={2.2} /> Download the Android app
+      </a>
+      <p className="animate-fade-up mt-1.5 text-xs text-muted-foreground" style={{ animationDelay: "340ms" }}>
+        Android APK · iPhone? Open in Safari → Share → Add to Home Screen
+      </p>
 
       {/* The three pillars */}
       <div className="mt-16 flex w-full max-w-md flex-col gap-4 text-left">
