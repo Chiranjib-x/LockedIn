@@ -7,7 +7,6 @@ import { KarmaBadge } from "@/modules/karma/badge";
 import { openChat } from "@/modules/chat/actions";
 import SearchInput from "@/modules/search/search-input";
 import VerifiedName from "@/components/verified-name";
-import ListingCard, { type ListingCardData } from "@/modules/marketplace/listing-card";
 
 // Phase 27: one search bar across everything. Full-text via the 0028
 // tsvector indexes. College scoping is RLS's job — these queries never
@@ -47,8 +46,6 @@ export default async function SearchPage({
   let orders: Order[] = [];
   let people: Person[] = [];
   let clubs: Club[] = [];
-  // No query yet → Explore is a browse surface: show the freshest listings.
-  let browse: ListingCardData[] = [];
 
   if (query.length >= 2) {
     const [l, p, o, u, cl] = await Promise.all([
@@ -94,14 +91,47 @@ export default async function SearchPage({
     people = (u.data ?? []) as Person[];
     clubs = (cl.data ?? []) as Club[];
   } else {
-    const { data } = await supabase
-      .from("listings")
-      .select("id, title, price, category, images, status, listing_type, rental_status")
-      .eq("status", "available")
-      .is("space_id", null)
-      .order("created_at", { ascending: false })
-      .limit(12);
-    browse = (data ?? []) as ListingCardData[];
+    // No query yet → browse recent items for the active tab, so the category
+    // toggles actually filter (People stays username-only).
+    const [l, p, o, cl] = await Promise.all([
+      want("market")
+        ? supabase
+            .from("listings")
+            .select("id, title, price, category, status")
+            .eq("status", "available")
+            .is("space_id", null)
+            .order("created_at", { ascending: false })
+            .limit(12)
+        : Promise.resolve({ data: [] }),
+      want("board")
+        ? supabase
+            .from("posts")
+            .select("id, title, type, status")
+            .in("type", ["lost", "found", "notice"])
+            .order("created_at", { ascending: false })
+            .limit(12)
+        : Promise.resolve({ data: [] }),
+      want("groupbuy")
+        ? supabase
+            .from("group_orders")
+            .select("id, title, category, status")
+            .order("created_at", { ascending: false })
+            .limit(12)
+        : Promise.resolve({ data: [] }),
+      want("clubs")
+        ? supabase
+            .from("communities")
+            .select("id, name, emoji, category, description, recruiting")
+            .eq("is_approved", true)
+            .order("recruiting", { ascending: false })
+            .order("created_at", { ascending: false })
+            .limit(12)
+        : Promise.resolve({ data: [] }),
+    ]);
+    listings = (l.data ?? []) as Listing[];
+    posts = (p.data ?? []) as Post[];
+    orders = (o.data ?? []) as Order[];
+    clubs = (cl.data ?? []) as Club[];
   }
 
   const total = listings.length + posts.length + orders.length + people.length + clubs.length;
@@ -133,28 +163,21 @@ export default async function SearchPage({
         </p>
       )}
 
-      {query.length < 2 ? (
-        <section className="flex flex-col gap-2">
-          <h2 className="text-lg font-semibold">Fresh on campus</h2>
-          {browse.length === 0 ? (
-            <Card className="flex flex-col items-center gap-2 py-10 text-center">
-              <span className="text-3xl">🛍️</span>
-              <p className="text-sm text-muted-foreground">Nothing listed yet — be the first to post.</p>
-            </Card>
-          ) : (
-            <div className="grid grid-cols-2 gap-3">
-              {browse.map((l, i) => (
-                <ListingCard key={l.id} listing={l} index={i} />
-              ))}
-            </div>
-          )}
-        </section>
-      ) : total === 0 ? (
-        <Card className="flex flex-col items-center gap-2 py-10 text-center">
-          <span className="text-3xl">🤷</span>
-          <p className="font-medium">Nothing on campus for “{query}”</p>
-          <p className="text-sm text-muted-foreground">Try a different word — or post it yourself.</p>
-        </Card>
+      {total === 0 ? (
+        // People tab with no query shows only the username hint above.
+        active === "people" && query.length < 2 ? null : (
+          <Card className="flex flex-col items-center gap-2 py-10 text-center">
+            <span className="text-3xl">{query.length < 2 ? "🧭" : "🤷"}</span>
+            {query.length < 2 ? (
+              <p className="text-sm text-muted-foreground">Nothing here yet — be the first to post.</p>
+            ) : (
+              <>
+                <p className="font-medium">Nothing on campus for “{query}”</p>
+                <p className="text-sm text-muted-foreground">Try a different word — or post it yourself.</p>
+              </>
+            )}
+          </Card>
+        )
       ) : (
         <div className="flex flex-col gap-5">
           {listings.length > 0 && (
