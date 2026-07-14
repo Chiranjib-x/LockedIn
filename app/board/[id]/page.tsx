@@ -133,6 +133,15 @@ export default async function PostDetailPage({
         />
       )}
 
+      {post.type === "event" && isMine && (
+        <Link
+          href={`/board/${post.id}/checkin`}
+          className="press flex min-h-12 items-center justify-center rounded-full bg-primary px-6 font-semibold text-on-primary hover:bg-primary-strong"
+        >
+          Run check-in →
+        </Link>
+      )}
+
       {isMine && resolvable && <ResolveButton id={post.id} resolved={post.status === "resolved"} />}
     </main>
   );

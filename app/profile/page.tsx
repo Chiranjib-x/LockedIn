@@ -27,16 +27,20 @@ async function updateProfile(formData: FormData) {
       batch: String(formData.get("batch") ?? "").trim() || null,
       hostel_block: String(formData.get("hostel_block") ?? "").trim() || null,
       room: String(formData.get("room") ?? "").trim() || null,
+      roll_number: String(formData.get("roll_number") ?? "").trim() || null,
     })
     .eq("id", user.id);
 
   // DB is the trust boundary: unique index + format check own these rules.
+  const dup = error?.code === "23505";
   const friendly =
-    error?.code === "23505"
-      ? "That username is taken — pick another."
-      : error?.code === "23514"
-        ? "Usernames are 3–20 characters: lowercase letters, numbers, underscores."
-        : error?.message;
+    dup && /roll/i.test(error?.message ?? "")
+      ? "That ID number is already linked to another account."
+      : dup
+        ? "That username is taken — pick another."
+        : error?.code === "23514"
+          ? "Usernames are 3–20 characters: lowercase letters, numbers, underscores."
+          : error?.message;
 
   revalidatePath("/profile");
   redirect("/profile" + (friendly ? "?error=" + encodeURIComponent(friendly) : "?saved=1"));
@@ -66,6 +70,7 @@ export default async function ProfilePage({
       batch: string | null;
       hostel_block: string | null;
       room: string | null;
+      roll_number: string | null;
       karma: number;
     }>();
 
@@ -128,8 +133,13 @@ export default async function ProfilePage({
           <input name="hostel_block" defaultValue={profile.hostel_block ?? ""} className={field} />
         </label>
         <label className="text-sm font-medium">
-          Room <span className="font-normal text-muted-foreground">(optional)</span>
+          Room <span className="font-normal text-muted-foreground">(optional, private)</span>
           <input name="room" defaultValue={profile.room ?? ""} className={field} />
+        </label>
+        <label className="text-sm font-medium">
+          College ID number{" "}
+          <span className="font-normal text-muted-foreground">(optional, private — show up by name at event check-ins)</span>
+          <input name="roll_number" defaultValue={profile.roll_number ?? ""} className={field} />
         </label>
         <SubmitButton pendingLabel="Saving…" className="mt-2">
           Save
