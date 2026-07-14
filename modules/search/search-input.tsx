@@ -28,7 +28,6 @@ export default function SearchInput({ initialQ }: { initialQ: string }) {
       value={q}
       onChange={(e) => setQ(e.target.value)}
       placeholder="Search everything — books, cycles, lost cards, people…"
-      autoFocus
       className={inputClass}
       aria-label="Global search"
     />
