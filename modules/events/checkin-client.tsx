@@ -4,6 +4,7 @@ import { useState } from "react";
 import { UserCheck } from "lucide-react";
 import BarcodeScanner from "./scanner";
 import { recordCheckin } from "./actions";
+import { regLabel } from "./reg";
 
 type Row = { code: string; name: string | null };
 
@@ -54,12 +55,21 @@ export default function CheckinClient({ postId, initial }: { postId: string; ini
           <p className="text-sm text-muted-foreground">Scan an ID card to check someone in.</p>
         ) : (
           <ul className="flex flex-col gap-1">
-            {roster.map((r) => (
-              <li key={r.code} className="flex items-center justify-between rounded-xl border border-border bg-card px-3 py-2 text-sm">
-                <span className="font-medium">{r.name ?? r.code}</span>
-                {!r.name && <span className="text-xs text-muted-foreground">guest · {r.code}</span>}
-              </li>
-            ))}
+            {roster.map((r) => {
+              const label = regLabel(r.code);
+              return (
+                <li key={r.code} className="flex items-center justify-between gap-2 rounded-xl border border-border bg-card px-3 py-2 text-sm">
+                  <span className="min-w-0">
+                    <span className="font-medium">{r.name ?? r.code}</span>
+                    <span className="block text-xs text-muted-foreground">
+                      {[!r.name ? "guest" : null, r.name ? r.code : null, label]
+                        .filter(Boolean)
+                        .join(" · ")}
+                    </span>
+                  </span>
+                </li>
+              );
+            })}
           </ul>
         )}
       </section>
