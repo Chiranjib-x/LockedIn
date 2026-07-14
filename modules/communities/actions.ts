@@ -78,3 +78,9 @@ export async function setRecruiting(id: string, on: boolean) {
   revalidatePath(`/communities/${id}`);
   revalidatePath("/communities");
 }
+
+export async function setMemberPosition(cid: string, uid: string, position: string) {
+  const { supabase } = await ctx();
+  await supabase.rpc("set_member_position", { cid, uid, pos: position }); // gated: club/app moderator
+  revalidatePath(`/communities/${cid}`);
+}

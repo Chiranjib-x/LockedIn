@@ -5,6 +5,7 @@ import { requireUser } from "@/lib/auth";
 import { Card } from "@/components/ui";
 import TypeBadge from "@/modules/board/badge";
 import { JoinLeaveButton, InterestButton, RecruitingToggle } from "@/modules/communities/client";
+import PositionEditor from "@/modules/communities/position-editor";
 import { openChat } from "@/modules/chat/actions";
 
 export default async function CommunityPage({ params }: { params: Promise<{ id: string }> }) {
@@ -17,7 +18,7 @@ export default async function CommunityPage({ params }: { params: Promise<{ id: 
   const [{ data: members }, { data: posts }, { data: interests }] = await Promise.all([
     supabase
       .from("community_members")
-      .select("user_id, role, profile:profiles!community_members_user_id_fkey(name)")
+      .select("user_id, role, position, profile:profiles!community_members_user_id_fkey(name)")
       .eq("community_id", id),
     supabase
       .from("posts")
@@ -36,6 +37,8 @@ export default async function CommunityPage({ params }: { params: Promise<{ id: 
   const mods = (members ?? []).filter((m) => m.role === "moderator");
   const isMod = me?.role === "moderator";
   const iAmInterested = (interests ?? []).some((x) => x.user_id === user.id);
+  const team = (members ?? []).filter((m) => (m as { position: string | null }).position);
+  const nameOf = (m: unknown) => (((m as { profile: { name: string } | null }).profile)?.name) ?? "Student";
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 px-4 py-6">
@@ -66,6 +69,22 @@ export default async function CommunityPage({ params }: { params: Promise<{ id: 
 
       {community.description && (
         <p className="text-[15px] leading-relaxed text-foreground/90">{community.description}</p>
+      )}
+
+      {team.length > 0 && (
+        <section className="flex flex-col gap-2">
+          <h2 className="text-lg font-semibold">The team</h2>
+          <div className="flex flex-wrap gap-2">
+            {team.map((m) => (
+              <span key={m.user_id} className="flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-sm">
+                <span className="font-medium">{nameOf(m)}</span>
+                <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
+                  {(m as { position: string }).position}
+                </span>
+              </span>
+            ))}
+          </div>
+        </section>
       )}
 
       {isMod && (
@@ -130,21 +149,25 @@ export default async function CommunityPage({ params }: { params: Promise<{ id: 
               "use server";
               await openChat(m.user_id, null, null);
             }
+            const position = (m as { position: string | null }).position;
             return (
-              <Card key={m.user_id} className="flex items-center justify-between gap-2">
-                <span className="flex min-w-0 items-center gap-2">
-                  <span className="truncate font-medium">{name}</span>
-                  {m.role === "moderator" && (
-                    <span className="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">Moderator</span>
+              <Card key={m.user_id} className="flex flex-col gap-2">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="flex min-w-0 items-center gap-2">
+                    <span className="truncate font-medium">{name}</span>
+                    {m.role === "moderator" && (
+                      <span className="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">Moderator</span>
+                    )}
+                  </span>
+                  {m.user_id !== user.id && (
+                    <form action={message}>
+                      <button type="submit" className="press min-h-9 shrink-0 rounded-full border border-border px-4 text-sm font-medium hover:bg-muted">
+                        Message
+                      </button>
+                    </form>
                   )}
-                </span>
-                {m.user_id !== user.id && (
-                  <form action={message}>
-                    <button type="submit" className="press min-h-9 shrink-0 rounded-full border border-border px-4 text-sm font-medium hover:bg-muted">
-                      Message
-                    </button>
-                  </form>
-                )}
+                </div>
+                <PositionEditor cid={id} uid={m.user_id} current={position} />
               </Card>
             );
           })}
