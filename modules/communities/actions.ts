@@ -71,3 +71,10 @@ export async function withdrawInterest(id: string) {
   await supabase.from("community_interests").delete().eq("community_id", id).eq("user_id", user.id);
   revalidatePath(`/communities/${id}`);
 }
+
+export async function setRecruiting(id: string, on: boolean) {
+  const { supabase } = await ctx();
+  await supabase.rpc("set_recruiting", { cid: id, on_flag: on }); // gated: club/app moderator
+  revalidatePath(`/communities/${id}`);
+  revalidatePath("/communities");
+}

@@ -1,7 +1,30 @@
 "use client";
 
 import { useState } from "react";
-import { joinCommunity, leaveCommunity, approveCommunity, rejectCommunity, expressInterest, withdrawInterest } from "./actions";
+import { joinCommunity, leaveCommunity, approveCommunity, rejectCommunity, expressInterest, withdrawInterest, setRecruiting } from "./actions";
+
+// Moderator toggle: flag the club as actively recruiting (surfaces it in the
+// communities list + search). Great for Quanta week.
+export function RecruitingToggle({ id, recruiting }: { id: string; recruiting: boolean }) {
+  const [busy, setBusy] = useState(false);
+  const [on, setOn] = useState(recruiting);
+  return (
+    <button
+      disabled={busy}
+      onClick={async () => {
+        setBusy(true);
+        await setRecruiting(id, !on);
+        setOn(!on);
+        setBusy(false);
+      }}
+      className={`press flex min-h-11 items-center justify-center gap-2 rounded-full border px-5 text-sm font-semibold disabled:opacity-50 ${
+        on ? "border-accent/40 bg-accent/10 text-accent" : "border-border bg-card hover:bg-muted"
+      }`}
+    >
+      {on ? "🟢 Recruiting — tap to stop" : "Start recruiting"}
+    </button>
+  );
+}
 
 // Soft "I'm interested" lead — the booth CTA (no phone numbers). Distinct from
 // joining; the club gets a list of interested students to follow up in-app.

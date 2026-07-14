@@ -34,6 +34,31 @@ export default async function CommunitiesPage({
   const myIds = new Set((myMemberships ?? []).map((m) => m.community_id));
   const approved = (communities ?? []).filter((c) => c.is_approved);
   const pending = (communities ?? []).filter((c) => !c.is_approved);
+  const recruiting = approved.filter((c) => c.recruiting);
+
+  const clubCard = (c: (typeof approved)[number], i: number) => {
+    const count = (c.members as { user_id: string }[]).length;
+    return (
+      <Link key={c.id} href={`/communities/${c.id}`} className="animate-fade-up press" style={{ animationDelay: `${Math.min(i, 8) * 45}ms` }}>
+        <Card className="h-full transition-all duration-150 hover:-translate-y-0.5 hover:border-primary hover:shadow-md">
+          <div className="flex items-start justify-between">
+            <span className="text-2xl">{c.emoji}</span>
+            <span className="rounded-full bg-muted px-2 py-0.5 text-xs">{CATEGORY_LABEL[c.category]}</span>
+          </div>
+          <div className="mt-1 flex flex-wrap items-center gap-2">
+            <h2 className="font-semibold">{c.name}</h2>
+            {c.recruiting && (
+              <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[11px] font-semibold text-accent">🟢 Recruiting</span>
+            )}
+          </div>
+          <p className="text-sm text-muted-foreground">
+            {count} member{count === 1 ? "" : "s"}
+            {myIds.has(c.id) && <span className="text-accent"> · you’re in</span>}
+          </p>
+        </Card>
+      </Link>
+    );
+  };
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 px-4 py-6">
@@ -78,6 +103,15 @@ export default async function CommunitiesPage({
         </section>
       )}
 
+      {recruiting.length > 0 && (
+        <section className="flex flex-col gap-2">
+          <h2 className="text-lg font-semibold">🟢 Recruiting now</h2>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {recruiting.map((c, i) => clubCard(c, i))}
+          </div>
+        </section>
+      )}
+
       {!approved.length ? (
         <EmptyState icon={Users} tint="blue" title="No communities yet">
           <p className="text-sm text-muted-foreground">
@@ -85,26 +119,12 @@ export default async function CommunitiesPage({
           </p>
         </EmptyState>
       ) : (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          {approved.map((c, i) => {
-            const count = (c.members as { user_id: string }[]).length;
-            return (
-              <Link key={c.id} href={`/communities/${c.id}`} className="animate-fade-up press" style={{ animationDelay: `${Math.min(i, 8) * 45}ms` }}>
-                <Card className="h-full transition-all duration-150 hover:-translate-y-0.5 hover:border-primary hover:shadow-md">
-                  <div className="flex items-start justify-between">
-                    <span className="text-2xl">{c.emoji}</span>
-                    <span className="rounded-full bg-muted px-2 py-0.5 text-xs">{CATEGORY_LABEL[c.category]}</span>
-                  </div>
-                  <h2 className="mt-1 font-semibold">{c.name}</h2>
-                  <p className="text-sm text-muted-foreground">
-                    {count} member{count === 1 ? "" : "s"}
-                    {myIds.has(c.id) && <span className="text-accent"> · you’re in</span>}
-                  </p>
-                </Card>
-              </Link>
-            );
-          })}
-        </div>
+        <section className="flex flex-col gap-2">
+          {recruiting.length > 0 && <h2 className="text-lg font-semibold">All communities</h2>}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {approved.map((c, i) => clubCard(c, i))}
+          </div>
+        </section>
       )}
     </main>
   );

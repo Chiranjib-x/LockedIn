@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { Card } from "@/components/ui";
 import TypeBadge from "@/modules/board/badge";
-import { JoinLeaveButton, InterestButton } from "@/modules/communities/client";
+import { JoinLeaveButton, InterestButton, RecruitingToggle } from "@/modules/communities/client";
 import { openChat } from "@/modules/chat/actions";
 
 export default async function CommunityPage({ params }: { params: Promise<{ id: string }> }) {
@@ -43,9 +43,16 @@ export default async function CommunityPage({ params }: { params: Promise<{ id: 
 
       <div className="animate-fade-up flex items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">
-            {community.emoji} {community.name}
-          </h1>
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="text-2xl font-bold">
+              {community.emoji} {community.name}
+            </h1>
+            {community.recruiting && (
+              <span className="rounded-full bg-accent/15 px-2 py-0.5 text-xs font-semibold text-accent">
+                🟢 Recruiting
+              </span>
+            )}
+          </div>
           <p className="text-sm text-muted-foreground">
             {members?.length ?? 0} member{(members?.length ?? 0) === 1 ? "" : "s"} · run by{" "}
             {mods.map((m) => (m.profile as unknown as { name: string })?.name).filter(Boolean).join(", ") || "the community"}
@@ -62,12 +69,15 @@ export default async function CommunityPage({ params }: { params: Promise<{ id: 
       )}
 
       {isMod && (
-        <Link
-          href={`/board/new?community=${id}`}
-          className="press flex min-h-11 items-center justify-center rounded-full border border-primary/40 bg-primary/5 px-5 text-sm font-semibold text-primary"
-        >
-          <Megaphone className="mr-1.5 h-4 w-4" strokeWidth={2} /> Post an update or event
-        </Link>
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+          <Link
+            href={`/board/new?community=${id}`}
+            className="press flex min-h-11 items-center justify-center rounded-full border border-primary/40 bg-primary/5 px-5 text-sm font-semibold text-primary"
+          >
+            <Megaphone className="mr-1.5 h-4 w-4" strokeWidth={2} /> Post an update or event
+          </Link>
+          <RecruitingToggle id={id} recruiting={community.recruiting} />
+        </div>
       )}
 
       {isMod && (interests?.length ?? 0) > 0 && (
