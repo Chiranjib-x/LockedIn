@@ -27,7 +27,7 @@ export async function signup(formData: FormData) {
     );
   }
 
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: { data: { name } },
@@ -36,6 +36,12 @@ export async function signup(formData: FormData) {
     redirect("/signup?error=" + encodeURIComponent(error.message));
   }
 
+  // Email confirmation OFF → signUp returns a session; the user is already
+  // logged in, so go straight in. Confirmation ON → no session; ask them to
+  // check their inbox. Handles either Supabase setting correctly.
+  if (data.session) {
+    redirect("/home");
+  }
   redirect(
     "/login?message=" +
       encodeURIComponent("Check your email for a confirmation link, then log in.")
