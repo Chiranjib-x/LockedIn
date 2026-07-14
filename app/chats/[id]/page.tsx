@@ -11,6 +11,7 @@ const CONTEXT_HINT: Record<string, string> = {
   group_order: "Group-buy",
   subscription: "Subscription pool",
   study_group: "Study group",
+  request: "Marketplace request",
 };
 
 export default async function ChatThreadPage({ params }: { params: Promise<{ id: string }> }) {

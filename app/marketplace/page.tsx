@@ -38,9 +38,14 @@ export default async function MarketplacePage({
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 px-4 py-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Marketplace</h1>
-        <Link href="/marketplace/mine" className="text-sm font-medium text-primary hover:underline">
-          My listings
-        </Link>
+        <span className="flex items-center gap-3 text-sm font-medium text-primary">
+          <Link href="/marketplace/requests" className="hover:underline">
+            Requests
+          </Link>
+          <Link href="/marketplace/mine" className="hover:underline">
+            My listings
+          </Link>
+        </span>
       </div>
 
       <FilterBar />

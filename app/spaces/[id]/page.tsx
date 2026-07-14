@@ -4,17 +4,18 @@ import { requireUser } from "@/lib/auth";
 import { Card } from "@/components/ui";
 import BackLink from "@/components/back-link";
 import ListingCard from "@/modules/marketplace/listing-card";
+import RequestCard, { type RequestRow } from "@/modules/requests/request-card";
 import AddMember from "@/modules/spaces/add-member";
 
 export default async function SpacePage({ params }: { params: Promise<{ id: string }> }) {
-  const { supabase } = await requireUser();
+  const { supabase, user } = await requireUser();
   const { id } = await params;
 
   // RLS: non-members get null here — the space is unreachable, not just hidden.
   const { data: space } = await supabase.from("spaces").select("*").eq("id", id).single();
   if (!space) notFound();
 
-  const [{ data: members }, { data: listings }] = await Promise.all([
+  const [{ data: members }, { data: listings }, { data: requests }] = await Promise.all([
     supabase
       .from("space_members")
       .select("user_id, profile:profiles!space_members_user_id_fkey(name)")
@@ -23,6 +24,12 @@ export default async function SpacePage({ params }: { params: Promise<{ id: stri
       .from("listings")
       .select("id, title, price, category, images, status")
       .eq("space_id", id)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("requests")
+      .select("id, requester_id, title, description, category, budget, status")
+      .eq("space_id", id)
+      .eq("status", "open")
       .order("created_at", { ascending: false }),
   ]);
 
@@ -47,7 +54,22 @@ export default async function SpacePage({ params }: { params: Promise<{ id: stri
         >
           ＋ Share an item
         </Link>
+        <Link
+          href={`/marketplace/requests/new?space=${id}`}
+          className="press rounded-full border border-border bg-card px-4 py-2 text-sm font-semibold hover:bg-muted"
+        >
+          🙋 Request something
+        </Link>
       </div>
+
+      {(requests?.length ?? 0) > 0 && (
+        <section className="flex flex-col gap-2">
+          <h2 className="text-lg font-semibold">Requests</h2>
+          {(requests as RequestRow[]).map((r) => (
+            <RequestCard key={r.id} request={r} meId={user.id} />
+          ))}
+        </section>
+      )}
 
       {!listings?.length ? (
         <Card className="mt-2 flex flex-col items-center gap-2 py-10 text-center">
