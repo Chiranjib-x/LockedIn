@@ -54,11 +54,20 @@ export default async function ProfilePage({
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
+  // my_profile() (migration 0041) — `room` is no longer selectable through the
+  // API by anyone, so the owner reads their own full row via this definer RPC.
   const { data: profile } = await supabase
-    .from("profiles")
-    .select("*, colleges(name)")
-    .eq("id", user.id)
-    .single();
+    .rpc("my_profile")
+    .single<{
+      id: string;
+      name: string;
+      username: string;
+      verified_name: string | null;
+      batch: string | null;
+      hostel_block: string | null;
+      room: string | null;
+      karma: number;
+    }>();
 
   if (!profile) redirect("/login");
 
