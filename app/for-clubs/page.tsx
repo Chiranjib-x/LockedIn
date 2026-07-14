@@ -2,10 +2,18 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { Megaphone, Search, Sparkles, CalendarDays, BarChart3, ShieldCheck, ArrowRight } from "lucide-react";
 import { Card } from "@/components/ui";
+import ShareLink from "@/modules/communities/share-link";
+
+const DESC = "Market your club and recruit members — without WhatsApp groups, QR codes, or phone numbers.";
 
 export const metadata: Metadata = {
   title: "LockedIn for Clubs",
-  description: "Market your club and recruit members — without WhatsApp groups, QR codes, or phone numbers.",
+  description: DESC,
+  openGraph: {
+    title: "LockedIn for Clubs",
+    description: DESC,
+    type: "website",
+  },
 };
 
 // Public (no auth) so it can be shared with club reps during outreach. The CTA
@@ -66,6 +74,14 @@ export default function ForClubsPage() {
           Or browse clubs already here →
         </Link>
       </Card>
+
+      <div className="flex flex-col gap-2 rounded-2xl border border-border bg-card p-4">
+        <p className="text-sm font-semibold">Share this with a club</p>
+        <p className="text-xs text-muted-foreground">Send this page to a club owner — it opens for anyone, no login needed.</p>
+        <div className="mt-1">
+          <ShareLink path="/for-clubs" title="LockedIn for Clubs" />
+        </div>
+      </div>
     </main>
   );
 }
