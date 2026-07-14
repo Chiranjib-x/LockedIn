@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "@/components/header";
 import BottomNav from "@/components/bottom-nav";
 import { RegisterSW } from "@/components/pwa";
+import NativeAuthBridge from "@/components/native-auth-bridge";
 
 const bricolage = Bricolage_Grotesque({
   variable: "--font-bricolage",
@@ -45,6 +46,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col pb-24">
         <script dangerouslySetInnerHTML={{ __html: themeInit }} />
         <RegisterSW />
+        <NativeAuthBridge />
         <Header />
         {children}
         <BottomNav />

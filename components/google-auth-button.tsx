@@ -27,11 +27,34 @@ export default function GoogleAuthButton() {
         onClick={async () => {
           setBusy(true);
           const supabase = createClient();
-          const { error } = await supabase.auth.signInWithOAuth({
-            provider: "google",
-            options: { redirectTo: `${window.location.origin}/auth/callback` },
-          });
-          if (error) setBusy(false);
+          const { Capacitor } = await import("@capacitor/core");
+          if (Capacitor.isNativePlatform()) {
+            // Installed app: Google rejects the embedded webview, so open the
+            // OAuth URL in a Chrome Custom Tab and return via a deep link
+            // (handled by NativeAuthBridge). This redirect URL must be in
+            // Supabase's allowed Redirect URLs. try/catch so an older APK
+            // without the Browser plugin fails gracefully instead of hanging.
+            try {
+              const { data, error } = await supabase.auth.signInWithOAuth({
+                provider: "google",
+                options: { redirectTo: "com.lockedin.campus://auth/callback", skipBrowserRedirect: true },
+              });
+              if (error || !data?.url) {
+                setBusy(false);
+                return;
+              }
+              const { Browser } = await import("@capacitor/browser");
+              await Browser.open({ url: data.url });
+            } catch {
+              setBusy(false);
+            }
+          } else {
+            const { error } = await supabase.auth.signInWithOAuth({
+              provider: "google",
+              options: { redirectTo: `${window.location.origin}/auth/callback` },
+            });
+            if (error) setBusy(false);
+          }
         }}
         className="press flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-border bg-card text-sm font-semibold text-foreground hover:bg-muted disabled:opacity-50"
       >
