@@ -19,11 +19,13 @@ export async function createPost(formData: FormData) {
   const title = String(formData.get("title") ?? "").trim();
   const eventDateRaw = String(formData.get("event_date") ?? "").trim();
 
+  // Events are created from /events/new; everything else from /board/new.
+  const backTo = type === "event" ? "/events/new" : "/board/new";
   if (!TYPES.includes(type) || !title) {
-    redirect("/board/new?error=" + encodeURIComponent("Pick a type and add a title."));
+    redirect(backTo + "?error=" + encodeURIComponent("Pick a type and add a title."));
   }
   if (type === "event" && !eventDateRaw) {
-    redirect("/board/new?error=" + encodeURIComponent("Events need a date."));
+    redirect(backTo + "?error=" + encodeURIComponent("Events need a date."));
   }
 
   const { data: profile } = await supabase
@@ -48,13 +50,17 @@ export async function createPost(formData: FormData) {
       type === "found" ? String(formData.get("claim_question") ?? "").trim() || null : null,
   });
 
-  if (error) redirect("/board/new?error=" + encodeURIComponent(error.message));
+  if (error) redirect(backTo + "?error=" + encodeURIComponent(error.message));
 
-  revalidatePath("/board");
   if (communityId) {
     revalidatePath(`/communities/${communityId}`);
     redirect(`/communities/${communityId}`);
   }
+  if (type === "event") {
+    revalidatePath("/events");
+    redirect("/events");
+  }
+  revalidatePath("/board");
   redirect("/board");
 }
 

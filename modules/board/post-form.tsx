@@ -6,25 +6,32 @@ import { SubmitButton } from "@/components/submit-button";
 import ImageUpload from "@/components/image-upload";
 import { createPost } from "./actions";
 
-const TYPES = [
+const BOARD_TYPES = [
   { value: "lost", label: "Lost", emoji: "😿", hint: "Where did you last see it?" },
   { value: "found", label: "Found", emoji: "🎉", hint: "Where did you find it?" },
   { value: "notice", label: "Notice", emoji: "📢", hint: "Relevant place (optional)" },
-  { value: "event", label: "Event", emoji: "🎪", hint: "Venue" },
 ] as const;
+
+const HINT: Record<string, string> = {
+  lost: "Where did you last see it?",
+  found: "Where did you find it?",
+  notice: "Relevant place (optional)",
+  event: "Venue",
+};
 
 export default function PostForm({
   error,
   communityId,
   communityName,
+  kind = "board",
 }: {
   error?: string;
   communityId?: string;
   communityName?: string;
+  kind?: "board" | "event";
 }) {
-  const [type, setType] = useState<(typeof TYPES)[number]["value"]>(communityId ? "notice" : "lost");
+  const [type, setType] = useState<string>(kind === "event" ? "event" : communityId ? "notice" : "lost");
   const [images, setImages] = useState<string[]>([]);
-  const active = TYPES.find((t) => t.value === type)!;
 
   return (
     <form action={createPost} className="flex flex-col gap-4">
@@ -44,21 +51,23 @@ export default function PostForm({
         </p>
       )}
 
-      <div className="grid grid-cols-4 gap-2">
-        {TYPES.map((t) => (
-          <button
-            key={t.value}
-            type="button"
-            onClick={() => setType(t.value)}
-            className={`press flex flex-col items-center gap-1 rounded-2xl border px-2 py-3 text-sm font-medium ${
-              type === t.value ? "border-primary bg-primary/10 text-primary" : "border-border bg-card"
-            }`}
-          >
-            <span className="text-xl">{t.emoji}</span>
-            {t.label}
-          </button>
-        ))}
-      </div>
+      {kind === "board" && (
+        <div className="grid grid-cols-3 gap-2">
+          {BOARD_TYPES.map((t) => (
+            <button
+              key={t.value}
+              type="button"
+              onClick={() => setType(t.value)}
+              className={`press flex flex-col items-center gap-1 rounded-2xl border px-2 py-3 text-sm font-medium ${
+                type === t.value ? "border-primary bg-primary/10 text-primary" : "border-border bg-card"
+              }`}
+            >
+              <span className="text-xl">{t.emoji}</span>
+              {t.label}
+            </button>
+          ))}
+        </div>
+      )}
 
       <label className="flex flex-col gap-1 text-sm font-medium">
         Title
@@ -76,8 +85,8 @@ export default function PostForm({
       </label>
 
       <label className="flex flex-col gap-1 text-sm font-medium">
-        {type === "notice" ? "Location (optional)" : "Location"}
-        <input name="location" placeholder={active.hint} className={inputClass} />
+        {type === "notice" ? "Location (optional)" : type === "event" ? "Venue" : "Location"}
+        <input name="location" placeholder={HINT[type]} className={inputClass} />
       </label>
 
       {type === "event" && (
@@ -116,7 +125,7 @@ export default function PostForm({
         <ImageUpload bucket="post-images" value={images} onChange={setImages} />
       </label>
 
-      <SubmitButton pendingLabel="Posting…">Post to the board</SubmitButton>
+      <SubmitButton pendingLabel="Posting…">{kind === "event" ? "Post the event" : "Post to the board"}</SubmitButton>
     </form>
   );
 }

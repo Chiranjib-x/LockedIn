@@ -7,7 +7,6 @@ const TYPES = [
   { value: "lost", label: "Lost" },
   { value: "found", label: "Found" },
   { value: "notice", label: "Notices" },
-  { value: "event", label: "Events" },
 ] as const;
 
 export default function BoardFilter() {

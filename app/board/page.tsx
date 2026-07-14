@@ -36,6 +36,7 @@ export default async function BoardPage({
   let query = supabase
     .from("posts")
     .select("id, type, title, images, location, event_date, status, created_at")
+    .in("type", ["lost", "found", "notice"]) // events live on /events now
     .not("author_id", "in", notInList(blocked))
     .order("created_at", { ascending: false });
 

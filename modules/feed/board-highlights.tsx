@@ -40,7 +40,7 @@ export default async function BoardHighlights() {
   if (!posts?.length) return null;
 
   return (
-    <Section title="Happening today" action={{ href: "/board", label: "See board" }}>
+    <Section title="Happening today" action={{ href: "/events", label: "See events" }}>
       <div className="flex flex-col gap-2">
         {posts.map((p) => (
           <Link key={p.id} href={`/board/${p.id}`} className="press">

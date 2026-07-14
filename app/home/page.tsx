@@ -8,6 +8,7 @@ import {
   Footprints,
   Handshake,
   MapPin,
+  PartyPopper,
   Pin,
   Search,
   ShoppingBag,
@@ -42,6 +43,7 @@ import { InstallPrompt } from "@/components/pwa";
 // live-stat row. The grid covers the rest (Pools tile kept for "my pools").
 const MODULES: { short: string; href: string; icon: LucideIcon; tint: string }[] = [
   { short: "Board", href: "/board", icon: Pin, tint: "bg-tint-rose text-tint-rose-fg" },
+  { short: "Events", href: "/events", icon: PartyPopper, tint: "bg-tint-violet text-tint-violet-fg" },
   { short: "Pools", href: "/subscriptions", icon: Tv, tint: "bg-tint-teal text-tint-teal-fg" },
   { short: "Match", href: "/matches", icon: Target, tint: "bg-tint-violet text-tint-violet-fg" },
   { short: "Groups", href: "/communities", icon: Users, tint: "bg-tint-blue text-tint-blue-fg" },

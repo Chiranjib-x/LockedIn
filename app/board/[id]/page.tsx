@@ -54,8 +54,8 @@ export default async function PostDetailPage({
   return (
     <main className="animate-fade-up mx-auto flex w-full max-w-lg flex-1 flex-col gap-4 px-4 py-6">
       <div className="flex items-center justify-between">
-        <Link href="/board" className="text-sm text-muted-foreground hover:text-foreground">
-          ← Board
+        <Link href={post.type === "event" ? "/events" : "/board"} className="text-sm text-muted-foreground hover:text-foreground">
+          ← {post.type === "event" ? "Events" : "Board"}
         </Link>
         <span className="flex items-center gap-2">
           <SaveButton targetType="post" targetId={post.id} initialSaved={savedRow !== null} />
