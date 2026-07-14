@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BarChart3, CalendarDays, MapPin, Megaphone, Sparkles } from "lucide-react";
+import { BarChart3, CalendarDays, MapPin, Megaphone, Sparkles, Users } from "lucide-react";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { Card } from "@/components/ui";
@@ -107,6 +107,38 @@ export default async function CommunityPage({ params }: { params: Promise<{ id: 
                     Message
                   </button>
                 </form>
+              </Card>
+            );
+          })}
+        </section>
+      )}
+
+      {isMod && (members?.length ?? 0) > 0 && (
+        <section className="flex flex-col gap-2">
+          <h2 className="flex items-center gap-2 text-lg font-semibold">
+            <Users className="h-5 w-5 text-primary" strokeWidth={2} /> Members · {members!.length}
+          </h2>
+          {members!.map((m) => {
+            const name = (m.profile as unknown as { name: string } | null)?.name ?? "Student";
+            async function message() {
+              "use server";
+              await openChat(m.user_id, null, null);
+            }
+            return (
+              <Card key={m.user_id} className="flex items-center justify-between gap-2">
+                <span className="flex min-w-0 items-center gap-2">
+                  <span className="truncate font-medium">{name}</span>
+                  {m.role === "moderator" && (
+                    <span className="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">Moderator</span>
+                  )}
+                </span>
+                {m.user_id !== user.id && (
+                  <form action={message}>
+                    <button type="submit" className="press min-h-9 shrink-0 rounded-full border border-border px-4 text-sm font-medium hover:bg-muted">
+                      Message
+                    </button>
+                  </form>
+                )}
               </Card>
             );
           })}
