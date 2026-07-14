@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 // Flip to true only AFTER enabling the Google provider in the Supabase
 // dashboard (Auth → Providers → Google, with a Client ID/Secret from Google
 // Cloud). Until then the button hits "provider is not enabled", so it's hidden.
-const GOOGLE_ENABLED = false;
+const GOOGLE_ENABLED = true;
 
 // College-domain gate is enforced server-side by the handle_new_user trigger
 // (migration 0036) regardless of provider, so no extra tenancy check needed here.
