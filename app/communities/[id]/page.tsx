@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BarChart3, CalendarDays, MapPin, Megaphone, Sparkles, Users } from "lucide-react";
+import { BarChart3, CalendarDays, Download, MapPin, Megaphone, Sparkles, Users } from "lucide-react";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { Card } from "@/components/ui";
@@ -79,10 +79,16 @@ export default async function CommunityPage({ params }: { params: Promise<{ id: 
           <RecruitingToggle id={id} recruiting={community.recruiting} />
           <Link
             href={`/communities/${id}/analytics`}
-            className="press flex min-h-11 items-center justify-center gap-2 rounded-full border border-border bg-card px-5 text-sm font-semibold hover:bg-muted sm:col-span-2"
+            className="press flex min-h-11 items-center justify-center gap-2 rounded-full border border-border bg-card px-5 text-sm font-semibold hover:bg-muted"
           >
             <BarChart3 className="h-4 w-4 text-primary" strokeWidth={2} /> View analytics
           </Link>
+          <a
+            href={`/communities/${id}/export`}
+            className="press flex min-h-11 items-center justify-center gap-2 rounded-full border border-border bg-card px-5 text-sm font-semibold hover:bg-muted"
+          >
+            <Download className="h-4 w-4 text-primary" strokeWidth={2} /> Export members (CSV)
+          </a>
         </div>
       )}
 
