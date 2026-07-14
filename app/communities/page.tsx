@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Users } from "lucide-react";
+import { ArrowRight, Users } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { Card } from "@/components/ui";
 import EmptyState from "@/components/empty-state";
@@ -73,6 +73,16 @@ export default async function CommunitiesPage({
       </div>
 
       <QuantaBanner />
+
+      <Link href="/for-clubs" className="press">
+        <Card className="flex items-center justify-between gap-3 border-primary/30 bg-gradient-to-r from-primary/10 to-accent/5 transition-all duration-150 hover:-translate-y-0.5 hover:border-primary hover:shadow-md">
+          <div>
+            <h2 className="font-semibold">Run a club? Bring it to LockedIn</h2>
+            <p className="text-sm text-muted-foreground">Announce to members, recruit, and collect leads — no WhatsApp or QR needed.</p>
+          </div>
+          <ArrowRight className="h-4 w-4 shrink-0 text-primary" strokeWidth={2.2} />
+        </Card>
+      </Link>
 
       {proposed && (
         <p className="rounded-2xl border border-accent/30 bg-accent/10 p-3 text-sm text-accent">
