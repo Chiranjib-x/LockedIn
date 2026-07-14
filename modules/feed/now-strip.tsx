@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { UpNextCard } from "@/modules/timetable/up-next-card";
-import { getNextClass, type TimetableEntry } from "@/modules/timetable/helpers";
+import { getNextClass, istNow, type TimetableEntry } from "@/modules/timetable/helpers";
 import { attendancePercent } from "@/modules/timetable/bunk-math";
 
 type CourseTotals = { attended: number; held: number; threshold: number };
@@ -33,7 +33,7 @@ export default async function NowStrip() {
 
     const defaultThreshold = profile?.colleges?.attendance_threshold ?? 75;
     const allEntries = (entries ?? []) as TimetableEntry[];
-    next = getNextClass(allEntries, new Date());
+    next = getNextClass(allEntries, istNow());
 
     for (const e of allEntries) {
       if (!byCourse.has(e.course_code)) {

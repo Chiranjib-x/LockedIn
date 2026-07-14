@@ -12,7 +12,7 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 function timeLabel(departAt: string) {
-  return new Date(departAt).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" });
+  return new Date(departAt).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit", timeZone: "Asia/Kolkata" });
 }
 
 export default async function CabsPage({
@@ -30,8 +30,10 @@ export default async function CabsPage({
     .order("depart_at", { ascending: true })
     .limit(40);
 
-  if (destination) {
-    query = query.or(`destination.ilike.%${destination}%,origin.ilike.%${destination}%`);
+  // strip PostgREST or() grammar chars — "Chennai (airport)" must not 400 the query
+  const safeDest = destination?.replace(/[,()]/g, " ");
+  if (safeDest?.trim()) {
+    query = query.or(`destination.ilike.%${safeDest}%,origin.ilike.%${safeDest}%`);
   }
   if (date) {
     const start = new Date(date + "T00:00:00");

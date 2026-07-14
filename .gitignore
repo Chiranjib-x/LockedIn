@@ -42,3 +42,10 @@ next-env.d.ts
 
 .vercel
 .env*
+
+# android signing (Play Store upload key — never commit)
+android/key.properties
+android/app/*.keystore
+android/app/*.jks
+*.keystore
+*.jks

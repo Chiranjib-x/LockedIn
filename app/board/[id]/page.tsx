@@ -106,6 +106,7 @@ export default async function PostDetailPage({
               month: "short",
               hour: "numeric",
               minute: "2-digit",
+              timeZone: "Asia/Kolkata",
             })}
           </p>
         )}

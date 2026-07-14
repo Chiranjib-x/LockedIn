@@ -86,7 +86,7 @@ export async function lendTo(id: string, borrowerId: string, due: string) {
   if (l) {
     await supabase.rpc("notify", {
       uid: borrowerId, cid: l.college_id, ntype: "marketplace",
-      msg: `Borrowed: ${l.title} — due back ${new Date(due).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}`,
+      msg: `Borrowed: ${l.title} — due back ${new Date(due).toLocaleDateString("en-IN", { day: "numeric", month: "short", timeZone: "Asia/Kolkata" })}`,
       nlink: `/marketplace/${id}`,
     });
   }

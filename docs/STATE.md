@@ -49,6 +49,7 @@ USER still owes Supabase Dashboard Google-provider setup (button live but errors
 - Icon tooling: Pillow 12.3.0 and sharp both available.
 
 ## Done
+- Bug hunt (2026-07-15, UNCOMMITTED — awaiting user's commit/deploy word) — RESULT: `npm run build` clean + node asserts pass. Fixed: (1) IST timezone — every server-rendered time was UTC on Vercel (−5:30h): added toIST/istNow/istTodayISO to modules/timetable/helpers.ts, timeZone:"Asia/Kolkata" on ~16 toLocale sites, IST day-bounds in events page + board-highlights, IST attendance dateKey + NOW highlight + greeting; (2) PostgREST or() breakage on `,()` in search q (marketplace/board/cabs); (3) CSV formula injection in club roster export cell(); (4) decideOffer: participant guard + closed-offer guard + buyer-can't-self-accept-uncountered guard. NOTED not fixed: subscription_members RLS lets a member update own share_amount (needs trigger migration); prorated pool share never bumps to perSeat after first cycle (no billing engine, by design).
 - Play Store prep (2026-07-12) — RESULT: `cd android && ./gradlew.bat bundleRelease` → signed AAB (jarsigner: "jar verified.") at android/app/build/outputs/bundle/release/app-release.aab; /privacy renders on dev; assets + LISTING.md in docs/playstore/. Rebuild for later releases: bump versionCode/versionName in android/app/build.gradle first.
 - Prod deploy + QA sweep (2026-07-09) — RESULT: all 12 module pages OK, login OK, domain-reject OK on lockedin-swart-ten.vercel.app.
 - Test boy/girl accounts in respective spaces — RESULT: symmetric isolation verified via UI both ways.
@@ -65,7 +66,7 @@ USER still owes Supabase Dashboard Google-provider setup (button live but errors
 - Delete gmail.com seed college + test accounts at real launch (DEPLOY.md item 3).
 - Re-point Girls' Closet/Boys' Den founding members to real hostel reps at launch (DEPLOY.md item 4).
 - Manual phone QA: photo upload, two-account realtime chat, UPI QR (can't automate). UPI flow REWORKED 2026-07-13 (copy-VPA + QR, deep link removed) — needs fresh phone QA.
-- USER: enable Google provider in Supabase Dashboard (Client ID/Secret from Google Cloud Console; redirect URI https://<project-ref>.supabase.co/auth/v1/callback) — OAuth button is live in UI but fails until then.
+- DONE 2026-07-14: Google provider enabled + verified (authorize endpoint 302s to accounts.google.com; button re-enabled, deployed). Native app flow (Custom Tab + deep link, commit 66b80cd) still needs: user adds `com.lockedin.campus://auth/callback` to Supabase Redirect URLs + redistributes the rebuilt APK + phone test.
 - Rotate Firebase service-account key (was pasted into chat during Phase 21b).
 - Header overflows at ≤380px width for moderator accounts (5 icons + Log out) — components/header.tsx:60-77; consider moving Log out to Profile page. Regular users unaffected.
 

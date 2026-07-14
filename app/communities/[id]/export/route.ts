@@ -2,9 +2,12 @@ import { createClient } from "@/lib/supabase/server";
 
 type Row = { name: string | null; email: string; status: string; since: string };
 
-// Escape a CSV cell: quote when it contains a comma/quote/newline, double inner quotes.
+// Escape a CSV cell: neutralize spreadsheet formula injection (a member named
+// "=HYPERLINK(...)" must not execute when the moderator opens this in Excel),
+// then quote when it contains a comma/quote/newline, doubling inner quotes.
 function cell(v: string): string {
-  return /[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v;
+  const s = /^[=+\-@\t\r]/.test(v) ? "'" + v : v;
+  return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
 
 // GET /communities/[id]/export → CSV of members + interested (moderator only).

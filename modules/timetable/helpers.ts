@@ -17,8 +17,29 @@ function toMinutes(t: string) {
   return h * 60 + m;
 }
 
-// Local Y-M-D, not toISOString() (which is UTC and can land on the wrong
-// day near midnight IST) — same server-local approximation greeting() uses.
+// Vercel functions run in UTC; students are IST. toIST shifts a Date so its
+// wall-clock getters (getHours/getDay/getDate…) read Asia/Kolkata on any
+// server timezone — a no-op on an IST machine. Read-only trick: never compare
+// a shifted Date to real timestamps or serialize it (toISOString is off by
+// the shift). For rendering real timestamps, pass timeZone: "Asia/Kolkata"
+// to toLocale* instead.
+export function toIST(d: Date) {
+  return new Date(d.getTime() + (d.getTimezoneOffset() + 330) * 60000);
+}
+export function istNow() {
+  return toIST(new Date());
+}
+
+// [start, end) of the current IST calendar day as real UTC instants, for
+// range filters on timestamptz columns.
+export function istTodayISO() {
+  const ist = istNow();
+  const start = Date.UTC(ist.getFullYear(), ist.getMonth(), ist.getDate()) - 330 * 60000;
+  return { start: new Date(start).toISOString(), end: new Date(start + 86400000).toISOString() };
+}
+
+// IST Y-M-D, not toISOString() (which is UTC and lands on the wrong day
+// between midnight and 5:30 AM IST) — pass an istNow()-shifted date.
 export function dateKey(d: Date) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }

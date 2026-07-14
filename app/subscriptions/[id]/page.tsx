@@ -64,7 +64,7 @@ export default async function SubscriptionPage({ params }: { params: Promise<{ i
 
       <div className={`rounded-2xl border p-3 text-sm font-medium ${days <= 5 ? "border-destructive/30 bg-destructive/10 text-destructive" : "border-border bg-card"}`}>
         <CalendarDays className="mr-1 inline h-3.5 w-3.5" strokeWidth={2} />
-        Renews {new Date(sub.renewal_date).toLocaleDateString("en-IN", { day: "numeric", month: "long" })}
+        Renews {new Date(sub.renewal_date).toLocaleDateString("en-IN", { day: "numeric", month: "long", timeZone: "Asia/Kolkata" })}
         {days > 0 && <> — in {days} day{days === 1 ? "" : "s"}</>}
         {unpaid.length > 0 && <> · {unpaid.length} member{unpaid.length === 1 ? "" : "s"} still owe{unpaid.length === 1 ? "s" : ""}</>}
       </div>

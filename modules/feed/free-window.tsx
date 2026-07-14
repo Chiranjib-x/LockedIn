@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Card, Section } from "@/components/ui";
-import { getFreeWindow, type TimetableEntry } from "@/modules/timetable/helpers";
+import { getFreeWindow, istNow, type TimetableEntry } from "@/modules/timetable/helpers";
 
 // "While you're free" — the timetable is the moat: things you could actually
 // do in the gap before your next class (open gate pickups, cabs departing).
@@ -12,9 +12,6 @@ function isoMinutesFromNow(min: number) {
 }
 function minutesUntil(iso: string) {
   return Math.max(0, Math.round((new Date(iso).getTime() - Date.now()) / 60000));
-}
-function nowDate() {
-  return new Date();
 }
 
 export default async function FreeWindow() {
@@ -31,7 +28,7 @@ export default async function FreeWindow() {
     const { data: entries } = await supabase
       .from("timetable_entries")
       .select("id, day_of_week, starts_at, ends_at, course_code, title, venue, min_attendance");
-    window = getFreeWindow((entries ?? []) as TimetableEntry[], nowDate());
+    window = getFreeWindow((entries ?? []) as TimetableEntry[], istNow());
     if (window === null || window < 20) return null;
 
     const horizon = isoMinutesFromNow(window);

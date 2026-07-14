@@ -26,7 +26,9 @@ export default async function MarketplacePage({
 
   if (ltype === "sell" || ltype === "rent") query = query.eq("listing_type", ltype);
   if (category) query = query.eq("category", category);
-  if (q) query = query.or(`title.ilike.%${q}%,description.ilike.%${q}%`);
+  // strip PostgREST or() grammar chars — a search like "shoes, size 9" must not 400 the query
+  const safeQ = q?.replace(/[,()]/g, " ");
+  if (safeQ?.trim()) query = query.or(`title.ilike.%${safeQ}%,description.ilike.%${safeQ}%`);
 
   if (sort === "price_asc") query = query.order("price", { ascending: true });
   else if (sort === "price_desc") query = query.order("price", { ascending: false });

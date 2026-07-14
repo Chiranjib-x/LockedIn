@@ -12,6 +12,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { requireUser } from "@/lib/auth";
+import { istNow, toIST } from "@/modules/timetable/helpers";
 import { Card } from "@/components/ui";
 import BackLink from "@/components/back-link";
 import EmptyState from "@/components/empty-state";
@@ -36,8 +37,10 @@ function ago(ts: string) {
 }
 
 function dayLabel(ts: string) {
-  const d = new Date(ts);
-  const today = new Date();
+  // Both sides IST-shifted so Today/Yesterday use IST calendar days, and the
+  // fallback format renders the shifted wall-clock (no extra timeZone opt).
+  const d = toIST(new Date(ts));
+  const today = istNow();
   const yesterday = new Date(today);
   yesterday.setDate(today.getDate() - 1);
   if (d.toDateString() === today.toDateString()) return "Today";

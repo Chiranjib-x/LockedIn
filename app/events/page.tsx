@@ -4,6 +4,7 @@ import { requireUser } from "@/lib/auth";
 import EmptyState from "@/components/empty-state";
 import { Card } from "@/components/ui";
 import { blockedIds, notInList } from "@/modules/moderation/blocks";
+import { istTodayISO } from "@/modules/timetable/helpers";
 
 // Dedicated events surface — split out of the board so lost & found and events
 // don't share one feed. Detail (+ organizer check-in) still lives at /board/[id].
@@ -11,10 +12,7 @@ export default async function EventsPage() {
   const { supabase, user } = await requireUser();
   const blocked = await blockedIds(supabase, user.id);
 
-  const startOfDay = (() => {
-    const n = new Date();
-    return new Date(n.getFullYear(), n.getMonth(), n.getDate()).toISOString();
-  })();
+  const { start: startOfDay } = istTodayISO();
 
   // Upcoming events, soonest first. Past events drop off the list.
   const { data: events } = await supabase
@@ -66,6 +64,7 @@ export default async function EventsPage() {
                           month: "short",
                           hour: "numeric",
                           minute: "2-digit",
+                          timeZone: "Asia/Kolkata",
                         })}
                       </p>
                     )}

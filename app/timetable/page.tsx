@@ -5,7 +5,7 @@ import EmptyState from "@/components/empty-state";
 import { MarkAttendance } from "@/modules/timetable/attendance-marker";
 import { AddClassForm, DeleteEntryButton } from "@/modules/timetable/client";
 import { AttendanceSummary, type CourseAttendance } from "@/modules/timetable/attendance-summary";
-import { DAY_NAMES, dateKey, formatTime, type TimetableEntry } from "@/modules/timetable/helpers";
+import { DAY_NAMES, dateKey, formatTime, istNow, type TimetableEntry } from "@/modules/timetable/helpers";
 import PushOptIn from "@/components/push-opt-in";
 
 export default async function TimetablePage({
@@ -25,7 +25,7 @@ export default async function TimetablePage({
 
   const defaultThreshold = profile?.colleges?.attendance_threshold ?? 75;
   const allEntries = (entries ?? []) as TimetableEntry[];
-  const now = new Date();
+  const now = istNow(); // wall-clock reads below must be IST, not server tz
   const today = now.getDay();
   const todayKey = dateKey(now);
 

@@ -66,7 +66,7 @@ export default async function CoursePage({ params }: { params: Promise<{ code: s
         ) : (
           records.map((r) => (
             <div key={r.id} className="flex items-center justify-between rounded-xl border border-border bg-card px-3 py-2 text-sm">
-              <span>{new Date(r.date).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}</span>
+              <span>{new Date(r.date).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Kolkata" })}</span>
               <span className="font-medium">{STATUS_LABEL[r.status]}</span>
             </div>
           ))

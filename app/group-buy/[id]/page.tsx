@@ -123,7 +123,7 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
 
       {order.status === "open" && (
         <p className="text-sm text-muted-foreground">
-          ⏳ Joining closes {new Date(order.deadline).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" })}
+          ⏳ Joining closes {new Date(order.deadline).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit", timeZone: "Asia/Kolkata" })}
         </p>
       )}
 

@@ -109,7 +109,7 @@ export default async function ListingDetailPage({
         <p className="rounded-2xl bg-muted p-3 text-center text-sm font-medium">
           Currently lent out
           {listing.rental_due != null &&
-            ` — back ${new Date(listing.rental_due).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}`}
+            ` — back ${new Date(listing.rental_due).toLocaleDateString("en-IN", { day: "numeric", month: "short", timeZone: "Asia/Kolkata" })}`}
         </p>
       )}
 

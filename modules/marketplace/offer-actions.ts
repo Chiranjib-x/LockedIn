@@ -75,6 +75,12 @@ export async function decideOffer(
     .from("listings").select("seller_id, college_id, title").eq("id", offer.listing_id).single();
   if (!l) return "Listing gone.";
   const isSeller = l.seller_id === user.id;
+  // RLS already hides other people's offers from the read above, but the
+  // guards below also gate the notify/chat side effects, which RLS can't.
+  if (!isSeller && offer.buyer_id !== user.id) return "Not your offer.";
+  // Closed offers stay closed — otherwise a re-tap re-fires "Deal 🤝"
+  // notifications and chat lines forever.
+  if (offer.status === "accepted" || offer.status === "declined") return "This offer is already closed.";
   const other = isSeller ? offer.buyer_id : l.seller_id;
 
   if (action === "counter") {
@@ -93,7 +99,10 @@ export async function decideOffer(
       msg: `Offer ${isSeller ? "declined" : "withdrawn"} on ${l.title}`, nlink: `/marketplace/${offer.listing_id}`,
     });
   } else {
-    // accept: seller accepts buyer's amount, or buyer accepts the counter
+    // accept: seller accepts buyer's amount, or buyer accepts the counter.
+    // A buyer can't "accept" their own uncountered offer — that would notify
+    // the seller of a deal the seller never agreed to.
+    if (!isSeller && offer.status !== "countered") return "Wait for the seller to respond.";
     const agreed = isSeller ? Number(offer.amount) : Number(offer.counter_amount ?? offer.amount);
     await supabase.from("offers").update({ status: "accepted" }).eq("id", offerId);
     await supabase.rpc("notify", {

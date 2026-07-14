@@ -192,7 +192,7 @@ export default async function CommunityPage({ params }: { params: Promise<{ id: 
                   {p.type === "event" && p.event_date && (
                     <span className="flex items-center gap-1 text-xs text-muted-foreground">
                       <CalendarDays className="h-3 w-3 shrink-0" strokeWidth={2} />
-                      {new Date(p.event_date).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" })}
+                      {new Date(p.event_date).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit", timeZone: "Asia/Kolkata" })}
                     </span>
                   )}
                 </div>

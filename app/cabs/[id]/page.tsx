@@ -60,7 +60,7 @@ export default async function TripPage({ params }: { params: Promise<{ id: strin
         </div>
         <h1 className="mt-1 text-2xl font-bold">{trip.origin} → {trip.destination}</h1>
         <p className="text-sm text-muted-foreground">
-          {new Date(trip.depart_at).toLocaleString("en-IN", { weekday: "short", day: "numeric", month: "short", hour: "numeric", minute: "2-digit" })}
+          {new Date(trip.depart_at).toLocaleString("en-IN", { weekday: "short", day: "numeric", month: "short", hour: "numeric", minute: "2-digit", timeZone: "Asia/Kolkata" })}
           {" · "}posted by {isCreator ? "you" : creator.name}
           {trip.fare_total != null && <> · {rupees(Number(trip.fare_total))} total</>}
         </p>

@@ -11,7 +11,7 @@ function eta(ts: string) {
   if (ms < 0) return "arriving now";
   const m = Math.round(ms / 60000);
   if (m < 60) return `in ~${m}m`;
-  return new Date(ts).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" });
+  return new Date(ts).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit", timeZone: "Asia/Kolkata" });
 }
 
 const STATUS_BADGE: Record<string, string> = {

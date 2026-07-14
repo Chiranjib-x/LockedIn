@@ -15,6 +15,7 @@ function when(post: { type: string; event_date: string | null; created_at: strin
       month: "short",
       hour: "numeric",
       minute: "2-digit",
+      timeZone: "Asia/Kolkata",
     });
   }
   const mins = (Date.now() - new Date(post.created_at).getTime()) / 60000;
@@ -41,7 +42,9 @@ export default async function BoardPage({
     .order("created_at", { ascending: false });
 
   if (type) query = query.eq("type", type);
-  if (q) query = query.or(`title.ilike.%${q}%,description.ilike.%${q}%`);
+  // strip PostgREST or() grammar chars — a search like "wallet (black)" must not 400 the query
+  const safeQ = q?.replace(/[,()]/g, " ");
+  if (safeQ?.trim()) query = query.or(`title.ilike.%${safeQ}%,description.ilike.%${safeQ}%`);
 
   const { data: posts } = await query.limit(60);
 

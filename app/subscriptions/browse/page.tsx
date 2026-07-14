@@ -54,7 +54,7 @@ export default async function BrowsePoolsPage() {
                     <p className="truncate font-semibold">{p.service_name}</p>
                     <p className="flex flex-wrap items-center gap-1 text-xs text-muted-foreground">
                       {owner?.name ?? "Student"} <KarmaBadge karma={owner?.karma ?? 0} /> · renews{" "}
-                      {new Date(p.renewal_date).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
+                      {new Date(p.renewal_date).toLocaleDateString("en-IN", { day: "numeric", month: "short", timeZone: "Asia/Kolkata" })}
                     </p>
                   </div>
                   <div className="shrink-0 text-right">

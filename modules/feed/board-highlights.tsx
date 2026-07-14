@@ -2,6 +2,7 @@ import Link from "next/link";
 import { CalendarDays, MapPin } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { Card, Section } from "@/components/ui";
+import { istTodayISO } from "@/modules/timetable/helpers";
 import TypeBadge from "@/modules/board/badge";
 
 type Post = { id: string; type: string; title: string; location: string | null; event_date: string | null };
@@ -19,9 +20,7 @@ export default async function BoardHighlights() {
     } = await supabase.auth.getUser();
     if (!user) return null;
 
-    const now = new Date();
-    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
-    const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).toISOString();
+    const { start: startOfDay, end: endOfDay } = istTodayISO();
 
     ({ data: posts } = await supabase
       .from("posts")
@@ -50,7 +49,7 @@ export default async function BoardHighlights() {
                 {p.type === "event" && p.event_date && (
                   <span className="flex items-center gap-1 text-xs text-muted-foreground">
                     <CalendarDays className="h-3 w-3 shrink-0" strokeWidth={2} />
-                    {new Date(p.event_date).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" })}
+                    {new Date(p.event_date).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit", timeZone: "Asia/Kolkata" })}
                   </span>
                 )}
               </div>

@@ -21,6 +21,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { requireUser } from "@/lib/auth";
+import { istNow } from "@/modules/timetable/helpers";
 import { SkeletonSection } from "@/components/skeleton";
 import NowStrip from "@/modules/feed/now-strip";
 import ClubsStrip from "@/modules/feed/clubs-strip";
@@ -57,8 +58,8 @@ const MODULES: { short: string; href: string; icon: LucideIcon; tint: string }[]
 ];
 
 function greeting() {
-  // ponytail: server-local hour ≈ IST for this deployment's audience
-  const h = new Date().getHours();
+  const h = istNow().getHours(); // server tz is UTC on Vercel — must shift
+
   if (h < 5) return "Up late";
   if (h < 12) return "Good morning";
   if (h < 17) return "Good afternoon";
