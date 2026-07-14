@@ -22,6 +22,7 @@ import {
 import { requireUser } from "@/lib/auth";
 import { SkeletonSection } from "@/components/skeleton";
 import NowStrip from "@/modules/feed/now-strip";
+import ClubsStrip from "@/modules/feed/clubs-strip";
 import RecentChats from "@/modules/feed/recent-chats";
 import RenewalsSoon from "@/modules/feed/renewals-soon";
 import FreshListings from "@/modules/feed/fresh-listings";
@@ -46,7 +47,7 @@ const MODULES: { short: string; href: string; icon: LucideIcon; tint: string }[]
   { short: "Events", href: "/events", icon: PartyPopper, tint: "bg-tint-violet text-tint-violet-fg" },
   { short: "Pools", href: "/subscriptions", icon: Tv, tint: "bg-tint-teal text-tint-teal-fg" },
   { short: "Match", href: "/matches", icon: Target, tint: "bg-tint-violet text-tint-violet-fg" },
-  { short: "Groups", href: "/communities", icon: Users, tint: "bg-tint-blue text-tint-blue-fg" },
+  { short: "Clubs", href: "/communities", icon: Users, tint: "bg-tint-blue text-tint-blue-fg" },
   { short: "Toolbox", href: "/toolbox", icon: Wrench, tint: "bg-tint-amber text-tint-amber-fg" },
   { short: "Deals", href: "/deals", icon: Tag, tint: "bg-tint-green text-tint-green-fg" },
   { short: "Timetable", href: "/timetable", icon: CalendarDays, tint: "bg-tint-violet text-tint-violet-fg" },
@@ -227,6 +228,10 @@ export default async function HomePage() {
           </Link>
         ))}
       </div>
+
+      <Suspense fallback={<SkeletonSection />}>
+        <ClubsStrip />
+      </Suspense>
 
       <InstallPrompt />
 
