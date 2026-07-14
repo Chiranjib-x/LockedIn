@@ -5,6 +5,7 @@ import { requireUser } from "@/lib/auth";
 import Gallery from "@/modules/marketplace/gallery";
 import TypeBadge from "@/modules/board/badge";
 import ResolveButton from "@/modules/board/resolve-button";
+import DeletePostButton from "@/modules/board/delete-post-button";
 import { ThisIsMine, ClaimsPanel } from "@/modules/board/claims";
 import ReportSheet from "@/modules/moderation/report-sheet";
 import ShareButton from "@/components/share-button";
@@ -153,6 +154,8 @@ export default async function PostDetailPage({
       )}
 
       {isMine && resolvable && <ResolveButton id={post.id} resolved={post.status === "resolved"} />}
+
+      {isMine && <DeletePostButton id={post.id} label={post.type === "event" ? "Delete event" : "Delete post"} />}
     </main>
   );
 }

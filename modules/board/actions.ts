@@ -122,3 +122,17 @@ export async function resolvePost(id: string, resolved: boolean) {
   revalidatePath("/board");
   revalidatePath(`/board/${id}`);
 }
+
+export async function deletePost(id: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+  const { data: p } = await supabase.from("posts").select("type").eq("id", id).single();
+  // RLS "posts: author delete" restricts this to the author.
+  await supabase.from("posts").delete().eq("id", id);
+  revalidatePath("/board");
+  revalidatePath("/events");
+  redirect(p?.type === "event" ? "/events" : "/board");
+}
