@@ -9,6 +9,7 @@ import PositionEditor from "@/modules/communities/position-editor";
 import QuestionsEditor from "@/modules/communities/questions-editor";
 import Meetings from "@/modules/communities/meetings";
 import { TaskBoard, Resources, Inventory } from "@/modules/communities/ops";
+import Money from "@/modules/communities/money";
 import { openChat } from "@/modules/chat/actions";
 import { decideApplication, withdrawApplication } from "@/modules/communities/actions";
 
@@ -72,13 +73,17 @@ export default async function CommunityPage({
   for (const r of attendanceRows ?? []) (attendance[r.meeting_id] ??= []).push(r.user_id);
 
   // Team ops (0056) — members read all three; writes are lead-gated by RLS.
-  const [{ data: tasks }, { data: resources }, { data: inventory }] = me
+  const [{ data: tasks }, { data: resources }, { data: inventory }, { data: collections }] = me
     ? await Promise.all([
         supabase.from("community_tasks").select("id, title, assignee_id, due_date, status").eq("community_id", id).order("created_at", { ascending: false }),
         supabase.from("community_resources").select("id, label, url").eq("community_id", id).order("created_at", { ascending: false }),
         supabase.from("community_inventory").select("id, item, holder_id, note").eq("community_id", id).order("created_at", { ascending: false }),
+        // Money (0057): collections + their dues, one nested read.
+        supabase.from("community_collections")
+          .select("id, title, kind, amount, upi_id, dues:collection_dues(id, user_id, amount, paid)")
+          .eq("community_id", id).order("created_at", { ascending: false }),
       ])
-    : [{ data: null }, { data: null }, { data: null }];
+    : [{ data: null }, { data: null }, { data: null }, { data: null }];
 
   // Member activity insights (lead-only): meetings attended per member, from
   // the roll-call data already loaded above. No new query.
@@ -202,6 +207,15 @@ export default async function CommunityPage({
       {me && <TaskBoard cid={id} isLead={!!isMod} tasks={tasks ?? []} members={memberList} />}
       {me && <Resources cid={id} isLead={!!isMod} resources={resources ?? []} />}
       {me && <Inventory cid={id} isLead={!!isMod} items={inventory ?? []} members={memberList} />}
+      {me && (
+        <Money
+          cid={id}
+          isLead={!!isMod}
+          meId={user.id}
+          collections={(collections ?? []) as Parameters<typeof Money>[0]["collections"]}
+          members={memberList}
+        />
+      )}
 
       {isMod && pendingApps.length > 0 && (
         <section className="flex flex-col gap-2">

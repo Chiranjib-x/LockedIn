@@ -143,6 +143,33 @@ export async function decideApplication(appId: string, cid: string, accept: bool
   return error?.message ?? null;
 }
 
+// ── Money: dues + fund split (0057) ──────────────────────────────────────────
+
+export async function createCollection(cid: string, title: string, kind: "dues" | "fund", amount: number, upi: string) {
+  const { supabase } = await ctx();
+  const t = title.trim();
+  if (!t || !(amount > 0)) return "Title and a positive amount are required.";
+  const { error } = await supabase.rpc("create_collection", {
+    cid, p_title: t, p_kind: kind, p_amount: amount, p_upi: upi.trim(),
+  });
+  revalidatePath(`/communities/${cid}`);
+  return error ? "Couldn't create it (leads only)." : null;
+}
+
+export async function setDuePaid(dueId: string, cid: string, paid: boolean) {
+  const { supabase } = await ctx();
+  await supabase.from("collection_dues") // RLS: lead only
+    .update({ paid, paid_at: paid ? new Date().toISOString() : null })
+    .eq("id", dueId);
+  revalidatePath(`/communities/${cid}`);
+}
+
+export async function deleteCollection(collId: string, cid: string) {
+  const { supabase } = await ctx();
+  await supabase.from("community_collections").delete().eq("id", collId);
+  revalidatePath(`/communities/${cid}`);
+}
+
 // ── Team ops: tasks / resources / inventory (0056) ───────────────────────────
 
 export async function addTask(cid: string, title: string, assigneeId: string, due: string) {
