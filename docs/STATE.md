@@ -71,7 +71,7 @@ USER still owes Supabase Dashboard Google-provider setup (button live but errors
 - Manual phone QA: photo upload, two-account realtime chat, UPI QR (can't automate). UPI flow REWORKED 2026-07-13 (copy-VPA + QR, deep link removed) — needs fresh phone QA.
 - DONE 2026-07-14: Google provider enabled + verified (authorize endpoint 302s to accounts.google.com; button re-enabled, deployed). Native app flow (Custom Tab + deep link, commit 66b80cd) still needs: user adds `com.lockedin.campus://auth/callback` to Supabase Redirect URLs + redistributes the rebuilt APK + phone test.
 - Rotate Firebase service-account key (was pasted into chat during Phase 21b).
-- Header overflows at ≤380px width for moderator accounts (5 icons + Log out) — components/header.tsx:60-77; consider moving Log out to Profile page. Regular users unaffected.
+- DONE 2026-07-15: narrow-header overflow — measured 383/358 at 360px (moderator), fixed by hiding the wordmark under 400px (logo mark stays); re-measured 358/358. Log out had already moved to Profile earlier.
 
 ## Failed attempts
 - MIGRATION ORDERING (2026-07-13): dropping profiles.contact_pref in 0037 while PROD still ran old code that `select`s it → PostgREST errored on the column → listing/board detail pages got null → notFound() "Nothing here", matches went empty. Lesson: expand/contract — never drop a column until every deployed build has stopped reading it. Fix: re-added column, deferred the drop to post-deploy. Same trap applies to any future column/enum removal.
