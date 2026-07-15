@@ -58,6 +58,7 @@
 - [x] Phase 35 — Group-buy lifecycle + fees (0035): open→locked→ordered→arrived→collecting→done (+cancelled), arrived push carries pickup_location, completion → organizer↔participant transactions (ratings+karma fire), delivery fee even/proportional computed at display time. **🚢 Wave D "Power-User Update" SHIPPED (all five surfaces smoke-checked on prod).**
 - [x] Play Store prep (2026-07-12): upload keystore + release signing (gitignored key.properties pattern), signed AAB built + jarsigner-verified, /privacy page, listing copy + data-safety answers + console walkthrough in docs/playstore/LISTING.md, 6 screenshots + feature graphic in docs/playstore/assets/. **Remaining is user-manual: $25 Play Console account + upload (steps in LISTING.md); /privacy needs a prod deploy.**
 - [x] Teams + role management (0052, 2026-07-15): 'team' community category; lead-run promote/demote/remove with last-lead guard on the Communities engine; landing "Everything inside" feature map + closing CTAs.
+- [x] Wave F — club/team/community toolkit (0053-0058, 2026-07-15): official-flag + 3-shelf separation (official clubs / teams / communities), recruitment applications (questions→review→accept), event RSVP+capacity+feedback, team meetings+roll-call+free-window finder, task board, pinned resources, inventory register, member activity insights, dues+fund-split, polls, scheduled announcements. Group chat excluded (user: free-tier realtime).
 - [ ] Phases 23, 36–40 (Wave E money — deliberately deferred until traffic)
 
 Update this tracker when a phase is committed.
