@@ -69,7 +69,7 @@ USER still owes Supabase Dashboard Google-provider setup (button live but errors
 - Delete gmail.com seed college + test accounts at real launch (DEPLOY.md item 3).
 - Re-point Girls' Closet/Boys' Den founding members to real hostel reps at launch (DEPLOY.md item 4).
 - Manual phone QA: photo upload, two-account realtime chat, UPI QR (can't automate). UPI flow REWORKED 2026-07-13 (copy-VPA + QR, deep link removed) — needs fresh phone QA.
-- DONE 2026-07-14: Google provider enabled + verified (authorize endpoint 302s to accounts.google.com; button re-enabled, deployed). Native app flow (Custom Tab + deep link, commit 66b80cd) still needs: user adds `com.lockedin.campus://auth/callback` to Supabase Redirect URLs + redistributes the rebuilt APK + phone test.
+- DONE 2026-07-15: Google native-flow prerequisites BOTH verified — (a) Drive file behind /download now serves the v1.1 APK byte-exact (Content-Length 4737883); (b) `com.lockedin.campus://auth/callback` accepted by GoTrue (authorize probe: redirect_to survives verbatim into the accounts.google.com URL — an unlisted URL gets stripped). ONLY remaining: user taps Continue-with-Google inside the newly installed APK on a real phone (unautomatable).
 - Rotate Firebase service-account key (was pasted into chat during Phase 21b).
 - DONE 2026-07-15: narrow-header overflow — measured 383/358 at 360px (moderator), fixed by hiding the wordmark under 400px (logo mark stays); re-measured 358/358. Log out had already moved to Profile earlier.
 
