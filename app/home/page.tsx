@@ -218,6 +218,11 @@ export default async function HomePage() {
         </div>
       </div>
 
+      {/* Clubs & teams — high on the page so campus life isn't hidden. */}
+      <Suspense fallback={<SkeletonSection />}>
+        <ClubsStrip />
+      </Suspense>
+
       <div
         className="animate-fade-up grid grid-cols-4 gap-3"
         style={{ animationDelay: "220ms" }}
@@ -231,10 +236,6 @@ export default async function HomePage() {
           </Link>
         ))}
       </div>
-
-      <Suspense fallback={<SkeletonSection />}>
-        <ClubsStrip />
-      </Suspense>
 
       <InstallPrompt />
 
