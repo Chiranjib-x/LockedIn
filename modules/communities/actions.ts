@@ -143,6 +143,79 @@ export async function decideApplication(appId: string, cid: string, accept: bool
   return error?.message ?? null;
 }
 
+// ── Team ops: tasks / resources / inventory (0056) ───────────────────────────
+
+export async function addTask(cid: string, title: string, assigneeId: string, due: string) {
+  const { supabase, user } = await ctx();
+  const t = title.trim();
+  if (!t) return "Task needs a title.";
+  const { data: profile } = await supabase.from("profiles").select("college_id").eq("id", user.id).single();
+  const { error } = await supabase.from("community_tasks").insert({
+    community_id: cid, college_id: profile?.college_id, title: t,
+    assignee_id: assigneeId || null, due_date: due || null, created_by: user.id,
+  });
+  revalidatePath(`/communities/${cid}`);
+  return error ? "Couldn't add the task (leads only)." : null;
+}
+
+export async function setTaskStatus(taskId: string, cid: string, done: boolean) {
+  const { supabase } = await ctx();
+  // RLS: assignee or lead.
+  await supabase.from("community_tasks").update({ status: done ? "done" : "open" }).eq("id", taskId);
+  revalidatePath(`/communities/${cid}`);
+}
+
+export async function deleteTask(taskId: string, cid: string) {
+  const { supabase } = await ctx();
+  await supabase.from("community_tasks").delete().eq("id", taskId); // RLS: lead
+  revalidatePath(`/communities/${cid}`);
+}
+
+export async function addResource(cid: string, label: string, url: string) {
+  const { supabase, user } = await ctx();
+  const l = label.trim();
+  let u = url.trim();
+  if (!l || !u) return "Label and link are required.";
+  if (!/^https?:\/\//i.test(u)) u = "https://" + u;
+  try { new URL(u); } catch { return "That doesn't look like a valid link."; }
+  const { data: profile } = await supabase.from("profiles").select("college_id").eq("id", user.id).single();
+  const { error } = await supabase.from("community_resources").insert({
+    community_id: cid, college_id: profile?.college_id, label: l, url: u, added_by: user.id,
+  });
+  revalidatePath(`/communities/${cid}`);
+  return error ? "Couldn't add it (leads only)." : null;
+}
+
+export async function deleteResource(rid: string, cid: string) {
+  const { supabase } = await ctx();
+  await supabase.from("community_resources").delete().eq("id", rid);
+  revalidatePath(`/communities/${cid}`);
+}
+
+export async function addInventory(cid: string, item: string, note: string) {
+  const { supabase, user } = await ctx();
+  const it = item.trim();
+  if (!it) return "Name the item.";
+  const { data: profile } = await supabase.from("profiles").select("college_id").eq("id", user.id).single();
+  const { error } = await supabase.from("community_inventory").insert({
+    community_id: cid, college_id: profile?.college_id, item: it, note: note.trim() || null,
+  });
+  revalidatePath(`/communities/${cid}`);
+  return error ? "Couldn't add it (leads only)." : null;
+}
+
+export async function setInventoryHolder(invId: string, cid: string, holderId: string) {
+  const { supabase } = await ctx();
+  await supabase.from("community_inventory").update({ holder_id: holderId || null }).eq("id", invId);
+  revalidatePath(`/communities/${cid}`);
+}
+
+export async function deleteInventory(invId: string, cid: string) {
+  const { supabase } = await ctx();
+  await supabase.from("community_inventory").delete().eq("id", invId);
+  revalidatePath(`/communities/${cid}`);
+}
+
 // ── Meetings + roll-call + free windows (0055) ───────────────────────────────
 
 export async function createMeeting(cid: string, title: string, whenLocal: string) {

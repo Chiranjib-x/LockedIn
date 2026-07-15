@@ -8,6 +8,7 @@ import { JoinLeaveButton, InterestButton, RecruitingToggle, RoleControls } from 
 import PositionEditor from "@/modules/communities/position-editor";
 import QuestionsEditor from "@/modules/communities/questions-editor";
 import Meetings from "@/modules/communities/meetings";
+import { TaskBoard, Resources, Inventory } from "@/modules/communities/ops";
 import { openChat } from "@/modules/chat/actions";
 import { decideApplication, withdrawApplication } from "@/modules/communities/actions";
 
@@ -69,6 +70,22 @@ export default async function CommunityPage({
     : { data: null };
   const attendance: Record<string, string[]> = {};
   for (const r of attendanceRows ?? []) (attendance[r.meeting_id] ??= []).push(r.user_id);
+
+  // Team ops (0056) — members read all three; writes are lead-gated by RLS.
+  const [{ data: tasks }, { data: resources }, { data: inventory }] = me
+    ? await Promise.all([
+        supabase.from("community_tasks").select("id, title, assignee_id, due_date, status").eq("community_id", id).order("created_at", { ascending: false }),
+        supabase.from("community_resources").select("id, label, url").eq("community_id", id).order("created_at", { ascending: false }),
+        supabase.from("community_inventory").select("id, item, holder_id, note").eq("community_id", id).order("created_at", { ascending: false }),
+      ])
+    : [{ data: null }, { data: null }, { data: null }];
+
+  // Member activity insights (lead-only): meetings attended per member, from
+  // the roll-call data already loaded above. No new query.
+  const meetingCount = meetings?.length ?? 0;
+  const attendedByUser: Record<string, number> = {};
+  for (const ids of Object.values(attendance)) for (const uid of ids) attendedByUser[uid] = (attendedByUser[uid] ?? 0) + 1;
+  const memberList = (members ?? []).map((m) => ({ user_id: m.user_id, name: nameOf(m) }));
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 px-4 py-6">
@@ -177,10 +194,14 @@ export default async function CommunityPage({
           cid={id}
           isLead={!!isMod}
           meetings={meetings ?? []}
-          members={(members ?? []).map((m) => ({ user_id: m.user_id, name: nameOf(m) }))}
+          members={memberList}
           attendance={attendance}
         />
       )}
+
+      {me && <TaskBoard cid={id} isLead={!!isMod} tasks={tasks ?? []} members={memberList} />}
+      {me && <Resources cid={id} isLead={!!isMod} resources={resources ?? []} />}
+      {me && <Inventory cid={id} isLead={!!isMod} items={inventory ?? []} members={memberList} />}
 
       {isMod && pendingApps.length > 0 && (
         <section className="flex flex-col gap-2">
@@ -249,6 +270,9 @@ export default async function CommunityPage({
           <h2 className="flex items-center gap-2 text-lg font-semibold">
             <Users className="h-5 w-5 text-primary" strokeWidth={2} /> Members · {members!.length}
           </h2>
+          {meetingCount > 0 && (
+            <p className="text-xs text-muted-foreground">Attendance shown per member across {meetingCount} meeting{meetingCount === 1 ? "" : "s"}.</p>
+          )}
           {members!.map((m) => {
             const name = (m.profile as unknown as { name: string } | null)?.name ?? "Student";
             async function message() {
@@ -256,6 +280,7 @@ export default async function CommunityPage({
               await openChat(m.user_id, null, null);
             }
             const position = (m as { position: string | null }).position;
+            const attended = attendedByUser[m.user_id] ?? 0;
             return (
               <Card key={m.user_id} className="flex flex-col gap-2">
                 <div className="flex items-center justify-between gap-2">
@@ -263,6 +288,11 @@ export default async function CommunityPage({
                     <span className="truncate font-medium">{name}</span>
                     {m.role === "moderator" && (
                       <span className="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">Moderator</span>
+                    )}
+                    {meetingCount > 0 && (
+                      <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+                        {attended}/{meetingCount} present
+                      </span>
                     )}
                   </span>
                   {m.user_id !== user.id && (
