@@ -24,6 +24,7 @@ import { requireUser } from "@/lib/auth";
 import { istNow } from "@/modules/timetable/helpers";
 import { SkeletonSection } from "@/components/skeleton";
 import NowStrip from "@/modules/feed/now-strip";
+import LeaderStrip from "@/modules/feed/leader-strip";
 import ClubsStrip from "@/modules/feed/clubs-strip";
 import RecentChats from "@/modules/feed/recent-chats";
 import RenewalsSoon from "@/modules/feed/renewals-soon";
@@ -123,7 +124,13 @@ export default async function HomePage() {
         Search campus…
       </Link>
 
-      {/* Personal & dynamic first — your next class + any attendance warning.
+      {/* Club owners & team leads get their management command center first —
+          renders nothing for normal students, so no toggle, no confusion. */}
+      <Suspense fallback={<SkeletonSection />}>
+        <LeaderStrip />
+      </Suspense>
+
+      {/* Personal & dynamic — your next class + any attendance warning.
           Self-hides for anyone without a timetable, so new users skip it. */}
       <Suspense fallback={<SkeletonSection />}>
         <NowStrip />
