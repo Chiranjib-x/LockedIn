@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui";
 import { rupees } from "@/modules/marketplace/format";
 import { openChat } from "@/modules/chat/actions";
+import ReportSheet from "@/modules/moderation/report-sheet";
 import { setRequestFulfilled, deleteRequest } from "./actions";
 
 export type RequestRow = {
@@ -44,8 +45,11 @@ export default function RequestCard({ request, meId }: { request: RequestRow; me
             {fulfilled && <span className="text-accent">· fulfilled</span>}
           </p>
         </div>
-        <span className="shrink-0 rounded-full bg-tint-blue px-2 py-0.5 text-xs font-semibold text-tint-blue-fg">
-          Wanted
+        <span className="flex shrink-0 items-center gap-2">
+          <span className="rounded-full bg-tint-blue px-2 py-0.5 text-xs font-semibold text-tint-blue-fg">
+            Wanted
+          </span>
+          {!isMine && <ReportSheet targetType="request" targetId={request.id} authorId={request.requester_id} compact />}
         </span>
       </div>
 

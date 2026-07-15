@@ -14,7 +14,7 @@ async function me() {
 }
 
 export async function fileReport(
-  targetType: "user" | "listing" | "post" | "group_order" | "subscription",
+  targetType: "user" | "listing" | "post" | "group_order" | "subscription" | "request",
   targetId: string,
   reason: string
 ) {
@@ -55,7 +55,7 @@ export async function dismissReport(reportId: string) {
 
 export async function removeContent(
   reportId: string,
-  ttype: "listing" | "post" | "group_order",
+  ttype: "listing" | "post" | "group_order" | "request",
   tid: string
 ) {
   const { supabase } = await me();

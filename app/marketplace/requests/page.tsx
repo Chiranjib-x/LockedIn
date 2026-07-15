@@ -11,11 +11,13 @@ export default async function RequestsPage() {
   const { supabase, user } = await requireUser();
   const blocked = await blockedIds(supabase, user.id);
 
+  // Open requests, plus the viewer's own fulfilled ones — otherwise a
+  // fulfilled request disappears from every surface and can never be reopened.
   const { data: requests } = await supabase
     .from("requests")
     .select("id, requester_id, title, description, category, budget, status")
     .is("space_id", null)
-    .eq("status", "open")
+    .or(`status.eq.open,requester_id.eq.${user.id}`)
     .not("requester_id", "in", notInList(blocked))
     .order("created_at", { ascending: false })
     .limit(60);

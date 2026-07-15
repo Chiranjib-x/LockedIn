@@ -13,7 +13,8 @@ export function ReportActions({
   targetId: string;
   authorId: string | null;
 }) {
-  const removable = targetType === "listing" || targetType === "post" || targetType === "group_order";
+  const removable =
+    targetType === "listing" || targetType === "post" || targetType === "group_order" || targetType === "request";
   return (
     <div className="flex flex-wrap gap-2 text-sm">
       <button onClick={() => dismissReport(reportId)} className="press rounded-full border border-border px-3 py-1.5 font-medium hover:bg-muted">
@@ -21,7 +22,7 @@ export function ReportActions({
       </button>
       {removable && (
         <button
-          onClick={() => removeContent(reportId, targetType as "listing" | "post" | "group_order", targetId)}
+          onClick={() => removeContent(reportId, targetType as "listing" | "post" | "group_order" | "request", targetId)}
           className="press rounded-full border border-destructive/40 px-3 py-1.5 font-medium text-destructive hover:bg-destructive/10"
         >
           Remove content

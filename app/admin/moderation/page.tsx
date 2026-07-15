@@ -7,6 +7,7 @@ const TARGET_TABLE: Record<string, string> = {
   listing: "listings",
   post: "posts",
   group_order: "group_orders",
+  request: "requests",
 };
 
 export default async function ModerationPage() {
@@ -31,7 +32,8 @@ export default async function ModerationPage() {
         authorId = r.target_id;
       } else if (TARGET_TABLE[r.target_type]) {
         const table = TARGET_TABLE[r.target_type];
-        const authorCol = table === "listings" ? "seller_id" : table === "posts" ? "author_id" : "organizer_id";
+        const authorCol =
+          table === "listings" ? "seller_id" : table === "posts" ? "author_id" : table === "requests" ? "requester_id" : "organizer_id";
         const { data } = await supabase.from(table).select(`title, ${authorCol}`).eq("id", r.target_id).maybeSingle();
         preview = (data as { title?: string } | null)?.title ?? "(removed or gone)";
         authorId = (data as Record<string, string> | null)?.[authorCol] ?? null;

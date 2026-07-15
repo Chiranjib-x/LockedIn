@@ -15,7 +15,7 @@ export default function ReportSheet({
   authorId,
   compact = false,
 }: {
-  targetType: "user" | "listing" | "post" | "group_order" | "subscription";
+  targetType: "user" | "listing" | "post" | "group_order" | "subscription" | "request";
   targetId: string;
   authorId?: string;
   compact?: boolean;
