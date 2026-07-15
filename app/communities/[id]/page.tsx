@@ -10,6 +10,7 @@ import QuestionsEditor from "@/modules/communities/questions-editor";
 import Meetings from "@/modules/communities/meetings";
 import { TaskBoard, Resources, Inventory } from "@/modules/communities/ops";
 import Money from "@/modules/communities/money";
+import { Polls, Scheduled } from "@/modules/communities/polls";
 import { openChat } from "@/modules/chat/actions";
 import { decideApplication, withdrawApplication } from "@/modules/communities/actions";
 
@@ -84,6 +85,18 @@ export default async function CommunityPage({
           .eq("community_id", id).order("created_at", { ascending: false }),
       ])
     : [{ data: null }, { data: null }, { data: null }, { data: null }];
+
+  // Polls (0058) — members read + vote; scheduled posts are lead-only (RLS).
+  const [{ data: polls }, { data: scheduled }] = me
+    ? await Promise.all([
+        supabase.from("community_polls")
+          .select("id, question, options, closes_at, votes:poll_votes(user_id, choice)")
+          .eq("community_id", id).order("created_at", { ascending: false }),
+        isMod
+          ? supabase.from("scheduled_posts").select("id, title, publish_at").eq("community_id", id).eq("published", false).order("publish_at")
+          : Promise.resolve({ data: null }),
+      ])
+    : [{ data: null }, { data: null }];
 
   // Member activity insights (lead-only): meetings attended per member, from
   // the roll-call data already loaded above. No new query.
@@ -216,6 +229,8 @@ export default async function CommunityPage({
           members={memberList}
         />
       )}
+      {me && <Polls cid={id} isLead={!!isMod} meId={user.id} polls={(polls ?? []) as Parameters<typeof Polls>[0]["polls"]} />}
+      {isMod && <Scheduled cid={id} scheduled={scheduled ?? []} />}
 
       {isMod && pendingApps.length > 0 && (
         <section className="flex flex-col gap-2">

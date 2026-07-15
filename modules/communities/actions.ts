@@ -143,6 +143,62 @@ export async function decideApplication(appId: string, cid: string, accept: bool
   return error?.message ?? null;
 }
 
+// ── Polls + scheduled announcements (0058) ───────────────────────────────────
+
+export async function createPoll(cid: string, question: string, options: string[], closesLocal: string) {
+  const { supabase, user } = await ctx();
+  const q = question.trim();
+  const opts = options.map((o) => o.trim()).filter(Boolean);
+  if (!q || opts.length < 2) return "A question and at least two options are required.";
+  const { istParse } = await import("@/modules/timetable/helpers");
+  const { data: profile } = await supabase.from("profiles").select("college_id").eq("id", user.id).single();
+  const { error } = await supabase.from("community_polls").insert({
+    community_id: cid, college_id: profile?.college_id, question: q, options: opts,
+    closes_at: closesLocal ? istParse(closesLocal).toISOString() : null, created_by: user.id,
+  });
+  revalidatePath(`/communities/${cid}`);
+  return error ? "Couldn't create the poll (leads only)." : null;
+}
+
+export async function votePoll(pollId: string, cid: string, choice: number) {
+  const { supabase, user } = await ctx();
+  const { data: profile } = await supabase.from("profiles").select("college_id").eq("id", user.id).single();
+  // Upsert: one vote per member, changing it re-writes the row.
+  await supabase.from("poll_votes").upsert(
+    { poll_id: pollId, user_id: user.id, college_id: profile?.college_id, choice },
+    { onConflict: "poll_id,user_id" }
+  );
+  revalidatePath(`/communities/${cid}`);
+}
+
+export async function deletePoll(pollId: string, cid: string) {
+  const { supabase } = await ctx();
+  await supabase.from("community_polls").delete().eq("id", pollId);
+  revalidatePath(`/communities/${cid}`);
+}
+
+export async function schedulePost(cid: string, title: string, body: string, whenLocal: string) {
+  const { supabase, user } = await ctx();
+  const t = title.trim();
+  if (!t || !whenLocal) return "Title and a publish time are required.";
+  const { istParse } = await import("@/modules/timetable/helpers");
+  const when = istParse(whenLocal);
+  if (when.getTime() <= Date.now()) return "Pick a time in the future.";
+  const { data: profile } = await supabase.from("profiles").select("college_id").eq("id", user.id).single();
+  const { error } = await supabase.from("scheduled_posts").insert({
+    community_id: cid, college_id: profile?.college_id, author_id: user.id,
+    title: t, body: body.trim() || null, publish_at: when.toISOString(),
+  });
+  revalidatePath(`/communities/${cid}`);
+  return error ? "Couldn't schedule it (leads only)." : null;
+}
+
+export async function cancelScheduled(schedId: string, cid: string) {
+  const { supabase } = await ctx();
+  await supabase.from("scheduled_posts").delete().eq("id", schedId);
+  revalidatePath(`/communities/${cid}`);
+}
+
 // ── Money: dues + fund split (0057) ──────────────────────────────────────────
 
 export async function createCollection(cid: string, title: string, kind: "dues" | "fund", amount: number, upi: string) {
