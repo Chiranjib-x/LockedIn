@@ -81,8 +81,9 @@ export default async function Header() {
         href="/"
         className="flex min-h-11 items-center gap-1.5"
       >
-        <LogoMark className="h-6 w-auto text-primary" />
-        <span className="gradient-brand-text font-heading text-lg font-bold tracking-tight">LockedIn</span>
+        <LogoMark className="h-6 w-auto shrink-0 text-primary" />
+        {/* tiny screens keep the mark only — a moderator's 6 header icons overflow 360px otherwise */}
+        <span className="gradient-brand-text hidden font-heading text-lg font-bold tracking-tight min-[400px]:inline">LockedIn</span>
       </Link>
       {user ? (
         <nav className="flex items-center">
