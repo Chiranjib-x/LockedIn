@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { istParse } from "@/modules/timetable/helpers";
 
 async function ctx() {
   const supabase = await createClient();
@@ -34,7 +35,7 @@ export async function createTrip(formData: FormData) {
       college_id: profile?.college_id,
       origin,
       destination,
-      depart_at: new Date(departAt).toISOString(),
+      depart_at: istParse(departAt).toISOString(),
       seats,
       notes: String(formData.get("notes") ?? "").trim() || null,
       fare_total: fareRaw ? Number(fareRaw) : null,

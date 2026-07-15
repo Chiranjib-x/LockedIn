@@ -7,6 +7,7 @@ import TypeBadge from "@/modules/board/badge";
 import { JoinLeaveButton, InterestButton, RecruitingToggle, RoleControls } from "@/modules/communities/client";
 import PositionEditor from "@/modules/communities/position-editor";
 import QuestionsEditor from "@/modules/communities/questions-editor";
+import Meetings from "@/modules/communities/meetings";
 import { openChat } from "@/modules/chat/actions";
 import { decideApplication, withdrawApplication } from "@/modules/communities/actions";
 
@@ -58,6 +59,16 @@ export default async function CommunityPage({
   const hasForm = (questions?.length ?? 0) > 0;
   const myApplication = (applications ?? []).find((a) => a.user_id === user.id && a.status === "pending");
   const pendingApps = isMod ? (applications ?? []).filter((a) => a.status === "pending") : [];
+
+  // Meetings (0055): members see the list; leads schedule + roll-call.
+  const { data: meetings } = me
+    ? await supabase.from("team_meetings").select("id, title, meet_at").eq("community_id", id).order("meet_at", { ascending: false }).limit(12)
+    : { data: null };
+  const { data: attendanceRows } = meetings?.length
+    ? await supabase.from("meeting_attendance").select("meeting_id, user_id").in("meeting_id", meetings.map((m) => m.id))
+    : { data: null };
+  const attendance: Record<string, string[]> = {};
+  for (const r of attendanceRows ?? []) (attendance[r.meeting_id] ??= []).push(r.user_id);
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 px-4 py-6">
@@ -160,6 +171,16 @@ export default async function CommunityPage({
       )}
 
       {isMod && <QuestionsEditor cid={id} questions={questions ?? []} />}
+
+      {me && (
+        <Meetings
+          cid={id}
+          isLead={!!isMod}
+          meetings={meetings ?? []}
+          members={(members ?? []).map((m) => ({ user_id: m.user_id, name: nameOf(m) }))}
+          attendance={attendance}
+        />
+      )}
 
       {isMod && pendingApps.length > 0 && (
         <section className="flex flex-col gap-2">

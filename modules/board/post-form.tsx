@@ -93,10 +93,16 @@ export default function PostForm({
       </label>
 
       {type === "event" && (
-        <label className="flex flex-col gap-1 text-sm font-medium">
-          Event date & time
-          <input name="event_date" type="datetime-local" required className={inputClass} />
-        </label>
+        <>
+          <label className="flex flex-col gap-1 text-sm font-medium">
+            Event date & time
+            <input name="event_date" type="datetime-local" required className={inputClass} />
+          </label>
+          <label className="flex flex-col gap-1 text-sm font-medium">
+            Capacity <span className="font-normal text-muted-foreground">(optional — extra RSVPs go on a waitlist)</span>
+            <input name="capacity" type="number" min={1} placeholder="e.g. 60" className={inputClass} />
+          </label>
+        </>
       )}
 
       {type === "found" && (

@@ -7,6 +7,7 @@ import TypeBadge from "@/modules/board/badge";
 import ResolveButton from "@/modules/board/resolve-button";
 import DeletePostButton from "@/modules/board/delete-post-button";
 import { ThisIsMine, ClaimsPanel } from "@/modules/board/claims";
+import { RsvpButton, FeedbackForm } from "@/modules/events/rsvp-feedback";
 import ReportSheet from "@/modules/moderation/report-sheet";
 import ShareButton from "@/components/share-button";
 import SaveButton from "@/components/save-button";
@@ -41,6 +42,19 @@ export default async function PostDetailPage({
     .eq("target_type", "post")
     .eq("target_id", post.id)
     .maybeSingle();
+
+  // RSVPs + feedback (0055) — events only. Feedback rows: RLS gives the
+  // author everyone's, others their own.
+  const isEvent = post.type === "event";
+  const eventPast = isEvent && post.event_date != null && new Date(post.event_date).getTime() < Date.now();
+  const [{ data: rsvps }, { data: feedback }] = isEvent
+    ? await Promise.all([
+        supabase.from("event_rsvps").select("user_id, created_at").eq("post_id", post.id).order("created_at"),
+        supabase.from("event_feedback").select("user_id, rating, comment").eq("post_id", post.id),
+      ])
+    : [{ data: null }, { data: null }];
+  const iRsvped = (rsvps ?? []).some((r) => r.user_id === user.id);
+  const myFeedback = (feedback ?? []).find((f) => f.user_id === user.id);
 
   // Phase 30 claims: RLS returns the author's full list, a claimant only
   // their own row, everyone else nothing.
@@ -145,7 +159,29 @@ export default async function PostDetailPage({
         />
       )}
 
-      {post.type === "event" && isMine && (
+      {isEvent && !eventPast && (
+        <RsvpButton postId={post.id} going={iRsvped} count={rsvps?.length ?? 0} capacity={post.capacity} />
+      )}
+
+      {isEvent && eventPast && !isMine && !myFeedback && <FeedbackForm postId={post.id} />}
+
+      {isEvent && isMine && (feedback?.length ?? 0) > 0 && (
+        <div className="rounded-2xl border border-border bg-card p-3">
+          <p className="text-sm font-semibold">
+            Feedback · {feedback!.length} · avg{" "}
+            {(feedback!.reduce((s, f) => s + f.rating, 0) / feedback!.length).toFixed(1)}⭐
+          </p>
+          <div className="mt-2 flex flex-col gap-1.5">
+            {feedback!.filter((f) => f.comment).map((f, i) => (
+              <p key={i} className="rounded-xl bg-muted/60 px-3 py-2 text-sm">
+                {"⭐".repeat(f.rating)} {f.comment}
+              </p>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {isEvent && isMine && (
         <Link
           href={`/board/${post.id}/checkin`}
           className="press flex min-h-12 items-center justify-center rounded-full bg-primary px-6 font-semibold text-on-primary hover:bg-primary-strong"

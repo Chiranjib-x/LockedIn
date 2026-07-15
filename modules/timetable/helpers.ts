@@ -30,6 +30,14 @@ export function istNow() {
   return toIST(new Date());
 }
 
+// Parse a datetime-local form value ("YYYY-MM-DDTHH:MM") as IST wall-clock.
+// Without the explicit offset, new Date() reads it in SERVER time — UTC on
+// Vercel — shifting every user-entered time by +5:30 (write-side twin of the
+// render bug fixed 2026-07-15).
+export function istParse(local: string) {
+  return new Date(local + "+05:30");
+}
+
 // [start, end) of the current IST calendar day as real UTC instants, for
 // range filters on timestamptz columns.
 export function istTodayISO() {

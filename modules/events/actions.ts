@@ -37,6 +37,44 @@ export async function unlinkMyId(): Promise<void> {
   revalidatePath("/profile");
 }
 
+// ── RSVPs + feedback (0055) ─────────────────────────────────────────────────
+
+export async function rsvpEvent(postId: string, going: boolean) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return "Not signed in.";
+  if (going) {
+    const { data: profile } = await supabase.from("profiles").select("college_id").eq("id", user.id).single();
+    const { error } = await supabase.from("event_rsvps").insert({
+      post_id: postId, user_id: user.id, college_id: profile?.college_id,
+    });
+    if (error && error.code !== "23505") return "Couldn't RSVP.";
+  } else {
+    await supabase.from("event_rsvps").delete().eq("post_id", postId).eq("user_id", user.id);
+  }
+  revalidatePath(`/board/${postId}`);
+  return null;
+}
+
+export async function submitFeedback(postId: string, rating: number, comment: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return "Not signed in.";
+  if (!Number.isInteger(rating) || rating < 1 || rating > 5) return "Pick a rating.";
+  const { data: profile } = await supabase.from("profiles").select("college_id").eq("id", user.id).single();
+  const { error } = await supabase.from("event_feedback").insert({
+    post_id: postId, user_id: user.id, college_id: profile?.college_id,
+    rating, comment: comment.trim() || null,
+  });
+  revalidatePath(`/board/${postId}`);
+  // RLS blocks pre-event feedback; unique pk blocks duplicates.
+  return error ? "Couldn't send feedback — the event may not have happened yet, or you already rated it." : null;
+}
+
 export type CheckinResult = {
   attendee_name: string | null;
   email: string | null;

@@ -143,6 +143,52 @@ export async function decideApplication(appId: string, cid: string, accept: bool
   return error?.message ?? null;
 }
 
+// ── Meetings + roll-call + free windows (0055) ───────────────────────────────
+
+export async function createMeeting(cid: string, title: string, whenLocal: string) {
+  const { supabase, user } = await ctx();
+  const t = title.trim();
+  if (!t || !whenLocal) return "Title and time are required.";
+  const { istParse } = await import("@/modules/timetable/helpers");
+  const { data: profile } = await supabase.from("profiles").select("college_id").eq("id", user.id).single();
+  const { error } = await supabase.from("team_meetings").insert({
+    community_id: cid, college_id: profile?.college_id,
+    title: t, meet_at: istParse(whenLocal).toISOString(), created_by: user.id,
+  });
+  revalidatePath(`/communities/${cid}`);
+  return error ? "Couldn't schedule it (leads only)." : null;
+}
+
+export async function deleteMeeting(meetingId: string, cid: string) {
+  const { supabase } = await ctx();
+  await supabase.from("team_meetings").delete().eq("id", meetingId); // RLS: lead only
+  revalidatePath(`/communities/${cid}`);
+}
+
+export async function markMeetingAttendance(meetingId: string, cid: string, uid: string, present: boolean) {
+  const { supabase, user } = await ctx();
+  if (present) {
+    const { data: profile } = await supabase.from("profiles").select("college_id").eq("id", user.id).single();
+    const { error } = await supabase.from("meeting_attendance").insert({
+      meeting_id: meetingId, user_id: uid, college_id: profile?.college_id, marked_by: user.id,
+    });
+    if (error && error.code !== "23505") return "Couldn't mark (leads only).";
+  } else {
+    await supabase.from("meeting_attendance").delete().eq("meeting_id", meetingId).eq("user_id", uid);
+  }
+  revalidatePath(`/communities/${cid}`);
+  return null;
+}
+
+// Privacy-preserving: the RPC only ever returns merged gaps, never anyone's
+// individual timetable.
+export async function getFreeWindows(cid: string, dow: number) {
+  const { supabase } = await ctx();
+  const { data, error } = await supabase.rpc("team_free_windows", { cid, dow });
+  if (error) return { error: "Couldn't compute free windows.", windows: [] as { start_min: number; end_min: number }[] };
+  return { error: null, windows: (data ?? []) as { start_min: number; end_min: number }[] };
+}
+
 // Lead management (0052). Both RPCs enforce: caller is a lead/founder, and a
 // team always keeps at least one lead.
 export async function setMemberRole(cid: string, uid: string, role: "member" | "moderator") {

@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { openChat } from "@/modules/chat/actions";
+import { istParse } from "@/modules/timetable/helpers";
 
 const TYPES = ["lost", "found", "notice", "event"] as const;
 export type PostType = (typeof TYPES)[number];
@@ -43,7 +44,8 @@ export async function createPost(formData: FormData) {
     title,
     description: String(formData.get("description") ?? "").trim() || null,
     location: String(formData.get("location") ?? "").trim() || null,
-    event_date: type === "event" ? new Date(eventDateRaw).toISOString() : null,
+    event_date: type === "event" ? istParse(eventDateRaw).toISOString() : null,
+    capacity: type === "event" ? Number(formData.get("capacity")) || null : null,
     images: JSON.parse(String(formData.get("images") ?? "[]")),
     community_id: communityId, // RLS: moderators only when set
     claim_question:

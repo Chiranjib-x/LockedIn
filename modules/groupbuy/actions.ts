@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { istParse } from "@/modules/timetable/helpers";
 
 async function ctx() {
   const supabase = await createClient();
@@ -35,7 +36,7 @@ export async function createOrder(formData: FormData) {
       title,
       description: String(formData.get("description") ?? "").trim() || null,
       category,
-      deadline: new Date(deadline).toISOString(),
+      deadline: istParse(deadline).toISOString(),
       unit_price: unitPriceRaw ? Number(unitPriceRaw) : null,
       upi_id: String(formData.get("upi_id") ?? "").trim() || null,
     })

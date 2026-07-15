@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { istParse } from "@/modules/timetable/helpers";
 
 async function ctx() {
   const supabase = await createClient();
@@ -34,7 +35,7 @@ export async function createPickup(formData: FormData) {
     item_desc: item,
     gate: String(formData.get("gate") ?? "").trim() || "Main Gate",
     drop_location: drop,
-    expected_at: new Date(expected).toISOString(),
+    expected_at: istParse(expected).toISOString(),
     reward: Number(formData.get("reward") ?? 0) || 0,
   });
 
