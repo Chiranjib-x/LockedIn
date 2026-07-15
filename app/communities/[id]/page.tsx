@@ -13,6 +13,7 @@ import Money from "@/modules/communities/money";
 import { Polls, Scheduled } from "@/modules/communities/polls";
 import ProfileEditor from "@/modules/communities/profile-editor";
 import Achievements from "@/modules/communities/achievements";
+import DeleteControls from "@/modules/communities/delete-controls";
 import { CATEGORY_META } from "@/modules/communities/categories";
 import { openChat } from "@/modules/chat/actions";
 import { decideApplication, withdrawApplication } from "@/modules/communities/actions";
@@ -30,6 +31,10 @@ export default async function CommunityPage({
 
   const { data: community } = await supabase.from("communities").select("*").eq("id", id).single();
   if (!community || !community.is_approved) notFound();
+
+  // App-founder status decides who may delete vs only request deletion (0060).
+  const { data: viewerProfile } = await supabase.from("profiles").select("is_moderator").eq("id", user.id).single();
+  const isFounder = !!viewerProfile?.is_moderator;
 
   const [{ data: members }, { data: posts }, { data: interests }, { data: questions }, { data: applications }, { data: achievements }] = await Promise.all([
     supabase
@@ -400,6 +405,15 @@ export default async function CommunityPage({
           ))
         )}
       </section>
+
+      <DeleteControls
+        cid={id}
+        name={community.name}
+        isFounder={isFounder}
+        isLead={!!isMod}
+        requested={!!community.deletion_requested_at}
+        reason={community.deletion_reason}
+      />
     </main>
   );
 }

@@ -60,8 +60,35 @@ export async function approveCommunity(id: string, official: boolean) {
 
 export async function rejectCommunity(id: string) {
   const { supabase } = await ctx();
-  await supabase.from("communities").delete().eq("id", id); // RLS: founder or proposer-pending
+  await supabase.from("communities").delete().eq("id", id); // RLS: founder only (0060)
   revalidatePath("/communities");
+}
+
+// ── Deletion: founder-only, everyone else requests (0060) ────────────────────
+
+export async function deleteCommunity(id: string) {
+  const { supabase } = await ctx();
+  const { error } = await supabase.from("communities").delete().eq("id", id); // RLS: is_app_moderator
+  if (error) return "Couldn't delete — only the campus admin can delete communities.";
+  revalidatePath("/communities");
+  redirect("/communities?deleted=1");
+}
+
+export async function requestCommunityDeletion(id: string, reason: string) {
+  const { supabase } = await ctx();
+  const { error } = await supabase.rpc("request_community_deletion", { cid: id, p_reason: reason });
+  revalidatePath(`/communities/${id}`);
+  return error ? "Couldn't send the request (leads only)." : null;
+}
+
+export async function dismissDeletionRequest(id: string) {
+  const { supabase } = await ctx();
+  // RLS: only is_app_moderator can UPDATE communities.
+  await supabase.from("communities")
+    .update({ deletion_requested_at: null, deletion_requested_by: null, deletion_reason: null })
+    .eq("id", id);
+  revalidatePath("/communities");
+  revalidatePath(`/communities/${id}`);
 }
 
 export async function expressInterest(id: string) {

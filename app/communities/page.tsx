@@ -6,16 +6,17 @@ import EmptyState from "@/components/empty-state";
 import { ApproveButtons } from "@/modules/communities/client";
 import QuantaBanner from "@/modules/communities/quanta-banner";
 import { CATEGORY_META, catGroup } from "@/modules/communities/categories";
+import { dismissDeletionRequest } from "@/modules/communities/actions";
 
 const catChip = (cat: string) => `${CATEGORY_META[cat]?.emoji ?? "✨"} ${CATEGORY_META[cat]?.label ?? "Community"}`;
 
 export default async function CommunitiesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ proposed?: string }>;
+  searchParams: Promise<{ proposed?: string; deleted?: string }>;
 }) {
   const { supabase, user } = await requireUser();
-  const { proposed } = await searchParams;
+  const { proposed, deleted } = await searchParams;
 
   const [{ data: communities }, { data: myMemberships }, { data: prof }] = await Promise.all([
     supabase
@@ -37,6 +38,7 @@ export default async function CommunitiesPage({
   const clubs = byGroup("club");
   const teams = byGroup("team");
   const groups = byGroup("community");
+  const deletionRequests = prof?.is_moderator ? approved.filter((c) => c.deletion_requested_at) : [];
 
   const clubCard = (c: (typeof approved)[number], i: number) => {
     const count = (c.members as { user_id: string }[]).length;
@@ -98,6 +100,45 @@ export default async function CommunitiesPage({
         <p className="rounded-2xl border border-accent/30 bg-accent/10 p-3 text-sm text-accent">
           Proposal sent — it goes live once approved. You’ll get a notification. 🎉
         </p>
+      )}
+
+      {deleted && (
+        <p className="rounded-2xl border border-border bg-muted p-3 text-sm text-muted-foreground">Community deleted.</p>
+      )}
+
+      {deletionRequests.length > 0 && (
+        <section className="flex flex-col gap-2">
+          <h2 className="text-lg font-semibold">🗑️ Deletion requests</h2>
+          {deletionRequests.map((c) => {
+            async function dismiss() {
+              "use server";
+              await dismissDeletionRequest(c.id);
+            }
+            return (
+              <Card key={c.id} className="flex flex-col gap-2 border-destructive/30">
+                <div className="flex items-center gap-2">
+                  <span className="text-xl">{c.emoji}</span>
+                  <p className="font-semibold">{c.name}</p>
+                  <span className="ml-auto rounded-full bg-muted px-2 py-0.5 text-xs">{catChip(c.category)}</span>
+                </div>
+                {c.deletion_reason && <p className="text-sm text-muted-foreground">“{c.deletion_reason}”</p>}
+                <div className="flex gap-2">
+                  <Link
+                    href={`/communities/${c.id}`}
+                    className="press flex-1 rounded-full bg-destructive px-4 py-1.5 text-center text-sm font-semibold text-on-destructive"
+                  >
+                    Review &amp; delete →
+                  </Link>
+                  <form action={dismiss}>
+                    <button type="submit" className="press rounded-full border border-border px-4 py-1.5 text-sm font-medium hover:bg-muted">
+                      Dismiss
+                    </button>
+                  </form>
+                </div>
+              </Card>
+            );
+          })}
+        </section>
       )}
 
       {pending.length > 0 && (
