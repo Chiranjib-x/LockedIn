@@ -11,7 +11,7 @@
 2. Create app → name **LockedIn**, default language English (India), App, Free.
 3. App integrity → accept **Play App Signing** (default — Google holds the signing key, our keystore is just the upload key).
 4. Fill store listing with the copy below + upload assets from `docs/playstore/assets/` + icon `public/icons/icon-512.png`.
-5. Privacy policy URL: `https://lockedin-swart-ten.vercel.app/privacy`
+5. Privacy policy URL: `https://chiranjib.online/privacy`
 6. Data safety form: answers below.
 7. Content rating questionnaire: social/communication app, users can interact (chat), no UGC moderation gaps (we have report + moderator tools), no gambling/violence → typically rates Everyone/Teen.
 8. Target audience: 18+ (college students).
@@ -57,7 +57,7 @@ Your college email is your key — everything you see and post stays inside your
   - App interactions: not collected (no analytics SDK)
   - Device IDs: collected (push token), optional, app functionality, not shared
 - Data encrypted in transit? **Yes** (HTTPS everywhere)
-- Users can request deletion? **Yes** — in-app (Profile → Delete my account) AND web, no install needed: `https://lockedin-swart-ten.vercel.app/delete-account` (enter this URL in App content → Account deletion). Email fallback stated in privacy policy.
+- Users can request deletion? **Yes** — in-app (Profile → Delete my account) AND web, no install needed: `https://chiranjib.online/delete-account` (enter this URL in App content → Account deletion). Email fallback stated in privacy policy.
 - Data shared with third parties? **No**
 
 ## Later releases

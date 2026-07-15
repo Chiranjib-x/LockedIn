@@ -9,7 +9,10 @@ const config: CapacitorConfig = {
   appName: "LockedIn",
   webDir: "public",
   server: {
-    url: "https://lockedin-swart-ten.vercel.app",
+    // Canonical custom domain. The .vercel.app alias still resolves, so the
+    // already-distributed APK keeps working; a rebuilt APK will load this.
+    // Only rebuild the APK AFTER chiranjib.online is verified live on Vercel.
+    url: "https://chiranjib.online",
     androidScheme: "https",
   },
   plugins: {

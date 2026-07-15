@@ -36,7 +36,7 @@ const SECTIONS: { h: string; body: string[] }[] = [
     h: "Deleting your data",
     body: [
       "You can delete your own listings, posts, and messages in the app at any time.",
-      "Delete your whole account instantly at lockedin-swart-ten.vercel.app/delete-account (also linked from your Profile). It permanently removes your profile and everything attached to it, immediately.",
+      "Delete your whole account instantly at chiranjib.online/delete-account (also linked from your Profile). It permanently removes your profile and everything attached to it, immediately.",
       "Can't log in? Email us from your college address and we will remove it within 30 days.",
     ],
   },

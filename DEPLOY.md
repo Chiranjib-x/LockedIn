@@ -9,7 +9,7 @@
 ## Before going to production
 
 1. **Supabase Auth URLs.** Supabase → Authentication → URL Configuration:
-   - Site URL → your production domain (e.g. `https://lockedin.vercel.app`).
+   - Site URL → your production domain (`https://chiranjib.online`).
    - Redirect URLs → add the production domain and any custom domain.
    (Without this, email-confirmation / password links point at localhost.)
 
