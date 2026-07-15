@@ -123,10 +123,38 @@ export default async function HomePage() {
         Search campus…
       </Link>
 
+      {/* Personal & dynamic first — your next class + any attendance warning.
+          Self-hides for anyone without a timetable, so new users skip it. */}
+      <Suspense fallback={<SkeletonSection />}>
+        <NowStrip />
+      </Suspense>
+
       {/* Flagship showcase — the features that sell the app get hero cards
           with live numbers; everything else stays one tap away in the grid. */}
       <div className="flex flex-col gap-3">
-        <Link href="/gate" className="animate-fade-up press" style={{ animationDelay: "60ms" }}>
+        <Link href="/marketplace" className="animate-fade-up press" style={{ animationDelay: "60ms" }}>
+          <div className="glass press-glow flex items-center gap-4 rounded-3xl p-4">
+            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-tint-blue text-tint-blue-fg">
+              <ShoppingBag className="h-7 w-7" strokeWidth={2} />
+            </span>
+            <div className="min-w-0 flex-1">
+              <h2 className="font-heading font-bold">Marketplace</h2>
+              <p className="text-sm text-muted-foreground">
+                {(listingCount ?? 0) > 0 ? (
+                  <>
+                    <span className="font-semibold text-primary">{listingCount}</span> thing
+                    {listingCount === 1 ? "" : "s"} for sale on campus right now
+                  </>
+                ) : (
+                  "Buy, sell, and rent — students from your college only."
+                )}
+              </p>
+            </div>
+            <ArrowRight className="h-4 w-4 shrink-0 text-primary" strokeWidth={2.2} />
+          </div>
+        </Link>
+
+        <Link href="/gate" className="animate-fade-up press" style={{ animationDelay: "120ms" }}>
           <div className="glass press-glow flex items-center gap-4 rounded-3xl p-4">
             <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-tint-green text-tint-green-fg">
               <Footprints className="h-7 w-7" strokeWidth={2} />
@@ -151,28 +179,6 @@ export default async function HomePage() {
                 )}
               </p>
               <span className="route-dash mt-2 block w-3/4" />
-            </div>
-            <ArrowRight className="h-4 w-4 shrink-0 text-primary" strokeWidth={2.2} />
-          </div>
-        </Link>
-
-        <Link href="/marketplace" className="animate-fade-up press" style={{ animationDelay: "120ms" }}>
-          <div className="glass press-glow flex items-center gap-4 rounded-3xl p-4">
-            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-tint-blue text-tint-blue-fg">
-              <ShoppingBag className="h-7 w-7" strokeWidth={2} />
-            </span>
-            <div className="min-w-0 flex-1">
-              <h2 className="font-heading font-bold">Marketplace</h2>
-              <p className="text-sm text-muted-foreground">
-                {(listingCount ?? 0) > 0 ? (
-                  <>
-                    <span className="font-semibold text-primary">{listingCount}</span> thing
-                    {listingCount === 1 ? "" : "s"} for sale on campus right now
-                  </>
-                ) : (
-                  "Buy, sell, and rent — students from your college only."
-                )}
-              </p>
             </div>
             <ArrowRight className="h-4 w-4 shrink-0 text-primary" strokeWidth={2.2} />
           </div>
@@ -238,10 +244,6 @@ export default async function HomePage() {
       </div>
 
       <InstallPrompt />
-
-      <Suspense fallback={<SkeletonSection />}>
-        <NowStrip />
-      </Suspense>
 
       <Suspense fallback={<SkeletonSection />}>
         <FreeWindow />
