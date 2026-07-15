@@ -20,6 +20,7 @@ USER still owes Supabase Dashboard Google-provider setup (button live but errors
 ## Facts (14.5 additions)
 - Build APK: `cd android && ./gradlew.bat assembleDebug` (Java 21 system, sdk.dir in android/local.properties — gitignored)
 - After changing capacitor.config.ts or public/: `npx cap sync android`
+- Brand mark (2026-07-15): components/logo.tsx (F3 flame+keyhole+key, user-picked). Raster icons regenerated via scratchpad gen-icons.js (sharp) + make-ico.py (Pillow) — keep tile SVG geometry in sync with logo.tsx if the mark changes. Android launcher mipmaps still the OLD icon — regenerate at next APK/AAB rebuild.
 
 
 ## Constraints

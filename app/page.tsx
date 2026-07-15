@@ -14,6 +14,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import LogoMark from "@/components/logo";
 
 // Marketing pillars — the three features that sell the app (user-directed):
 // Gate Runner (nothing else has it), campus-only Marketplace, and the
@@ -101,8 +102,9 @@ export default async function Home() {
         className="pointer-events-none absolute -right-24 -bottom-32 h-96 w-96 rounded-full bg-accent/10 blur-3xl"
       />
 
-      <p className="animate-fade-up gradient-brand-text font-heading text-sm font-bold tracking-widest uppercase">
-        LockedIn
+      <p className="animate-fade-up flex items-center gap-2 font-heading text-sm font-bold tracking-widest uppercase">
+        <LogoMark className="h-7 w-auto text-primary" />
+        <span className="gradient-brand-text">LockedIn</span>
       </p>
       <h1
         className="animate-fade-up mt-4 max-w-2xl text-5xl font-bold sm:text-7xl"

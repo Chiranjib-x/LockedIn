@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Bell, Search, ShieldCheck, Wrench } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import ThemeToggle from "@/components/theme-toggle";
+import LogoMark from "@/components/logo";
 
 async function NotificationBell({
   supabase,
@@ -78,9 +79,10 @@ export default async function Header() {
     <header className="glass sticky top-0 z-10 flex items-center justify-between rounded-none border-x-0 border-t-0 px-4 py-2">
       <Link
         href="/"
-        className="gradient-brand-text flex min-h-11 items-center font-heading text-lg font-bold tracking-tight"
+        className="flex min-h-11 items-center gap-1.5"
       >
-        LockedIn
+        <LogoMark className="h-6 w-auto text-primary" />
+        <span className="gradient-brand-text font-heading text-lg font-bold tracking-tight">LockedIn</span>
       </Link>
       {user ? (
         <nav className="flex items-center">
