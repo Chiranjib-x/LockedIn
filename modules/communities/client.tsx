@@ -102,14 +102,20 @@ export function JoinLeaveButton({ id, joined }: { id: string; joined: boolean })
   );
 }
 
-export function ApproveButtons({ id }: { id: string }) {
+export function ApproveButtons({ id, claimsOfficial }: { id: string; claimsOfficial: boolean }) {
   return (
-    <div className="flex gap-2">
+    <div className="flex flex-wrap gap-2">
       <button
-        onClick={() => approveCommunity(id)}
+        onClick={() => approveCommunity(id, true)}
+        className="press rounded-full bg-primary px-4 py-1.5 text-xs font-semibold text-on-primary"
+      >
+        Approve as ✔ Official
+      </button>
+      <button
+        onClick={() => approveCommunity(id, false)}
         className="press rounded-full bg-accent px-4 py-1.5 text-xs font-semibold text-on-accent"
       >
-        Approve ✓
+        Approve{claimsOfficial ? " (strip official)" : " ✓"}
       </button>
       <button
         onClick={() => { if (confirm("Reject this proposal?")) rejectCommunity(id); }}

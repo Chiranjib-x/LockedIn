@@ -10,6 +10,7 @@ contact_pref: still PRESENT in the live DB (nullable, null, read by no code — 
 USER still owes Supabase Dashboard Google-provider setup (button live but errors until then). migration 0037 APPLIED (unique usernames backfilled 9/9, find_by_username RPC); people search exact-username-only; chat 📱 contact-share removed; UPI deep link replaced with copy-VPA + QR (NPCI blocks P2P intent links). Earlier: MARKETING + LOGOUT FIX DEPLOYED (2026-07-13). Landing now 6 pillars (gate/marketplace/spaces + cabs/group-buy/pools bc3a3cc); home has flagship hero cards (facd019) + live-stats row (cabs/group-buy/pools counts). Logout hang FIXED (f3394ba): disablePush awaited navigator.serviceWorker.ready which NEVER settles without a registered SW (always dev, briefly prod) → logout stuck on "Logging out…". Fix: getRegistration() (returns immediately) + 3s Promise.race cap in LogoutButton. Prod smoke-checked: all 6 pillar strings live. Earlier: UI REVAMP + QoL PASS DEPLOYED TO PROD. (2026-07-12, user said "deploy"; smoke-checked: auth hero tagline + gradient wordmark live). Revamp = 5 phases of docs/design/REVAMP-PLAN.md (d0b109e..97e8e9f) + Play assets reshot (4467525) + QoL d93b9d4 (BackLink on 13 secondary screens, Button disabled state, chat inline send-error w/ draft restore). Explore tab wired to /search. Remaining: user's Play Console steps (docs/playstore/LISTING.md); purple QA image on Casio listing (user deletes in-app, then reshoot 2-marketplace.png). AAB needs NO rebuild (remote-load wrapper).
 
 ## Next
+0. WAVE F (user-chosen 2026-07-15, "all except group chats"): T1 official-flag + teams/clubs/communities visual separation (propose-form option, founder verifies at approval) → T2 application forms + join question (one system) → T3 events: RSVP+capacity, feedback, meeting roll-call, team free-slot finder (privacy-preserving definer RPC over member timetables) → T4 ops: task board, pinned resources, inventory register, member activity insights → T5 money: dues tracker, event fund split → T6 polls + scheduled announcements. EXCLUDED BY USER: member group chat (free-tier realtime limits).
 1. USER: say "deploy" → prod deploy makes /privacy live (required Play listing URL).
 2. USER: Play Console steps per docs/playstore/LISTING.md (create $25 account, listing, data safety, upload android/app/build/outputs/bundle/release/app-release.aab).
 3. USER: back up android/lockedin-upload.keystore + android/key.properties off-machine.
@@ -24,6 +25,7 @@ USER still owes Supabase Dashboard Google-provider setup (button live but errors
 
 
 ## Constraints
+- 2026-07-15, verbatim: "all except group chats , cozi hv free tier" — do NOT build community group chat (Supabase free-tier realtime limits).
 - 2026-07-13, verbatim: "i dont want anyone to share their whatsapp number like so easily , better to remove that feature"
 - 2026-07-13, verbatim: "I dont want people to start using this app to text anyone they want by searching their name on it"
 - 2026-07-13, verbatim: "everyone must have a username which must be unique to them else they cant set it , and to contact them , one should know their unique username"

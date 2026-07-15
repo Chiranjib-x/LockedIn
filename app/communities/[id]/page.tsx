@@ -6,16 +6,25 @@ import { Card } from "@/components/ui";
 import TypeBadge from "@/modules/board/badge";
 import { JoinLeaveButton, InterestButton, RecruitingToggle, RoleControls } from "@/modules/communities/client";
 import PositionEditor from "@/modules/communities/position-editor";
+import QuestionsEditor from "@/modules/communities/questions-editor";
 import { openChat } from "@/modules/chat/actions";
+import { decideApplication, withdrawApplication } from "@/modules/communities/actions";
 
-export default async function CommunityPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function CommunityPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ applied?: string }>;
+}) {
   const { supabase, user } = await requireUser();
   const { id } = await params;
+  const { applied } = await searchParams;
 
   const { data: community } = await supabase.from("communities").select("*").eq("id", id).single();
   if (!community || !community.is_approved) notFound();
 
-  const [{ data: members }, { data: posts }, { data: interests }] = await Promise.all([
+  const [{ data: members }, { data: posts }, { data: interests }, { data: questions }, { data: applications }] = await Promise.all([
     supabase
       .from("community_members")
       .select("user_id, role, position, profile:profiles!community_members_user_id_fkey(name)")
@@ -31,6 +40,13 @@ export default async function CommunityPage({ params }: { params: Promise<{ id: 
       .from("community_interests")
       .select("user_id, created_at, profile:profiles!community_interests_user_id_fkey(name)")
       .eq("community_id", id),
+    supabase.from("community_questions").select("id, prompt").eq("community_id", id).order("ord").order("created_at"),
+    // RLS: applicant sees own; leads see all of this community's.
+    supabase
+      .from("community_applications")
+      .select("id, user_id, answers, status, created_at, profile:profiles!community_applications_user_id_fkey(name)")
+      .eq("community_id", id)
+      .order("created_at", { ascending: false }),
   ]);
 
   const me = members?.find((m) => m.user_id === user.id);
@@ -39,6 +55,9 @@ export default async function CommunityPage({ params }: { params: Promise<{ id: 
   const iAmInterested = (interests ?? []).some((x) => x.user_id === user.id);
   const team = (members ?? []).filter((m) => (m as { position: string | null }).position);
   const nameOf = (m: unknown) => (((m as { profile: { name: string } | null }).profile)?.name) ?? "Student";
+  const hasForm = (questions?.length ?? 0) > 0;
+  const myApplication = (applications ?? []).find((a) => a.user_id === user.id && a.status === "pending");
+  const pendingApps = isMod ? (applications ?? []).filter((a) => a.status === "pending") : [];
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 px-4 py-6">
@@ -50,6 +69,9 @@ export default async function CommunityPage({ params }: { params: Promise<{ id: 
             <h1 className="text-2xl font-bold">
               {community.emoji} {community.name}
             </h1>
+            {community.is_official && (
+              <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">✔ Official</span>
+            )}
             {community.recruiting && (
               <span className="rounded-full bg-accent/15 px-2 py-0.5 text-xs font-semibold text-accent">
                 🟢 Recruiting
@@ -62,10 +84,36 @@ export default async function CommunityPage({ params }: { params: Promise<{ id: 
           </p>
         </div>
         <div className="flex shrink-0 flex-col items-end gap-2">
-          <JoinLeaveButton id={id} joined={!!me} />
+          {me || !hasForm ? (
+            <JoinLeaveButton id={id} joined={!!me} />
+          ) : myApplication ? (
+            <form
+              action={async () => {
+                "use server";
+                await withdrawApplication(id);
+              }}
+            >
+              <button type="submit" className="press rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-muted">
+                Application pending — withdraw
+              </button>
+            </form>
+          ) : (
+            <Link
+              href={`/communities/${id}/apply`}
+              className="press rounded-full bg-primary px-5 py-2 text-sm font-semibold text-on-primary hover:bg-primary-strong"
+            >
+              Apply to join
+            </Link>
+          )}
           {!me && <InterestButton id={id} interested={iAmInterested} />}
         </div>
       </div>
+
+      {applied && (
+        <p className="rounded-2xl border border-accent/30 bg-accent/10 p-3 text-sm text-accent">
+          Application sent — the leads will review it. 📨
+        </p>
+      )}
 
       {community.description && (
         <p className="text-[15px] leading-relaxed text-foreground/90">{community.description}</p>
@@ -109,6 +157,43 @@ export default async function CommunityPage({ params }: { params: Promise<{ id: 
             <Download className="h-4 w-4 text-primary" strokeWidth={2} /> Export members (CSV)
           </a>
         </div>
+      )}
+
+      {isMod && <QuestionsEditor cid={id} questions={questions ?? []} />}
+
+      {isMod && pendingApps.length > 0 && (
+        <section className="flex flex-col gap-2">
+          <h2 className="text-lg font-semibold">📩 Applications · {pendingApps.length}</h2>
+          {pendingApps.map((a) => {
+            const decide = async (accept: boolean) => {
+              "use server";
+              await decideApplication(a.id, id, accept);
+            };
+            return (
+              <Card key={a.id} className="flex flex-col gap-2">
+                <p className="font-medium">{(a.profile as unknown as { name: string } | null)?.name ?? "Student"}</p>
+                {(a.answers as { q: string; a: string }[]).map((ans, i) => (
+                  <div key={i} className="rounded-xl bg-muted/60 px-3 py-2 text-sm">
+                    <p className="text-xs font-medium text-muted-foreground">{ans.q}</p>
+                    <p className="whitespace-pre-wrap">{ans.a}</p>
+                  </div>
+                ))}
+                <div className="flex gap-2">
+                  <form action={decide.bind(null, true)} className="flex-1">
+                    <button type="submit" className="press min-h-10 w-full rounded-full bg-accent text-sm font-semibold text-on-accent">
+                      Accept — add to members
+                    </button>
+                  </form>
+                  <form action={decide.bind(null, false)}>
+                    <button type="submit" className="press min-h-10 rounded-full border border-destructive/40 px-4 text-sm font-medium text-destructive hover:bg-destructive/10">
+                      Reject
+                    </button>
+                  </form>
+                </div>
+              </Card>
+            );
+          })}
+        </section>
       )}
 
       {isMod && (interests?.length ?? 0) > 0 && (

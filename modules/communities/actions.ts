@@ -28,6 +28,8 @@ export async function proposeCommunity(formData: FormData) {
     emoji: String(formData.get("emoji") ?? "").trim() || "🎯",
     category: String(formData.get("category") ?? "other"),
     description: String(formData.get("description") ?? "").trim() || null,
+    // A claim only — the founder confirms or strips it at approval (0053).
+    is_official: formData.get("is_official") === "on",
   });
   if (error) redirect("/communities/new?error=" + encodeURIComponent(error.message));
   revalidatePath("/communities");
@@ -48,9 +50,10 @@ export async function leaveCommunity(id: string) {
   revalidatePath("/communities");
 }
 
-export async function approveCommunity(id: string) {
+export async function approveCommunity(id: string, official: boolean) {
   const { supabase } = await ctx();
-  await supabase.from("communities").update({ is_approved: true }).eq("id", id); // RLS: founder only
+  // RLS: founder only. Approval is where the official claim gets verified.
+  await supabase.from("communities").update({ is_approved: true, is_official: official }).eq("id", id);
   revalidatePath("/communities");
 }
 
@@ -83,6 +86,61 @@ export async function setMemberPosition(cid: string, uid: string, position: stri
   const { supabase } = await ctx();
   await supabase.rpc("set_member_position", { cid, uid, pos: position }); // gated: club/app moderator
   revalidatePath(`/communities/${cid}`);
+}
+
+// ── Applications (0054) ──────────────────────────────────────────────────────
+
+export async function addQuestion(cid: string, prompt: string) {
+  const { supabase, user } = await ctx();
+  const p = prompt.trim();
+  if (!p) return "Write the question first.";
+  const { data: profile } = await supabase.from("profiles").select("college_id").eq("id", user.id).single();
+  const { error } = await supabase.from("community_questions").insert({ community_id: cid, college_id: profile?.college_id, prompt: p });
+  revalidatePath(`/communities/${cid}`);
+  return error ? "Couldn't add the question." : null;
+}
+
+export async function removeQuestion(qid: string, cid: string) {
+  const { supabase } = await ctx();
+  await supabase.from("community_questions").delete().eq("id", qid); // RLS: lead only
+  revalidatePath(`/communities/${cid}`);
+}
+
+// Form action from /communities/[id]/apply — answers snapshot the prompts.
+export async function applyToJoin(cid: string, formData: FormData) {
+  const { supabase, user } = await ctx();
+  const { data: questions } = await supabase
+    .from("community_questions").select("id, prompt").eq("community_id", cid).order("ord").order("created_at");
+  const answers = (questions ?? []).map((q) => ({
+    q: q.prompt,
+    a: String(formData.get(`q_${q.id}`) ?? "").trim(),
+  }));
+  if (answers.some((x) => !x.a)) {
+    redirect(`/communities/${cid}/apply?error=` + encodeURIComponent("Answer every question."));
+  }
+  const { data: profile } = await supabase.from("profiles").select("college_id").eq("id", user.id).single();
+  const { error } = await supabase.from("community_applications").insert({
+    community_id: cid, user_id: user.id, college_id: profile?.college_id, answers,
+  });
+  if (error) {
+    redirect(`/communities/${cid}/apply?error=` + encodeURIComponent("You already have a pending application."));
+  }
+  revalidatePath(`/communities/${cid}`);
+  redirect(`/communities/${cid}?applied=1`);
+}
+
+export async function withdrawApplication(cid: string) {
+  const { supabase, user } = await ctx();
+  await supabase.from("community_applications").delete()
+    .eq("community_id", cid).eq("user_id", user.id).eq("status", "pending");
+  revalidatePath(`/communities/${cid}`);
+}
+
+export async function decideApplication(appId: string, cid: string, accept: boolean) {
+  const { supabase } = await ctx();
+  const { error } = await supabase.rpc("decide_application", { app_id: appId, accept });
+  revalidatePath(`/communities/${cid}`);
+  return error?.message ?? null;
 }
 
 // Lead management (0052). Both RPCs enforce: caller is a lead/founder, and a

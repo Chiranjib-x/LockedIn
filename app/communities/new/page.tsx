@@ -52,6 +52,15 @@ export default async function NewCommunityPage({
           What’s it about?
           <textarea name="description" rows={3} placeholder="Race weekends together, ranked grind, weekly kickabouts…" className={inputClass} />
         </label>
+        <label className="flex items-start gap-3 rounded-2xl border border-border bg-card p-3 text-sm">
+          <input type="checkbox" name="is_official" className="mt-0.5 h-4 w-4 accent-[var(--color-primary)]" />
+          <span>
+            <span className="font-medium">This is an official club, chapter, or student team</span>
+            <span className="block text-xs text-muted-foreground">
+              Recognized by the college. The campus admin verifies this at approval — verified ones get the ✔ Official badge.
+            </span>
+          </span>
+        </label>
         <SubmitButton pendingLabel="Sending…">Send proposal</SubmitButton>
       </form>
     </main>

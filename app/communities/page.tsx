@@ -36,6 +36,11 @@ export default async function CommunitiesPage({
   const approved = (communities ?? []).filter((c) => c.is_approved);
   const pending = (communities ?? []).filter((c) => !c.is_approved);
   const recruiting = approved.filter((c) => c.recruiting);
+  // Three distinct shelves: verified official clubs/chapters, student teams,
+  // and everything else. Official teams live on the Teams shelf with a badge.
+  const officialClubs = approved.filter((c) => c.is_official && c.category !== "team");
+  const teams = approved.filter((c) => c.category === "team");
+  const rest = approved.filter((c) => !c.is_official && c.category !== "team");
 
   const clubCard = (c: (typeof approved)[number], i: number) => {
     const count = (c.members as { user_id: string }[]).length;
@@ -48,6 +53,9 @@ export default async function CommunitiesPage({
           </div>
           <div className="mt-1 flex flex-wrap items-center gap-2">
             <h2 className="font-semibold">{c.name}</h2>
+            {c.is_official && (
+              <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-semibold text-primary">✔ Official</span>
+            )}
             {c.recruiting && (
               <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[11px] font-semibold text-accent">🟢 Recruiting</span>
             )}
@@ -104,8 +112,11 @@ export default async function CommunitiesPage({
                 <span className="ml-auto rounded-full bg-muted px-2 py-0.5 text-xs">{CATEGORY_LABEL[c.category]}</span>
               </div>
               {c.description && <p className="text-sm text-muted-foreground">{c.description}</p>}
+              {c.is_official && (
+                <p className="text-xs font-medium text-primary">Claims to be official — verify before approving.</p>
+              )}
               {prof?.is_moderator ? (
-                <ApproveButtons id={c.id} />
+                <ApproveButtons id={c.id} claimsOfficial={!!c.is_official} />
               ) : (
                 <p className="text-xs text-muted-foreground">Waiting for approval…</p>
               )}
@@ -130,12 +141,32 @@ export default async function CommunitiesPage({
           </p>
         </EmptyState>
       ) : (
-        <section className="flex flex-col gap-2">
-          {recruiting.length > 0 && <h2 className="text-lg font-semibold">All communities</h2>}
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            {approved.map((c, i) => clubCard(c, i))}
-          </div>
-        </section>
+        <>
+          {officialClubs.length > 0 && (
+            <section className="flex flex-col gap-2">
+              <h2 className="text-lg font-semibold">✔ Official clubs & chapters</h2>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                {officialClubs.map((c, i) => clubCard(c, i))}
+              </div>
+            </section>
+          )}
+          {teams.length > 0 && (
+            <section className="flex flex-col gap-2">
+              <h2 className="text-lg font-semibold">🚀 Student teams</h2>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                {teams.map((c, i) => clubCard(c, i))}
+              </div>
+            </section>
+          )}
+          {rest.length > 0 && (
+            <section className="flex flex-col gap-2">
+              <h2 className="text-lg font-semibold">Communities</h2>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                {rest.map((c, i) => clubCard(c, i))}
+              </div>
+            </section>
+          )}
+        </>
       )}
     </main>
   );

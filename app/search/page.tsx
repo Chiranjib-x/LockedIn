@@ -28,7 +28,7 @@ type Listing = { id: string; title: string; price: number; category: string; sta
 type Post = { id: string; title: string; type: string; status: string };
 type Order = { id: string; title: string; category: string; status: string };
 type Person = { id: string; name: string; verified_name: string | null; username: string; hostel_block: string | null; karma: number };
-type Club = { id: string; name: string; emoji: string; category: string; description: string | null; recruiting: boolean };
+type Club = { id: string; name: string; emoji: string; category: string; description: string | null; recruiting: boolean; is_official: boolean };
 
 export default async function SearchPage({
   searchParams,
@@ -79,7 +79,7 @@ export default async function SearchPage({
       want("clubs")
         ? supabase
             .from("communities")
-            .select("id, name, emoji, category, description, recruiting")
+            .select("id, name, emoji, category, description, recruiting, is_official")
             .eq("is_approved", true)
             .ilike("name", `%${query}%`)
             .limit(10)
@@ -121,9 +121,10 @@ export default async function SearchPage({
       want("clubs")
         ? supabase
             .from("communities")
-            .select("id, name, emoji, category, description, recruiting")
+            .select("id, name, emoji, category, description, recruiting, is_official")
             .eq("is_approved", true)
             .order("recruiting", { ascending: false })
+            .order("is_official", { ascending: false })
             .order("created_at", { ascending: false })
             .limit(12)
         : Promise.resolve({ data: [] }),
@@ -224,6 +225,9 @@ export default async function SearchPage({
                     <div className="min-w-0">
                       <p className="flex items-center gap-2 truncate font-semibold">
                         {cl.name}
+                        {cl.is_official && (
+                          <span className="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-semibold text-primary">✔ Official</span>
+                        )}
                         {cl.recruiting && (
                           <span className="shrink-0 rounded-full bg-accent/15 px-2 py-0.5 text-[11px] font-semibold text-accent">🟢 Recruiting</span>
                         )}

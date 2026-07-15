@@ -2,7 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Section } from "@/components/ui";
 
-type Club = { id: string; name: string; emoji: string; recruiting: boolean; members: { user_id: string }[] };
+type Club = { id: string; name: string; emoji: string; recruiting: boolean; is_official: boolean; members: { user_id: string }[] };
 
 // Home showcase for clubs & chapters — recruiting ones lead. Makes clubs a
 // first-class part of the home page instead of a single tile in the grid.
@@ -16,9 +16,10 @@ export default async function ClubsStrip() {
     if (!user) return null;
     ({ data: clubs } = await supabase
       .from("communities")
-      .select("id, name, emoji, recruiting, members:community_members(user_id)")
+      .select("id, name, emoji, recruiting, is_official, members:community_members(user_id)")
       .eq("is_approved", true)
       .order("recruiting", { ascending: false })
+      .order("is_official", { ascending: false })
       .order("created_at", { ascending: false })
       .limit(10));
   } catch {
@@ -39,7 +40,10 @@ export default async function ClubsStrip() {
                 }`}
               >
                 <span className="text-3xl">{c.emoji}</span>
-                <p className="truncate text-sm font-semibold">{c.name}</p>
+                <p className="truncate text-sm font-semibold">
+                  {c.name}
+                  {c.is_official && <span className="ml-1 text-primary">✔</span>}
+                </p>
                 <p className="text-xs text-muted-foreground">
                   {count} member{count === 1 ? "" : "s"}
                 </p>
