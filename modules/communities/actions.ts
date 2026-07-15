@@ -84,3 +84,19 @@ export async function setMemberPosition(cid: string, uid: string, position: stri
   await supabase.rpc("set_member_position", { cid, uid, pos: position }); // gated: club/app moderator
   revalidatePath(`/communities/${cid}`);
 }
+
+// Lead management (0052). Both RPCs enforce: caller is a lead/founder, and a
+// team always keeps at least one lead.
+export async function setMemberRole(cid: string, uid: string, role: "member" | "moderator") {
+  const { supabase } = await ctx();
+  const { error } = await supabase.rpc("set_community_role", { cid, uid, newrole: role });
+  revalidatePath(`/communities/${cid}`);
+  return error?.message ?? null;
+}
+
+export async function removeMember(cid: string, uid: string) {
+  const { supabase } = await ctx();
+  const { error } = await supabase.rpc("remove_community_member", { cid, uid });
+  revalidatePath(`/communities/${cid}`);
+  return error?.message ?? null;
+}

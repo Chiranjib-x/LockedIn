@@ -18,7 +18,9 @@ export default async function NewCommunityPage({
       <div>
         <h1 className="text-2xl font-bold">Propose a community</h1>
         <p className="text-sm text-muted-foreground">
-          Once approved, it goes live and you become its first moderator.
+          Clubs, chapters, student teams, interest groups — once approved, it
+          goes live and you become its first lead. Leads can appoint co-leads,
+          assign positions, recruit, broadcast, and export rosters.
         </p>
       </div>
       {error && (
@@ -38,7 +40,8 @@ export default async function NewCommunityPage({
         <label className="flex flex-col gap-1 text-sm font-medium">
           Category
           <select name="category" defaultValue="other" className={inputClass}>
-            <option value="club">Official club</option>
+            <option value="club">Official club / chapter</option>
+            <option value="team">Student team</option>
             <option value="sports">Sports</option>
             <option value="gaming">Gaming</option>
             <option value="hobby">Hobby</option>

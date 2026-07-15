@@ -4,7 +4,7 @@ import { Megaphone, Search, Sparkles, CalendarDays, BarChart3, ShieldCheck, Arro
 import { Card } from "@/components/ui";
 import ShareLink from "@/modules/communities/share-link";
 
-const DESC = "Market your club and recruit members — without WhatsApp groups, QR codes, or phone numbers.";
+const DESC = "Market your club or student team and recruit members — without WhatsApp groups, QR codes, or phone numbers.";
 
 export const metadata: Metadata = {
   title: "LockedIn for Clubs",
@@ -31,8 +31,8 @@ export default function ForClubsPage() {
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-4 py-10">
       <div className="animate-fade-up flex flex-col gap-3 text-center">
-        <p className="text-xs font-semibold tracking-wide text-primary uppercase">LockedIn for Clubs</p>
-        <h1 className="text-3xl font-bold leading-tight">Market your club. Recruit members. All in one app.</h1>
+        <p className="text-xs font-semibold tracking-wide text-primary uppercase">LockedIn for Clubs & Teams</p>
+        <h1 className="text-3xl font-bold leading-tight">Market your club or team. Recruit members. All in one app.</h1>
         <p className="text-[15px] leading-relaxed text-muted-foreground">
           Quanta bans WhatsApp groups, QR codes, and collecting phone numbers. LockedIn is the
           compliant way to reach students — announcements, recruiting, and leads, built in.

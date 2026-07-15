@@ -27,7 +27,7 @@ export default async function ClubsStrip() {
   if (!clubs?.length) return null;
 
   return (
-    <Section title="Clubs & Chapters" action={{ href: "/communities", label: "See all" }}>
+    <Section title="Clubs & Teams" action={{ href: "/communities", label: "See all" }}>
       <div className="-mx-1 flex gap-3 overflow-x-auto px-1 pb-1">
         {clubs.map((c) => {
           const count = c.members.length;

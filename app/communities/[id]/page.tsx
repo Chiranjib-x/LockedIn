@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { Card } from "@/components/ui";
 import TypeBadge from "@/modules/board/badge";
-import { JoinLeaveButton, InterestButton, RecruitingToggle } from "@/modules/communities/client";
+import { JoinLeaveButton, InterestButton, RecruitingToggle, RoleControls } from "@/modules/communities/client";
 import PositionEditor from "@/modules/communities/position-editor";
 import { openChat } from "@/modules/chat/actions";
 
@@ -168,6 +168,7 @@ export default async function CommunityPage({ params }: { params: Promise<{ id: 
                   )}
                 </div>
                 <PositionEditor cid={id} uid={m.user_id} current={position} />
+                <RoleControls cid={id} uid={m.user_id} role={m.role} isSelf={m.user_id === user.id} />
               </Card>
             );
           })}

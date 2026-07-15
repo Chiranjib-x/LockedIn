@@ -1,7 +1,41 @@
 "use client";
 
 import { useState } from "react";
-import { joinCommunity, leaveCommunity, approveCommunity, rejectCommunity, expressInterest, withdrawInterest, setRecruiting } from "./actions";
+import { joinCommunity, leaveCommunity, approveCommunity, rejectCommunity, expressInterest, withdrawInterest, setRecruiting, setMemberRole, removeMember } from "./actions";
+
+// Lead-only member management: promote/demote co-leads, remove members.
+// The RPCs guard the last lead server-side; errors surface inline.
+export function RoleControls({ cid, uid, role, isSelf }: { cid: string; uid: string; role: string; isSelf: boolean }) {
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const isLead = role === "moderator";
+  const run = async (fn: () => Promise<string | null>) => {
+    setBusy(true);
+    setErr(await fn());
+    setBusy(false);
+  };
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <button
+        disabled={busy}
+        onClick={() => run(() => setMemberRole(cid, uid, isLead ? "member" : "moderator"))}
+        className="press min-h-9 rounded-full border border-border px-3 text-xs font-medium hover:bg-muted disabled:opacity-50"
+      >
+        {isLead ? "Demote to member" : "Make lead"}
+      </button>
+      {!isSelf && (
+        <button
+          disabled={busy}
+          onClick={() => { if (confirm("Remove them from this group?")) run(() => removeMember(cid, uid)); }}
+          className="press min-h-9 rounded-full border border-destructive/40 px-3 text-xs font-medium text-destructive hover:bg-destructive/10 disabled:opacity-50"
+        >
+          Remove
+        </button>
+      )}
+      {err && <span className="text-xs text-destructive">{err}</span>}
+    </div>
+  );
+}
 
 // Moderator toggle: flag the club as actively recruiting (surfaces it in the
 // communities list + search). Great for Quanta week.

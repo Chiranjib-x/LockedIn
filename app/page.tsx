@@ -75,12 +75,59 @@ const PILLARS: {
   },
 ];
 
-const ALSO = [
-  "Lost & found",
-  "Roommate match",
-  "Study groups",
-  "Timetable & bunk math",
-  "Campus communities",
+// The complete feature map, grouped the way students think about them.
+// Every entry is a shipped feature — no vaporware on the front page.
+const EVERYTHING: { group: string; items: { name: string; blurb: string }[] }[] = [
+  {
+    group: "Buy, sell & rent",
+    items: [
+      { name: "Marketplace", blurb: "Buy, sell, and rent with verified students from your own campus." },
+      { name: "Make an offer", blurb: "Haggle right on the listing — offer, counter, deal at one tap." },
+      { name: "Requests", blurb: "Can't find it? Post what you need and let campus come to you." },
+      { name: "Rent & lend", blurb: "Per-day pricing, deposits, due-date reminders, auto-relist on return." },
+      { name: "Student deals", blurb: "Curated offers from shops around campus." },
+    ],
+  },
+  {
+    group: "Split the cost",
+    items: [
+      { name: "Group-buys", blurb: "One order, one delivery fee, split between everyone who joins." },
+      { name: "Netflix & Spotify pools", blurb: "Browse open seats, join mid-cycle at a prorated share." },
+      { name: "Cab pooling", blurb: "4 AM airport run? Find students leaving the same day, split the fare." },
+      { name: "Gate Runner", blurb: "Someone's already walking to the gate — they grab your parcel, you reward them." },
+    ],
+  },
+  {
+    group: "Your people",
+    items: [
+      { name: "Clubs, chapters & teams", blurb: "Leads run recruiting, positions, broadcasts, analytics, and rosters — no WhatsApp needed." },
+      { name: "Events + barcode check-in", blurb: "Organizers scan college IDs at the door and get a live attendee roster." },
+      { name: "Girls' Closet & Boys' Den", blurb: "Members-only spaces invisible to everyone else — rent out that lehenga or the console." },
+      { name: "Study groups", blurb: "Course-tagged groups with their own built-in group chat." },
+      { name: "Roommate match", blurb: "Compatibility-scored matches — sleep schedule, tidiness, guests, all of it." },
+      { name: "Crews", blurb: "Private groups for roommates & friends with shared to-dos." },
+    ],
+  },
+  {
+    group: "Daily drivers",
+    items: [
+      { name: "Timetable + bunk math", blurb: "One-tap attendance and the answer to \"can I skip today?\"" },
+      { name: "Campus board", blurb: "Lost & found that auto-matches lost posts to found ones, plus notices." },
+      { name: "Built-in chat", blurb: "DMs and group rooms with context — every deal, ride, and group has its thread." },
+      { name: "Smart notifications", blurb: "Class nudges when your attendance is at risk, deal alerts, event pings." },
+      { name: "Search & alerts", blurb: "One search across everything; save a search and get told when it appears." },
+      { name: "Karma & ratings", blurb: "Good actors are visible — every deal builds your campus reputation." },
+    ],
+  },
+  {
+    group: "Locked down",
+    items: [
+      { name: "College email only", blurb: "Every single person here is a verified student of your college." },
+      { name: "No phone numbers", blurb: "Usernames, not numbers. Your contact stays private until you share it." },
+      { name: "Report & block everywhere", blurb: "Campus moderators act on reports; blocked people can't reach you." },
+      { name: "Your college only", blurb: "Everything you post stays inside your campus — enforced at the database." },
+    ],
+  },
 ];
 
 export default async function Home() {
@@ -158,19 +205,46 @@ export default async function Home() {
         ))}
       </div>
 
-      <p
-        className="animate-fade-up mt-10 max-w-md text-xs leading-relaxed text-muted-foreground"
-        style={{ animationDelay: "1110ms" }}
-      >
-        Also inside: {ALSO.join(" · ")}
-      </p>
-      <Link
-        href="/signup"
-        className="animate-fade-up mt-6 text-sm font-semibold text-primary hover:underline"
-        style={{ animationDelay: "1170ms" }}
-      >
-        Sign up with your college email →
-      </Link>
+      {/* The full feature map — everything above is the pitch, this is the receipt. */}
+      <section className="mt-16 w-full max-w-md text-left">
+        <h2 className="text-center font-heading text-2xl font-bold">
+          Everything inside<span className="gradient-brand-text">.</span>
+        </h2>
+        <p className="mt-1 text-center text-sm text-muted-foreground">
+          One app instead of eleven WhatsApp groups.
+        </p>
+        <div className="mt-6 flex flex-col gap-6">
+          {EVERYTHING.map((g) => (
+            <div key={g.group}>
+              <h3 className="text-xs font-bold tracking-widest text-primary uppercase">{g.group}</h3>
+              <div className="mt-2 flex flex-col gap-2">
+                {g.items.map((f) => (
+                  <div key={f.name} className="glass rounded-2xl px-4 py-3">
+                    <p className="font-semibold">{f.name}</p>
+                    <p className="text-sm leading-relaxed text-muted-foreground">{f.blurb}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Closing CTA — same two actions as the hero, for people who read this far. */}
+      <div className="mt-12 flex flex-col items-center gap-3">
+        <Link
+          href="/signup"
+          className="press shine gradient-brand glow-primary flex min-h-13 items-center gap-2 rounded-full px-8 font-semibold text-on-primary"
+        >
+          Sign up with your college email <ArrowRight className="h-4 w-4" strokeWidth={2.4} />
+        </Link>
+        <a
+          href="/download"
+          className="press flex min-h-11 items-center gap-2 rounded-full border border-border bg-card/70 px-6 text-sm font-semibold backdrop-blur hover:border-primary"
+        >
+          <Download className="h-4 w-4" strokeWidth={2.2} /> Download the Android app
+        </a>
+      </div>
 
       <p className="mt-8 flex gap-4 text-xs text-muted-foreground">
         <Link href="/terms" className="hover:underline">Terms</Link>
