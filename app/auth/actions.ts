@@ -66,3 +66,28 @@ export async function logout() {
   await supabase.auth.signOut();
   redirect("/login");
 }
+
+// Play Store account-deletion requirement. delete_my_account() (migration
+// 0050) is SECURITY DEFINER and hard-scoped to auth.uid(); the auth.users
+// delete cascades through profiles into all content.
+export async function deleteAccount(formData: FormData) {
+  const confirm = String(formData.get("confirm") ?? "").trim().toUpperCase();
+  if (confirm !== "DELETE") {
+    redirect("/delete-account?error=" + encodeURIComponent("Type DELETE in the box to confirm."));
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login?message=" + encodeURIComponent("Log in first, then delete your account."));
+
+  const { error } = await supabase.rpc("delete_my_account");
+  if (error) {
+    redirect("/delete-account?error=" + encodeURIComponent("Couldn't delete your account — try again, or email us (see Privacy Policy)."));
+  }
+  // Best-effort: the user row is already gone, so the server-side revoke can
+  // 4xx — signOut still clears the local session cookies either way.
+  await supabase.auth.signOut();
+  redirect("/login?message=" + encodeURIComponent("Your account and data have been deleted."));
+}

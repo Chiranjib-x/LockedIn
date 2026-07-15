@@ -148,6 +148,13 @@ export default async function ProfilePage({
       )}
 
       <LogoutButton />
+
+      <Link
+        href="/delete-account"
+        className="press text-center text-xs text-muted-foreground underline hover:text-destructive"
+      >
+        Delete my account
+      </Link>
     </main>
   );
 }

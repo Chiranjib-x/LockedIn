@@ -13,14 +13,16 @@ export function SubmitButton({
 }: {
   children: React.ReactNode;
   pendingLabel?: string;
-  variant?: "primary" | "accent";
+  variant?: "primary" | "accent" | "destructive";
   className?: string;
 }) {
   const { pending } = useFormStatus();
   const styles =
     variant === "accent"
       ? "shine bg-accent text-on-accent hover:opacity-90"
-      : "shine bg-primary text-on-primary hover:bg-primary-strong";
+      : variant === "destructive"
+        ? "bg-destructive text-on-destructive hover:opacity-90"
+        : "shine bg-primary text-on-primary hover:bg-primary-strong";
 
   return (
     <button

@@ -57,7 +57,7 @@ Your college email is your key — everything you see and post stays inside your
   - App interactions: not collected (no analytics SDK)
   - Device IDs: collected (push token), optional, app functionality, not shared
 - Data encrypted in transit? **Yes** (HTTPS everywhere)
-- Users can request deletion? **Yes** — via email (stated in privacy policy)
+- Users can request deletion? **Yes** — in-app (Profile → Delete my account) AND web, no install needed: `https://lockedin-swart-ten.vercel.app/delete-account` (enter this URL in App content → Account deletion). Email fallback stated in privacy policy.
 - Data shared with third parties? **No**
 
 ## Later releases

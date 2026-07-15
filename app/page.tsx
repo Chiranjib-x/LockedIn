@@ -171,6 +171,12 @@ export default async function Home() {
       >
         Sign up with your college email →
       </Link>
+
+      <p className="mt-8 flex gap-4 text-xs text-muted-foreground">
+        <Link href="/terms" className="hover:underline">Terms</Link>
+        <Link href="/privacy" className="hover:underline">Privacy</Link>
+        <Link href="/delete-account" className="hover:underline">Delete account</Link>
+      </p>
     </main>
   );
 }
