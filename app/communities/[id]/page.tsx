@@ -65,6 +65,9 @@ export default async function CommunityPage({
   const me = members?.find((m) => m.user_id === user.id);
   const mods = (members ?? []).filter((m) => m.role === "moderator");
   const isMod = me?.role === "moderator";
+  // The app founder can manage any community's profile + members without being
+  // a member — for seeding the directory and handing pages to real leads.
+  const canManage = isMod || isFounder;
   const iAmInterested = (interests ?? []).some((x) => x.user_id === user.id);
   const team = (members ?? []).filter((m) => (m as { position: string | null }).position);
   const nameOf = (m: unknown) => (((m as { profile: { name: string } | null }).profile)?.name) ?? "Student";
@@ -181,11 +184,11 @@ export default async function CommunityPage({
 
       {community.description ? (
         <p className="text-[15px] leading-relaxed text-foreground/90">{community.description}</p>
-      ) : isMod ? (
+      ) : canManage ? (
         <p className="text-sm text-muted-foreground">No description yet — add one so students know what you&rsquo;re about.</p>
       ) : null}
 
-      {isMod && (
+      {canManage && (
         <ProfileEditor
           cid={id}
           name={community.name}
@@ -326,15 +329,20 @@ export default async function CommunityPage({
         </section>
       )}
 
-      {isMod && (members?.length ?? 0) > 0 && (
+      {canManage && (
         <section className="flex flex-col gap-2">
           <h2 className="flex items-center gap-2 text-lg font-semibold">
-            <Users className="h-5 w-5 text-primary" strokeWidth={2} /> Members · {members!.length}
+            <Users className="h-5 w-5 text-primary" strokeWidth={2} /> Members · {members?.length ?? 0}
           </h2>
+          {(members?.length ?? 0) === 0 && (
+            <p className="text-sm text-muted-foreground">
+              No members yet. When a lead joins, use “Make lead” here to hand this page over to them.
+            </p>
+          )}
           {meetingCount > 0 && (
             <p className="text-xs text-muted-foreground">Attendance shown per member across {meetingCount} meeting{meetingCount === 1 ? "" : "s"}.</p>
           )}
-          {members!.map((m) => {
+          {(members ?? []).map((m) => {
             const name = (m.profile as unknown as { name: string } | null)?.name ?? "Student";
             async function message() {
               "use server";
