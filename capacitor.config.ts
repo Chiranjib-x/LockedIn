@@ -9,10 +9,11 @@ const config: CapacitorConfig = {
   appName: "LockedIn",
   webDir: "public",
   server: {
-    // Canonical custom domain. The .vercel.app alias still resolves, so the
-    // already-distributed APK keeps working; a rebuilt APK will load this.
-    // Only rebuild the APK AFTER chiranjib.online is verified live on Vercel.
-    url: "https://chiranjib.online",
+    // Load the primary host DIRECTLY (www is primary in Vercel; the bare apex
+    // 308-redirects to it). A Capacitor server.url must not redirect on the
+    // app's root origin, so we point at www, not the apex. The .vercel.app
+    // alias still resolves, so the previously-distributed APK keeps working.
+    url: "https://www.chiranjib.online",
     androidScheme: "https",
   },
   plugins: {
