@@ -26,6 +26,7 @@ export async function proposeCommunity(formData: FormData) {
     college_id: profile?.college_id,
     name,
     emoji: String(formData.get("emoji") ?? "").trim() || "🎯",
+    logo_url: String(formData.get("logo_url") ?? "").trim() || null,
     category: String(formData.get("category") ?? "other"),
     description: String(formData.get("description") ?? "").trim() || null,
     // A claim only — the founder confirms or strips it at approval (0053).
@@ -85,6 +86,44 @@ export async function setRecruiting(id: string, on: boolean) {
 export async function setMemberPosition(cid: string, uid: string, position: string) {
   const { supabase } = await ctx();
   await supabase.rpc("set_member_position", { cid, uid, pos: position }); // gated: club/app moderator
+  revalidatePath(`/communities/${cid}`);
+}
+
+// ── Profile: logo / description / achievements (0059) ────────────────────────
+
+export async function editCommunityProfile(
+  cid: string,
+  fields: { name: string; emoji: string; logoUrl: string; description: string }
+) {
+  const { supabase } = await ctx();
+  const { error } = await supabase.rpc("update_community_profile", {
+    cid,
+    p_name: fields.name,
+    p_emoji: fields.emoji,
+    p_logo_url: fields.logoUrl,
+    p_description: fields.description,
+  });
+  revalidatePath(`/communities/${cid}`);
+  revalidatePath("/communities");
+  return error ? "Couldn't save (leads only)." : null;
+}
+
+export async function addAchievement(cid: string, title: string, detail: string, year: string) {
+  const { supabase, user } = await ctx();
+  const t = title.trim();
+  if (!t) return "Give the achievement a title.";
+  const { data: profile } = await supabase.from("profiles").select("college_id").eq("id", user.id).single();
+  const { error } = await supabase.from("community_achievements").insert({
+    community_id: cid, college_id: profile?.college_id,
+    title: t, detail: detail.trim() || null, year: year.trim() || null, created_by: user.id,
+  });
+  revalidatePath(`/communities/${cid}`);
+  return error ? "Couldn't add it (leads only)." : null;
+}
+
+export async function deleteAchievement(id: string, cid: string) {
+  const { supabase } = await ctx();
+  await supabase.from("community_achievements").delete().eq("id", id); // RLS: lead
   revalidatePath(`/communities/${cid}`);
 }
 

@@ -1,24 +1,17 @@
 import Link from "next/link";
 import { ArrowRight, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { catLabel } from "@/modules/communities/categories";
 
 type Club = {
   id: string;
   name: string;
   emoji: string;
+  logo_url: string | null;
   category: string;
   recruiting: boolean;
   is_official: boolean;
   members: { user_id: string }[];
-};
-
-const CATEGORY_LABEL: Record<string, string> = {
-  club: "Club",
-  team: "Team",
-  sports: "Sports",
-  gaming: "Gaming",
-  hobby: "Hobby",
-  other: "Community",
 };
 
 // Home showcase for clubs, chapters & teams — a prominent hero section, not a
@@ -34,7 +27,7 @@ export default async function ClubsStrip() {
     if (!user) return null;
     ({ data: clubs } = await supabase
       .from("communities")
-      .select("id, name, emoji, category, recruiting, is_official, members:community_members(user_id)")
+      .select("id, name, emoji, logo_url, category, recruiting, is_official, members:community_members(user_id)")
       .eq("is_approved", true)
       .order("recruiting", { ascending: false })
       .order("is_official", { ascending: false })
@@ -68,11 +61,16 @@ export default async function ClubsStrip() {
                 }`}
               >
                 <div className="flex items-start justify-between">
-                  <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-3xl">
-                    {c.emoji}
-                  </span>
+                  {c.logo_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={c.logo_url} alt="" className="h-14 w-14 rounded-2xl object-cover" />
+                  ) : (
+                    <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-3xl">
+                      {c.emoji}
+                    </span>
+                  )}
                   <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
-                    {CATEGORY_LABEL[c.category] ?? "Community"}
+                    {catLabel(c.category)}
                   </span>
                 </div>
                 <p className="flex items-center gap-1 font-heading font-bold leading-tight">

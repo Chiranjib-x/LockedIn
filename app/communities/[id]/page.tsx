@@ -11,6 +11,9 @@ import Meetings from "@/modules/communities/meetings";
 import { TaskBoard, Resources, Inventory } from "@/modules/communities/ops";
 import Money from "@/modules/communities/money";
 import { Polls, Scheduled } from "@/modules/communities/polls";
+import ProfileEditor from "@/modules/communities/profile-editor";
+import Achievements from "@/modules/communities/achievements";
+import { CATEGORY_META } from "@/modules/communities/categories";
 import { openChat } from "@/modules/chat/actions";
 import { decideApplication, withdrawApplication } from "@/modules/communities/actions";
 
@@ -28,7 +31,7 @@ export default async function CommunityPage({
   const { data: community } = await supabase.from("communities").select("*").eq("id", id).single();
   if (!community || !community.is_approved) notFound();
 
-  const [{ data: members }, { data: posts }, { data: interests }, { data: questions }, { data: applications }] = await Promise.all([
+  const [{ data: members }, { data: posts }, { data: interests }, { data: questions }, { data: applications }, { data: achievements }] = await Promise.all([
     supabase
       .from("community_members")
       .select("user_id, role, position, profile:profiles!community_members_user_id_fkey(name)")
@@ -51,6 +54,7 @@ export default async function CommunityPage({
       .select("id, user_id, answers, status, created_at, profile:profiles!community_applications_user_id_fkey(name)")
       .eq("community_id", id)
       .order("created_at", { ascending: false }),
+    supabase.from("community_achievements").select("id, title, detail, year").eq("community_id", id).order("created_at", { ascending: false }),
   ]);
 
   const me = members?.find((m) => m.user_id === user.id);
@@ -110,24 +114,33 @@ export default async function CommunityPage({
       <Link href="/communities" className="text-sm text-muted-foreground hover:text-foreground">← Communities</Link>
 
       <div className="animate-fade-up flex items-start justify-between gap-3">
-        <div>
-          <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-2xl font-bold">
-              {community.emoji} {community.name}
-            </h1>
-            {community.is_official && (
-              <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">✔ Official</span>
-            )}
-            {community.recruiting && (
-              <span className="rounded-full bg-accent/15 px-2 py-0.5 text-xs font-semibold text-accent">
-                🟢 Recruiting
+        <div className="flex min-w-0 items-start gap-3">
+          {community.logo_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={community.logo_url} alt="" className="h-14 w-14 shrink-0 rounded-2xl object-cover" />
+          ) : (
+            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-3xl">
+              {community.emoji}
+            </span>
+          )}
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <h1 className="text-2xl font-bold">{community.name}</h1>
+              <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-semibold">
+                {CATEGORY_META[community.category]?.emoji} {CATEGORY_META[community.category]?.label ?? "Community"}
               </span>
-            )}
+              {community.is_official && (
+                <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">✔ Official</span>
+              )}
+              {community.recruiting && (
+                <span className="rounded-full bg-accent/15 px-2 py-0.5 text-xs font-semibold text-accent">🟢 Recruiting</span>
+              )}
+            </div>
+            <p className="text-sm text-muted-foreground">
+              {members?.length ?? 0} member{(members?.length ?? 0) === 1 ? "" : "s"} · run by{" "}
+              {mods.map((m) => (m.profile as unknown as { name: string })?.name).filter(Boolean).join(", ") || "the community"}
+            </p>
           </div>
-          <p className="text-sm text-muted-foreground">
-            {members?.length ?? 0} member{(members?.length ?? 0) === 1 ? "" : "s"} · run by{" "}
-            {mods.map((m) => (m.profile as unknown as { name: string })?.name).filter(Boolean).join(", ") || "the community"}
-          </p>
         </div>
         <div className="flex shrink-0 flex-col items-end gap-2">
           {me || !hasForm ? (
@@ -161,9 +174,23 @@ export default async function CommunityPage({
         </p>
       )}
 
-      {community.description && (
+      {community.description ? (
         <p className="text-[15px] leading-relaxed text-foreground/90">{community.description}</p>
+      ) : isMod ? (
+        <p className="text-sm text-muted-foreground">No description yet — add one so students know what you&rsquo;re about.</p>
+      ) : null}
+
+      {isMod && (
+        <ProfileEditor
+          cid={id}
+          name={community.name}
+          emoji={community.emoji}
+          logoUrl={community.logo_url}
+          description={community.description}
+        />
       )}
+
+      <Achievements cid={id} isLead={!!isMod} items={achievements ?? []} />
 
       {team.length > 0 && (
         <section className="flex flex-col gap-2">

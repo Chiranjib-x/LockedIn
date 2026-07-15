@@ -3,6 +3,7 @@ import { inputClass } from "@/components/ui";
 import BackLink from "@/components/back-link";
 import { SubmitButton } from "@/components/submit-button";
 import { proposeCommunity } from "@/modules/communities/actions";
+import LogoField from "@/modules/communities/logo-field";
 
 export default async function NewCommunityPage({
   searchParams,
@@ -34,18 +35,28 @@ export default async function NewCommunityPage({
           </label>
           <label className="flex flex-1 flex-col gap-1 text-sm font-medium">
             Name
-            <input name="name" required placeholder="e.g. F1 Paddock, Valorant VIT" className={inputClass} />
+            <input name="name" required placeholder="e.g. IEEE Student Chapter, Robotics Team" className={inputClass} />
           </label>
+        </div>
+
+        <div className="flex flex-col gap-1 text-sm font-medium">
+          Logo
+          <LogoField />
         </div>
         <label className="flex flex-col gap-1 text-sm font-medium">
           Category
-          <select name="category" defaultValue="other" className={inputClass}>
-            <option value="club">Official club / chapter</option>
-            <option value="team">Student team</option>
-            <option value="sports">Sports</option>
-            <option value="gaming">Gaming</option>
-            <option value="hobby">Hobby</option>
-            <option value="other">Other</option>
+          <select name="category" defaultValue="club" className={inputClass}>
+            <optgroup label="The big three">
+              <option value="chapter">🎖️ Chapter (IEEE, ACM, GDG…)</option>
+              <option value="club">🎭 Club</option>
+              <option value="team">🚀 Student team</option>
+            </optgroup>
+            <optgroup label="Interest group">
+              <option value="sports">⚽ Sports</option>
+              <option value="gaming">🎮 Gaming</option>
+              <option value="hobby">🎨 Hobby</option>
+              <option value="other">✨ Other</option>
+            </optgroup>
           </select>
         </label>
         <label className="flex flex-col gap-1 text-sm font-medium">

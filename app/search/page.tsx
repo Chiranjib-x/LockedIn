@@ -28,7 +28,7 @@ type Listing = { id: string; title: string; price: number; category: string; sta
 type Post = { id: string; title: string; type: string; status: string };
 type Order = { id: string; title: string; category: string; status: string };
 type Person = { id: string; name: string; verified_name: string | null; username: string; hostel_block: string | null; karma: number };
-type Club = { id: string; name: string; emoji: string; category: string; description: string | null; recruiting: boolean; is_official: boolean };
+type Club = { id: string; name: string; emoji: string; logo_url: string | null; category: string; description: string | null; recruiting: boolean; is_official: boolean };
 
 export default async function SearchPage({
   searchParams,
@@ -79,7 +79,7 @@ export default async function SearchPage({
       want("clubs")
         ? supabase
             .from("communities")
-            .select("id, name, emoji, category, description, recruiting, is_official")
+            .select("id, name, emoji, logo_url, category, description, recruiting, is_official")
             .eq("is_approved", true)
             .ilike("name", `%${query}%`)
             .limit(10)
@@ -121,7 +121,7 @@ export default async function SearchPage({
       want("clubs")
         ? supabase
             .from("communities")
-            .select("id, name, emoji, category, description, recruiting, is_official")
+            .select("id, name, emoji, logo_url, category, description, recruiting, is_official")
             .eq("is_approved", true)
             .order("recruiting", { ascending: false })
             .order("is_official", { ascending: false })
@@ -221,7 +221,12 @@ export default async function SearchPage({
               {clubs.map((cl) => (
                 <Link key={cl.id} href={`/communities/${cl.id}`} className="press">
                   <Card className="flex items-center gap-3">
-                    <span className="text-2xl">{cl.emoji}</span>
+                    {cl.logo_url ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={cl.logo_url} alt="" className="h-9 w-9 shrink-0 rounded-lg object-cover" />
+                    ) : (
+                      <span className="text-2xl">{cl.emoji}</span>
+                    )}
                     <div className="min-w-0">
                       <p className="flex items-center gap-2 truncate font-semibold">
                         {cl.name}

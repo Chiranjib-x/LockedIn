@@ -5,15 +5,9 @@ import { Card } from "@/components/ui";
 import EmptyState from "@/components/empty-state";
 import { ApproveButtons } from "@/modules/communities/client";
 import QuantaBanner from "@/modules/communities/quanta-banner";
+import { CATEGORY_META, catGroup } from "@/modules/communities/categories";
 
-const CATEGORY_LABEL: Record<string, string> = {
-  club: "🏛️ Club",
-  team: "🚀 Team",
-  sports: "⚽ Sports",
-  gaming: "🎮 Gaming",
-  hobby: "🎨 Hobby",
-  other: "✨ Other",
-};
+const catChip = (cat: string) => `${CATEGORY_META[cat]?.emoji ?? "✨"} ${CATEGORY_META[cat]?.label ?? "Community"}`;
 
 export default async function CommunitiesPage({
   searchParams,
@@ -36,11 +30,13 @@ export default async function CommunitiesPage({
   const approved = (communities ?? []).filter((c) => c.is_approved);
   const pending = (communities ?? []).filter((c) => !c.is_approved);
   const recruiting = approved.filter((c) => c.recruiting);
-  // Three distinct shelves: verified official clubs/chapters, student teams,
-  // and everything else. Official teams live on the Teams shelf with a badge.
-  const officialClubs = approved.filter((c) => c.is_official && c.category !== "team");
-  const teams = approved.filter((c) => c.category === "team");
-  const rest = approved.filter((c) => !c.is_official && c.category !== "team");
+  // Four distinct shelves by type. is_official is a badge within each, not a
+  // shelf of its own.
+  const byGroup = (g: string) => approved.filter((c) => catGroup(c.category) === g);
+  const chapters = byGroup("chapter");
+  const clubs = byGroup("club");
+  const teams = byGroup("team");
+  const groups = byGroup("community");
 
   const clubCard = (c: (typeof approved)[number], i: number) => {
     const count = (c.members as { user_id: string }[]).length;
@@ -48,8 +44,13 @@ export default async function CommunitiesPage({
       <Link key={c.id} href={`/communities/${c.id}`} className="animate-fade-up press" style={{ animationDelay: `${Math.min(i, 8) * 45}ms` }}>
         <Card className="h-full transition-all duration-150 hover:-translate-y-0.5 hover:border-primary hover:shadow-md">
           <div className="flex items-start justify-between">
-            <span className="text-2xl">{c.emoji}</span>
-            <span className="rounded-full bg-muted px-2 py-0.5 text-xs">{CATEGORY_LABEL[c.category]}</span>
+            {c.logo_url ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={c.logo_url} alt="" className="h-11 w-11 rounded-xl object-cover" />
+            ) : (
+              <span className="text-2xl">{c.emoji}</span>
+            )}
+            <span className="rounded-full bg-muted px-2 py-0.5 text-xs">{catChip(c.category)}</span>
           </div>
           <div className="mt-1 flex flex-wrap items-center gap-2">
             <h2 className="font-semibold">{c.name}</h2>
@@ -109,7 +110,7 @@ export default async function CommunitiesPage({
               <div className="flex items-center gap-2">
                 <span className="text-xl">{c.emoji}</span>
                 <p className="font-semibold">{c.name}</p>
-                <span className="ml-auto rounded-full bg-muted px-2 py-0.5 text-xs">{CATEGORY_LABEL[c.category]}</span>
+                <span className="ml-auto rounded-full bg-muted px-2 py-0.5 text-xs">{catChip(c.category)}</span>
               </div>
               {c.description && <p className="text-sm text-muted-foreground">{c.description}</p>}
               {c.is_official && (
@@ -137,34 +138,25 @@ export default async function CommunitiesPage({
       {!approved.length ? (
         <EmptyState icon={Users} tint="blue" title="No communities yet">
           <p className="text-sm text-muted-foreground">
-            F1, football, Valorant, quizzing — propose the group you wish existed.
+            Chapters, clubs, teams, interest groups — propose the one you wish existed.
           </p>
         </EmptyState>
       ) : (
         <>
-          {officialClubs.length > 0 && (
-            <section className="flex flex-col gap-2">
-              <h2 className="text-lg font-semibold">✔ Official clubs & chapters</h2>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                {officialClubs.map((c, i) => clubCard(c, i))}
-              </div>
-            </section>
-          )}
-          {teams.length > 0 && (
-            <section className="flex flex-col gap-2">
-              <h2 className="text-lg font-semibold">🚀 Student teams</h2>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                {teams.map((c, i) => clubCard(c, i))}
-              </div>
-            </section>
-          )}
-          {rest.length > 0 && (
-            <section className="flex flex-col gap-2">
-              <h2 className="text-lg font-semibold">Communities</h2>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                {rest.map((c, i) => clubCard(c, i))}
-              </div>
-            </section>
+          {[
+            { title: "🎖️ Chapters", items: chapters },
+            { title: "🎭 Clubs", items: clubs },
+            { title: "🚀 Student teams", items: teams },
+            { title: "✨ Communities & groups", items: groups },
+          ].map((shelf) =>
+            shelf.items.length > 0 ? (
+              <section key={shelf.title} className="flex flex-col gap-2">
+                <h2 className="text-lg font-semibold">{shelf.title}</h2>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  {shelf.items.map((c, i) => clubCard(c, i))}
+                </div>
+              </section>
+            ) : null
           )}
         </>
       )}

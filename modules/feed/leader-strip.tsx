@@ -7,6 +7,7 @@ type Led = {
   id: string;
   name: string;
   emoji: string;
+  logo_url: string | null;
   category: string;
   is_official: boolean;
   recruiting: boolean;
@@ -38,14 +39,14 @@ export default async function LeaderStrip() {
 
     const { data: rows } = await supabase
       .from("community_members")
-      .select("community:communities!inner(id, name, emoji, category, is_official, recruiting, is_approved)")
+      .select("community:communities!inner(id, name, emoji, logo_url, category, is_official, recruiting, is_approved)")
       .eq("user_id", user.id)
       .eq("role", "moderator");
 
     led = (rows ?? [])
       .map((r) => r.community as unknown as Led & { is_approved: boolean })
       .filter((c) => c && c.is_approved)
-      .map(({ id, name, emoji, category, is_official, recruiting }) => ({ id, name, emoji, category, is_official, recruiting }));
+      .map(({ id, name, emoji, logo_url, category, is_official, recruiting }) => ({ id, name, emoji, logo_url, category, is_official, recruiting }));
     if (led.length === 0) return null;
 
     const ids = led.map((c) => c.id);
@@ -113,9 +114,14 @@ export default async function LeaderStrip() {
           return (
             <Link key={c.id} href={`/communities/${c.id}`} className="press">
               <div className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 transition-all duration-150 hover:-translate-y-0.5 hover:border-primary hover:shadow-md">
-                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-2xl">
-                  {c.emoji}
-                </span>
+                {c.logo_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={c.logo_url} alt="" className="h-12 w-12 shrink-0 rounded-2xl object-cover" />
+                ) : (
+                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-2xl">
+                    {c.emoji}
+                  </span>
+                )}
                 <div className="min-w-0 flex-1">
                   <p className="flex items-center gap-1.5 font-heading font-bold leading-tight">
                     <span className="truncate">{c.name}</span>
