@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import UpiPay from "@/components/upi-pay";
+import { useRefresh } from "@/lib/use-refresh";
 import { joinTrip, leaveTrip, cancelTrip, completeTrip, markTripPaid, confirmTripPaid } from "./actions";
 
 export function JoinLeaveButton({ tripId, joined, full }: { tripId: string; joined: boolean; full: boolean }) {
+  const refresh = useRefresh();
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
@@ -27,6 +29,7 @@ export function JoinLeaveButton({ tripId, joined, full }: { tripId: string; join
             if (e) setErr(e);
           }
           setBusy(false);
+          refresh();
         }}
         className={`press rounded-full px-5 py-2 text-sm font-semibold disabled:opacity-50 ${
           joined ? "border border-border bg-card text-muted-foreground hover:bg-muted" : "bg-primary text-on-primary hover:bg-primary-strong"
@@ -45,12 +48,13 @@ const NEXT: Record<string, { to: "completed"; label: string }> = {
 };
 
 export function CreatorControls({ tripId, status }: { tripId: string; status: string }) {
+  const refresh = useRefresh();
   const next = NEXT[status];
   return (
     <div className="flex flex-wrap gap-2">
       {next && (
         <button
-          onClick={() => completeTrip(tripId)}
+          onClick={async () => { await completeTrip(tripId); refresh(); }}
           className="press rounded-full bg-primary px-4 py-2 text-sm font-semibold text-on-primary hover:bg-primary-strong"
         >
           {next.label}
@@ -58,7 +62,7 @@ export function CreatorControls({ tripId, status }: { tripId: string; status: st
       )}
       {(status === "open" || status === "full") && (
         <button
-          onClick={() => { if (confirm("Cancel this trip?")) cancelTrip(tripId); }}
+          onClick={async () => { if (confirm("Cancel this trip?")) { await cancelTrip(tripId); refresh(); } }}
           className="press rounded-full border border-destructive/40 px-4 py-2 text-sm font-medium text-destructive hover:bg-destructive/10"
         >
           Cancel trip
@@ -85,6 +89,7 @@ export function PayPanel({
   paidMarked: boolean;
   route: string;
 }) {
+  const refresh = useRefresh();
   return (
     <div className="flex flex-col gap-2 rounded-2xl border border-primary/30 bg-primary/5 p-4">
       <p className="text-sm font-semibold">Your share: ₹{amount.toFixed(0)}</p>
@@ -97,7 +102,7 @@ export function PayPanel({
         <p className="text-sm font-medium text-accent">Marked as paid — waiting for the creator to confirm.</p>
       ) : (
         <button
-          onClick={() => markTripPaid(memberId, tripId)}
+          onClick={async () => { await markTripPaid(memberId, tripId); refresh(); }}
           className="press min-h-11 rounded-full border border-accent px-5 text-sm font-semibold text-accent hover:bg-accent/10"
         >
           I’ve paid ✓
@@ -108,9 +113,10 @@ export function PayPanel({
 }
 
 export function ConfirmPaidButton({ memberId, tripId, confirmed }: { memberId: string; tripId: string; confirmed: boolean }) {
+  const refresh = useRefresh();
   return (
     <button
-      onClick={() => confirmTripPaid(memberId, tripId, !confirmed)}
+      onClick={async () => { await confirmTripPaid(memberId, tripId, !confirmed); refresh(); }}
       className={`press rounded-full px-3 py-1 text-xs font-semibold ${
         confirmed ? "bg-accent text-on-accent" : "border border-border text-muted-foreground hover:bg-muted"
       }`}

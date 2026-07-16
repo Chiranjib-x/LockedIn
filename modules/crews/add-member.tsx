@@ -3,11 +3,13 @@
 import { useState } from "react";
 import { UserPlus } from "lucide-react";
 import ProfileSearch from "@/components/profile-search";
+import { useRefresh } from "@/lib/use-refresh";
 import { addCrewMember } from "./actions";
 
 // Add a crew member by exact @username (same privacy model as the rest of the
 // app — you add people you already know).
 export default function AddCrewMember({ crewId, excludeIds }: { crewId: string; excludeIds: string[] }) {
+  const refresh = useRefresh();
   const [open, setOpen] = useState(false);
 
   if (!open) {
@@ -29,6 +31,7 @@ export default function AddCrewMember({ crewId, excludeIds }: { crewId: string; 
         actionLabel="Add"
         onPick={async (p) => {
           await addCrewMember(crewId, p.id);
+          refresh();
         }}
       />
       <button onClick={() => setOpen(false)} className="press text-xs text-muted-foreground">

@@ -2,6 +2,7 @@
 
 import { connect, messageMatch } from "./actions";
 import { useState } from "react";
+import { useRefresh } from "@/lib/use-refresh";
 
 export default function ConnectButton({
   targetId,
@@ -10,6 +11,7 @@ export default function ConnectButton({
   targetId: string;
   state: "none" | "sent" | "incoming" | "mutual";
 }) {
+  const refresh = useRefresh();
   const [busy, setBusy] = useState(false);
 
   if (state === "mutual") {
@@ -32,6 +34,7 @@ export default function ConnectButton({
         setBusy(true);
         await connect(targetId);
         setBusy(false);
+        refresh();
       }}
       className="press rounded-full bg-primary px-4 py-1.5 text-sm font-semibold text-on-primary hover:bg-primary-strong disabled:opacity-50"
     >

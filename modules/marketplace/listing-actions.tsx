@@ -5,6 +5,7 @@ import { useState } from "react";
 import { setSold, deleteListing, lendTo, markReturned } from "./actions";
 import { markSoldTo } from "@/modules/ratings/actions";
 import ProfileSearch from "@/components/profile-search";
+import { useRefresh } from "@/lib/use-refresh";
 
 // My-Listings row actions. Sell listings: "Mark sold" -> buyer picker ->
 // transaction (mutual rating). Rent listings (Phase 32): lend-to picker with
@@ -20,6 +21,7 @@ export default function ListingActions({
   listingType?: "sell" | "rent";
   lentOut?: boolean;
 }) {
+  const refresh = useRefresh();
   const [picking, setPicking] = useState(false);
   const [due, setDue] = useState("");
   const [err, setErr] = useState<string | null>(null);
@@ -29,7 +31,7 @@ export default function ListingActions({
       return (
         <div className="flex flex-wrap gap-2 text-sm">
           <button
-            onClick={async () => { const e = await markReturned(id); if (e) setErr(e); }}
+            onClick={async () => { const e = await markReturned(id); if (e) setErr(e); else refresh(); }}
             className="press rounded-full bg-accent px-3 py-1.5 font-medium text-on-accent"
           >
             Mark returned ✓
@@ -58,7 +60,7 @@ export default function ListingActions({
                 if (!due) { setErr("Pick a due date first."); return; }
                 const e = await lendTo(id, p.id, due);
                 if (e) setErr(e);
-                else setPicking(false);
+                else { setPicking(false); refresh(); }
               }}
             />
             {err && <p className="text-xs text-destructive">{err}</p>}
@@ -84,7 +86,7 @@ export default function ListingActions({
   if (sold) {
     return (
       <div className="flex flex-wrap gap-2 text-sm">
-        <button onClick={() => setSold(id, false)} className="press rounded-full border border-border px-3 py-1.5 font-medium hover:bg-muted">
+        <button onClick={async () => { await setSold(id, false); refresh(); }} className="press rounded-full border border-border px-3 py-1.5 font-medium hover:bg-muted">
           Mark available
         </button>
         <DeleteBtn id={id} />
@@ -102,7 +104,7 @@ export default function ListingActions({
             onPick={async (p) => {
               const e = await markSoldTo(id, p.id);
               if (e) setErr(e);
-              else setPicking(false);
+              else { setPicking(false); refresh(); }
             }}
           />
           {err && <p className="text-xs text-destructive">{err}</p>}
@@ -118,7 +120,7 @@ export default function ListingActions({
           >
             Mark sold
           </button>
-          <button onClick={() => setSold(id, true)} className="press rounded-full border border-border px-3 py-1.5 font-medium hover:bg-muted">
+          <button onClick={async () => { await setSold(id, true); refresh(); }} className="press rounded-full border border-border px-3 py-1.5 font-medium hover:bg-muted">
             Just mark sold
           </button>
           <Link href={`/marketplace/${id}/edit`} className="press rounded-full border border-border px-3 py-1.5 font-medium hover:bg-muted">
@@ -132,10 +134,11 @@ export default function ListingActions({
 }
 
 function DeleteBtn({ id }: { id: string }) {
+  const refresh = useRefresh();
   return (
     <button
-      onClick={() => {
-        if (confirm("Delete this listing? This can’t be undone.")) deleteListing(id);
+      onClick={async () => {
+        if (confirm("Delete this listing? This can’t be undone.")) { await deleteListing(id); refresh(); }
       }}
       className="press rounded-full border border-destructive/40 px-3 py-1.5 font-medium text-destructive hover:bg-destructive/10"
     >
