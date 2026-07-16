@@ -99,3 +99,5 @@ Make chapter/team/community first-class everywhere "Clubs" is hardcoded.
 - 2026-07-16: ~42/49 client mutate buttons don't refresh the view (Phase 0).
 
 - 2026-07-16: Phase 3 refresh sweep done for board/timetable/crews/subscriptions/gate/moderation. Remaining low-traffic: listing-actions, cabs, matcher, spaces/add-member, events-rsvp, showcase (per section sweeps).
+
+- 2026-07-16: 390px sweep of marketplace/board/events/timetable/gate/cabs — all clean (no overflow, good empty states, correct layout). No code changes. Remaining sections (chat/profile/spaces/showcase) low-risk.
