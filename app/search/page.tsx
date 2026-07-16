@@ -7,6 +7,7 @@ import { KarmaBadge } from "@/modules/karma/badge";
 import { openChat } from "@/modules/chat/actions";
 import SearchInput from "@/modules/search/search-input";
 import VerifiedName from "@/components/verified-name";
+import { catLabel } from "@/modules/communities/categories";
 
 // Phase 27: one search bar across everything. Full-text via the 0028
 // tsvector indexes. College scoping is RLS's job — these queries never
@@ -19,7 +20,7 @@ const TABS = [
   { key: "all", label: "All" },
   { key: "market", label: "Marketplace" },
   { key: "board", label: "Board" },
-  { key: "clubs", label: "Clubs" },
+  { key: "clubs", label: "Clubs & Teams" },
   { key: "groupbuy", label: "Group-buys" },
   { key: "people", label: "People" },
 ] as const;
@@ -217,7 +218,7 @@ export default async function SearchPage({
 
           {clubs.length > 0 && (
             <section className="flex flex-col gap-2">
-              <h2 className="text-lg font-semibold">Clubs</h2>
+              <h2 className="text-lg font-semibold">Clubs, chapters & teams</h2>
               {clubs.map((cl) => (
                 <Link key={cl.id} href={`/communities/${cl.id}`} className="press">
                   <Card className="flex items-center gap-3">
@@ -238,7 +239,8 @@ export default async function SearchPage({
                         )}
                       </p>
                       <p className="truncate text-xs text-muted-foreground">
-                        {cl.description || cl.category}
+                        <span className="font-medium">{catLabel(cl.category)}</span>
+                        {cl.description ? ` · ${cl.description}` : ""}
                       </p>
                     </div>
                   </Card>

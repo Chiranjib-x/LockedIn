@@ -47,7 +47,7 @@ into its section sweep (Phases 6–12) since those files get edited there anyway
 **Done when:** the Phase-0 repro (task "mark done" reflects with no reload)
 passes, spot-checked across the communities suite.
 
-## Phase 1 — Taxonomy & labels (GLOBAL) ☐
+## Phase 1 — Taxonomy & labels (GLOBAL) ☑
 
 Make chapter/team/community first-class everywhere "Clubs" is hardcoded.
 - `app/search/page.tsx` — split/relabel the "Clubs" tab + result section so it
