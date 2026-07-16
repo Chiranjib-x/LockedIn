@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRefresh } from "@/lib/use-refresh";
 import { createMeeting, deleteMeeting, markMeetingAttendance, getFreeWindows } from "./actions";
 import { DAY_SHORT } from "@/modules/timetable/helpers";
 
@@ -34,6 +35,7 @@ export default function Meetings({
   members: Member[];
   attendance: Record<string, string[]>; // meeting_id -> present user_ids
 }) {
+  const refresh = useRefresh();
   const [title, setTitle] = useState("");
   const [when, setWhen] = useState("");
   const [busy, setBusy] = useState(false);
@@ -101,6 +103,7 @@ export default function Meetings({
                 setErr(await createMeeting(cid, title, when));
                 setTitle(""); setWhen("");
                 setBusy(false);
+                refresh();
               }}
               className="press shrink-0 rounded-full bg-primary px-4 text-sm font-semibold text-on-primary disabled:opacity-50"
             >
@@ -132,7 +135,7 @@ export default function Meetings({
                       Roll-call
                     </button>
                     <button
-                      onClick={() => { if (confirm("Delete this meeting?")) deleteMeeting(m.id, cid); }}
+                      onClick={async () => { if (confirm("Delete this meeting?")) { await deleteMeeting(m.id, cid); refresh(); } }}
                       className="press rounded-full border border-destructive/40 px-3 py-1 text-xs font-medium text-destructive"
                     >
                       ✕
@@ -152,6 +155,7 @@ export default function Meetings({
                           setBusy(true);
                           await markMeetingAttendance(m.id, cid, mem.user_id, !on);
                           setBusy(false);
+                          refresh();
                         }}
                         className={`press rounded-full border px-3 py-1 text-xs font-medium ${on ? "border-accent/40 bg-accent/10 text-accent" : "border-border bg-card"}`}
                       >

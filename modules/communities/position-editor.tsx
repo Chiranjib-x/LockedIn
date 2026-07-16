@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRefresh } from "@/lib/use-refresh";
 import { setMemberPosition } from "./actions";
 
 const PRESETS = ["President", "Vice President", "Management Head", "Events Head", "Tech Head", "Design Head", "PR Head", "Treasurer"];
@@ -8,6 +9,7 @@ const PRESETS = ["President", "Vice President", "Management Head", "Events Head"
 // Moderator control to tag a member's official club position. Presets for the
 // common ones + free text; blank clears it.
 export default function PositionEditor({ cid, uid, current }: { cid: string; uid: string; current: string | null }) {
+  const refresh = useRefresh();
   const [value, setValue] = useState(current ?? "");
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -17,6 +19,7 @@ export default function PositionEditor({ cid, uid, current }: { cid: string; uid
     await setMemberPosition(cid, uid, v);
     setBusy(false);
     setOpen(false);
+    refresh();
   }
 
   if (!open) {

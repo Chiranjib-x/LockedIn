@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRefresh } from "@/lib/use-refresh";
 import { createPoll, votePoll, deletePoll, schedulePost, cancelScheduled } from "./actions";
 
 type Vote = { user_id: string; choice: number };
@@ -14,6 +15,7 @@ function fmt(iso: string) {
 // Member polls — leads create, members vote (one each, changeable), results
 // visible to the group. Closed polls (past closes_at) are read-only.
 export function Polls({ cid, isLead, meId, polls }: { cid: string; isLead: boolean; meId: string; polls: Poll[] }) {
+  const refresh = useRefresh();
   const [q, setQ] = useState("");
   const [opts, setOpts] = useState(["", ""]);
   const [closes, setCloses] = useState("");
@@ -41,7 +43,7 @@ export function Polls({ cid, isLead, meId, polls }: { cid: string; isLead: boole
           </div>
           <button
             disabled={busy || !q.trim() || opts.filter((o) => o.trim()).length < 2}
-            onClick={async () => { setBusy(true); setErr(await createPoll(cid, q, opts, closes)); setQ(""); setOpts(["", ""]); setCloses(""); setBusy(false); }}
+            onClick={async () => { setBusy(true); setErr(await createPoll(cid, q, opts, closes)); setQ(""); setOpts(["", ""]); setCloses(""); setBusy(false); refresh(); }}
             className="press min-h-10 rounded-full bg-primary text-sm font-semibold text-on-primary disabled:opacity-50"
           >
             Post poll
@@ -57,7 +59,7 @@ export function Polls({ cid, isLead, meId, polls }: { cid: string; isLead: boole
           <div key={poll.id} className="flex flex-col gap-2 rounded-2xl border border-border bg-card p-3">
             <div className="flex items-start justify-between gap-2">
               <p className="font-semibold">{poll.question}</p>
-              {isLead && <button onClick={() => { if (confirm("Delete this poll?")) deletePoll(poll.id, cid); }} className="press shrink-0 text-xs text-destructive">✕</button>}
+              {isLead && <button onClick={async () => { if (confirm("Delete this poll?")) { await deletePoll(poll.id, cid); refresh(); } }} className="press shrink-0 text-xs text-destructive">✕</button>}
             </div>
             {poll.options.map((opt, i) => {
               const count = poll.votes.filter((v) => v.choice === i).length;
@@ -67,7 +69,7 @@ export function Polls({ cid, isLead, meId, polls }: { cid: string; isLead: boole
                 <button
                   key={i}
                   disabled={closed}
-                  onClick={() => !closed && votePoll(poll.id, cid, i)}
+                  onClick={async () => { if (!closed) { await votePoll(poll.id, cid, i); refresh(); } }}
                   className={`press relative overflow-hidden rounded-xl border px-3 py-2 text-left text-sm disabled:cursor-default ${mine ? "border-primary" : "border-border"}`}
                 >
                   <span className="absolute inset-y-0 left-0 bg-primary/10" style={{ width: `${pct}%` }} aria-hidden />
@@ -92,6 +94,7 @@ export function Polls({ cid, isLead, meId, polls }: { cid: string; isLead: boole
 
 // Scheduled announcements — write now, auto-publish later (5-min cron).
 export function Scheduled({ cid, scheduled }: { cid: string; scheduled: Scheduled[] }) {
+  const refresh = useRefresh();
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [when, setWhen] = useState("");
@@ -110,7 +113,7 @@ export function Scheduled({ cid, scheduled }: { cid: string; scheduled: Schedule
             className="min-h-10 flex-1 rounded-xl border border-border bg-background px-3 text-sm" />
           <button
             disabled={busy || !title.trim() || !when}
-            onClick={async () => { setBusy(true); setErr(await schedulePost(cid, title, body, when)); setTitle(""); setBody(""); setWhen(""); setBusy(false); }}
+            onClick={async () => { setBusy(true); setErr(await schedulePost(cid, title, body, when)); setTitle(""); setBody(""); setWhen(""); setBusy(false); refresh(); }}
             className="press shrink-0 rounded-full bg-primary px-4 text-sm font-semibold text-on-primary disabled:opacity-50"
           >
             Schedule
@@ -125,7 +128,7 @@ export function Scheduled({ cid, scheduled }: { cid: string; scheduled: Schedule
             <p className="truncate text-sm font-medium">{s.title}</p>
             <p className="text-xs text-muted-foreground">→ {fmt(s.publish_at)}</p>
           </div>
-          <button onClick={() => cancelScheduled(s.id, cid)} className="press shrink-0 text-xs text-destructive">Cancel</button>
+          <button onClick={async () => { await cancelScheduled(s.id, cid); refresh(); }} className="press shrink-0 text-xs text-destructive">Cancel</button>
         </div>
       ))}
     </section>

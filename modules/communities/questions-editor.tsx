@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRefresh } from "@/lib/use-refresh";
 import { addQuestion, removeQuestion } from "./actions";
 
 // Lead-only editor for the application form. Zero questions = instant join;
@@ -12,6 +13,7 @@ export default function QuestionsEditor({
   cid: string;
   questions: { id: string; prompt: string }[];
 }) {
+  const refresh = useRefresh();
   const [draft, setDraft] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -28,7 +30,7 @@ export default function QuestionsEditor({
           <span className="min-w-0 flex-1">{q.prompt}</span>
           <button
             disabled={busy}
-            onClick={async () => { setBusy(true); await removeQuestion(q.id, cid); setBusy(false); }}
+            onClick={async () => { setBusy(true); await removeQuestion(q.id, cid); setBusy(false); refresh(); }}
             className="press shrink-0 text-xs font-medium text-destructive disabled:opacity-50"
           >
             Remove
@@ -49,6 +51,7 @@ export default function QuestionsEditor({
             setErr(await addQuestion(cid, draft));
             setDraft("");
             setBusy(false);
+            refresh();
           }}
           className="press shrink-0 rounded-full bg-primary px-4 text-sm font-semibold text-on-primary disabled:opacity-50"
         >

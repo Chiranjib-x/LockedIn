@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Pencil } from "lucide-react";
 import ImageUpload from "@/components/image-upload";
+import { useRefresh } from "@/lib/use-refresh";
 import { editCommunityProfile } from "./actions";
 
 // Lead-only "Edit profile" — name, emoji, logo, description. Collapsed behind a
@@ -20,6 +21,7 @@ export default function ProfileEditor({
   logoUrl: string | null;
   description: string | null;
 }) {
+  const refresh = useRefresh();
   const [open, setOpen] = useState(false);
   const [n, setN] = useState(name);
   const [e, setE] = useState(emoji);
@@ -73,7 +75,7 @@ export default function ProfileEditor({
             const msg = await editCommunityProfile(cid, { name: n, emoji: e, logoUrl: logo[0] ?? "", description: desc });
             setBusy(false);
             if (msg) setErr(msg);
-            else setOpen(false);
+            else { setOpen(false); refresh(); }
           }}
           className="press min-h-10 flex-1 rounded-full bg-primary text-sm font-semibold text-on-primary disabled:opacity-50"
         >

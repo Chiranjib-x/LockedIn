@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Trophy } from "lucide-react";
+import { useRefresh } from "@/lib/use-refresh";
 import { addAchievement, deleteAchievement } from "./actions";
 
 type Achievement = { id: string; title: string; detail: string | null; year: string | null };
@@ -17,6 +18,7 @@ export default function Achievements({
   isLead: boolean;
   items: Achievement[];
 }) {
+  const refresh = useRefresh();
   const [title, setTitle] = useState("");
   const [detail, setDetail] = useState("");
   const [year, setYear] = useState("");
@@ -47,6 +49,7 @@ export default function Achievements({
               setErr(await addAchievement(cid, title, detail, year));
               setTitle(""); setDetail(""); setYear("");
               setBusy(false);
+              refresh();
             }}
             className="press min-h-10 rounded-full bg-primary text-sm font-semibold text-on-primary disabled:opacity-50"
           >
@@ -67,7 +70,7 @@ export default function Achievements({
             {a.detail && <p className="text-sm text-muted-foreground">{a.detail}</p>}
           </div>
           {isLead && (
-            <button onClick={() => deleteAchievement(a.id, cid)} className="press shrink-0 text-xs text-destructive">✕</button>
+            <button onClick={async () => { await deleteAchievement(a.id, cid); refresh(); }} className="press shrink-0 text-xs text-destructive">✕</button>
           )}
         </div>
       ))}

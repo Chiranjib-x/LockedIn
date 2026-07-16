@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import UpiPay from "@/components/upi-pay";
+import { useRefresh } from "@/lib/use-refresh";
 import { createCollection, setDuePaid, deleteCollection } from "./actions";
 
 type Member = { user_id: string; name: string };
@@ -30,6 +31,7 @@ export default function Money({
   collections: Collection[];
   members: Member[];
 }) {
+  const refresh = useRefresh();
   const [title, setTitle] = useState("");
   const [kind, setKind] = useState<"dues" | "fund">("dues");
   const [amount, setAmount] = useState("");
@@ -64,7 +66,7 @@ export default function Money({
             disabled={busy || !title.trim() || !(Number(amount) > 0)}
             onClick={async () => {
               setBusy(true);
-              setErr(await createCollection(cid, title, kind, Number(amount), upi));
+              setErr(await createCollection(cid, title, kind, Number(amount), upi)); refresh();
               setTitle(""); setAmount(""); setUpi("");
               setBusy(false);
             }}
@@ -89,7 +91,7 @@ export default function Money({
                 </p>
               </div>
               {isLead && (
-                <button onClick={() => { if (confirm("Delete this collection?")) deleteCollection(coll.id, cid); }}
+                <button onClick={async () => { if (confirm("Delete this collection?")) { await deleteCollection(coll.id, cid); refresh(); } }}
                   className="press shrink-0 text-xs text-destructive">✕</button>
               )}
             </div>
@@ -107,7 +109,7 @@ export default function Money({
                   <div key={d.id} className="flex items-center justify-between gap-2 rounded-xl bg-muted/50 px-3 py-1.5 text-sm">
                     <span className="truncate">{nameOf(d.user_id)}</span>
                     <button
-                      onClick={() => setDuePaid(d.id, cid, !d.paid)}
+                      onClick={async () => { await setDuePaid(d.id, cid, !d.paid); refresh(); }}
                       className={`press shrink-0 rounded-full px-3 py-0.5 text-xs font-semibold ${d.paid ? "bg-accent/15 text-accent" : "border border-border"}`}
                     >
                       {d.paid ? "Paid ✓" : "Mark paid"}

@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useRefresh } from "@/lib/use-refresh";
 import { joinCommunity, leaveCommunity, approveCommunity, rejectCommunity, expressInterest, withdrawInterest, setRecruiting, setMemberRole, removeMember } from "./actions";
 
 // Lead-only member management: promote/demote co-leads, remove members.
 // The RPCs guard the last lead server-side; errors surface inline.
 export function RoleControls({ cid, uid, role, isSelf }: { cid: string; uid: string; role: string; isSelf: boolean }) {
+  const refresh = useRefresh();
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const isLead = role === "moderator";
@@ -13,6 +15,7 @@ export function RoleControls({ cid, uid, role, isSelf }: { cid: string; uid: str
     setBusy(true);
     setErr(await fn());
     setBusy(false);
+    refresh();
   };
   return (
     <div className="flex flex-wrap items-center gap-2">
@@ -40,6 +43,7 @@ export function RoleControls({ cid, uid, role, isSelf }: { cid: string; uid: str
 // Moderator toggle: flag the club as actively recruiting (surfaces it in the
 // communities list + search). Great for Quanta week.
 export function RecruitingToggle({ id, recruiting }: { id: string; recruiting: boolean }) {
+  const refresh = useRefresh();
   const [busy, setBusy] = useState(false);
   const [on, setOn] = useState(recruiting);
   return (
@@ -50,6 +54,7 @@ export function RecruitingToggle({ id, recruiting }: { id: string; recruiting: b
         await setRecruiting(id, !on);
         setOn(!on);
         setBusy(false);
+        refresh();
       }}
       className={`press flex min-h-11 items-center justify-center gap-2 rounded-full border px-5 text-sm font-semibold disabled:opacity-50 ${
         on ? "border-accent/40 bg-accent/10 text-accent" : "border-border bg-card hover:bg-muted"
@@ -63,6 +68,7 @@ export function RecruitingToggle({ id, recruiting }: { id: string; recruiting: b
 // Soft "I'm interested" lead — the booth CTA (no phone numbers). Distinct from
 // joining; the club gets a list of interested students to follow up in-app.
 export function InterestButton({ id, interested }: { id: string; interested: boolean }) {
+  const refresh = useRefresh();
   const [busy, setBusy] = useState(false);
   const [on, setOn] = useState(interested);
   return (
@@ -73,6 +79,7 @@ export function InterestButton({ id, interested }: { id: string; interested: boo
         await (on ? withdrawInterest(id) : expressInterest(id));
         setOn(!on);
         setBusy(false);
+        refresh();
       }}
       className={`press rounded-full border px-4 py-2 text-sm font-medium disabled:opacity-50 ${
         on ? "border-accent/40 bg-accent/10 text-accent" : "border-border bg-card hover:bg-muted"
@@ -84,6 +91,7 @@ export function InterestButton({ id, interested }: { id: string; interested: boo
 }
 
 export function JoinLeaveButton({ id, joined }: { id: string; joined: boolean }) {
+  const refresh = useRefresh();
   const [busy, setBusy] = useState(false);
   return (
     <button
@@ -92,6 +100,7 @@ export function JoinLeaveButton({ id, joined }: { id: string; joined: boolean })
         setBusy(true);
         await (joined ? leaveCommunity(id) : joinCommunity(id));
         setBusy(false);
+        refresh();
       }}
       className={`press rounded-full px-5 py-2 text-sm font-semibold disabled:opacity-50 ${
         joined ? "border border-border bg-card text-muted-foreground hover:bg-muted" : "bg-primary text-on-primary hover:bg-primary-strong"
@@ -103,22 +112,23 @@ export function JoinLeaveButton({ id, joined }: { id: string; joined: boolean })
 }
 
 export function ApproveButtons({ id, claimsOfficial }: { id: string; claimsOfficial: boolean }) {
+  const refresh = useRefresh();
   return (
     <div className="flex flex-wrap gap-2">
       <button
-        onClick={() => approveCommunity(id, true)}
+        onClick={async () => { await approveCommunity(id, true); refresh(); }}
         className="press rounded-full bg-primary px-4 py-1.5 text-xs font-semibold text-on-primary"
       >
         Approve as ✔ Official
       </button>
       <button
-        onClick={() => approveCommunity(id, false)}
+        onClick={async () => { await approveCommunity(id, false); refresh(); }}
         className="press rounded-full bg-accent px-4 py-1.5 text-xs font-semibold text-on-accent"
       >
         Approve{claimsOfficial ? " (strip official)" : " ✓"}
       </button>
       <button
-        onClick={() => { if (confirm("Reject this proposal?")) rejectCommunity(id); }}
+        onClick={async () => { if (confirm("Reject this proposal?")) { await rejectCommunity(id); refresh(); } }}
         className="press rounded-full border border-destructive/40 px-4 py-1.5 text-xs font-semibold text-destructive hover:bg-destructive/10"
       >
         Reject

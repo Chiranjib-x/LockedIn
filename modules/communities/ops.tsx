@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRefresh } from "@/lib/use-refresh";
 import {
   addTask, setTaskStatus, deleteTask,
   addResource, deleteResource,
@@ -18,6 +19,7 @@ const nameById = (members: Member[], id: string | null) =>
 // Task board — leads assign with a due date; the assignee (or a lead) ticks
 // it done. Members see the whole board.
 export function TaskBoard({ cid, isLead, tasks, members }: { cid: string; isLead: boolean; tasks: Task[]; members: Member[] }) {
+  const refresh = useRefresh();
   const [title, setTitle] = useState("");
   const [assignee, setAssignee] = useState("");
   const [due, setDue] = useState("");
@@ -42,7 +44,7 @@ export function TaskBoard({ cid, isLead, tasks, members }: { cid: string; isLead
             <input type="date" value={due} onChange={(e) => setDue(e.target.value)}
               className="min-h-10 rounded-xl border border-border bg-background px-2 text-sm" />
             <button disabled={busy || !title.trim()}
-              onClick={async () => { setBusy(true); setErr(await addTask(cid, title, assignee, due)); setTitle(""); setAssignee(""); setDue(""); setBusy(false); }}
+              onClick={async () => { setBusy(true); setErr(await addTask(cid, title, assignee, due)); setTitle(""); setAssignee(""); setDue(""); setBusy(false); refresh(); }}
               className="press shrink-0 rounded-full bg-primary px-4 text-sm font-semibold text-on-primary disabled:opacity-50">Add</button>
           </div>
           {err && <p className="text-xs text-destructive">{err}</p>}
@@ -52,7 +54,7 @@ export function TaskBoard({ cid, isLead, tasks, members }: { cid: string; isLead
       {open.map((t) => (
         <div key={t.id} className="flex items-center gap-2 rounded-2xl border border-border bg-card p-3">
           <button
-            onClick={() => setTaskStatus(t.id, cid, true)}
+            onClick={async () => { await setTaskStatus(t.id, cid, true); refresh(); }}
             aria-label="Mark done"
             className="press h-5 w-5 shrink-0 rounded-full border-2 border-primary"
           />
@@ -63,15 +65,15 @@ export function TaskBoard({ cid, isLead, tasks, members }: { cid: string; isLead
               {t.due_date && ` · due ${new Date(t.due_date).toLocaleDateString("en-IN", { day: "numeric", month: "short", timeZone: "Asia/Kolkata" })}`}
             </p>
           </div>
-          {isLead && <button onClick={() => deleteTask(t.id, cid)} className="press shrink-0 text-xs text-destructive">✕</button>}
+          {isLead && <button onClick={async () => { await deleteTask(t.id, cid); refresh(); }} className="press shrink-0 text-xs text-destructive">✕</button>}
         </div>
       ))}
       {done.map((t) => (
         <div key={t.id} className="flex items-center gap-2 rounded-2xl border border-border bg-muted/40 p-3">
-          <button onClick={() => setTaskStatus(t.id, cid, false)} aria-label="Reopen"
+          <button onClick={async () => { await setTaskStatus(t.id, cid, false); refresh(); }} aria-label="Reopen"
             className="press flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent text-[10px] text-on-accent">✓</button>
           <p className="min-w-0 flex-1 truncate text-sm text-muted-foreground line-through">{t.title}</p>
-          {isLead && <button onClick={() => deleteTask(t.id, cid)} className="press shrink-0 text-xs text-destructive">✕</button>}
+          {isLead && <button onClick={async () => { await deleteTask(t.id, cid); refresh(); }} className="press shrink-0 text-xs text-destructive">✕</button>}
         </div>
       ))}
     </section>
@@ -80,6 +82,7 @@ export function TaskBoard({ cid, isLead, tasks, members }: { cid: string; isLead
 
 // Pinned resources — a links shelf (drive folders, rulebooks, playlists).
 export function Resources({ cid, isLead, resources }: { cid: string; isLead: boolean; resources: Resource[] }) {
+  const refresh = useRefresh();
   const [label, setLabel] = useState("");
   const [url, setUrl] = useState("");
   const [busy, setBusy] = useState(false);
@@ -96,7 +99,7 @@ export function Resources({ cid, isLead, resources }: { cid: string; isLead: boo
             <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="Paste a link"
               className="min-h-10 flex-1 rounded-xl border border-border bg-background px-3 text-sm" />
             <button disabled={busy || !label.trim() || !url.trim()}
-              onClick={async () => { setBusy(true); setErr(await addResource(cid, label, url)); setLabel(""); setUrl(""); setBusy(false); }}
+              onClick={async () => { setBusy(true); setErr(await addResource(cid, label, url)); setLabel(""); setUrl(""); setBusy(false); refresh(); }}
               className="press shrink-0 rounded-full bg-primary px-4 text-sm font-semibold text-on-primary disabled:opacity-50">Pin</button>
           </div>
           {err && <p className="text-xs text-destructive">{err}</p>}
@@ -107,7 +110,7 @@ export function Resources({ cid, isLead, resources }: { cid: string; isLead: boo
           <a href={r.url} target="_blank" rel="noopener noreferrer" className="press min-w-0 flex-1 truncate text-sm font-medium text-primary hover:underline">
             🔗 {r.label}
           </a>
-          {isLead && <button onClick={() => deleteResource(r.id, cid)} className="press shrink-0 text-xs text-destructive">✕</button>}
+          {isLead && <button onClick={async () => { await deleteResource(r.id, cid); refresh(); }} className="press shrink-0 text-xs text-destructive">✕</button>}
         </div>
       ))}
     </section>
@@ -116,6 +119,7 @@ export function Resources({ cid, isLead, resources }: { cid: string; isLead: boo
 
 // Inventory register — team gear and who currently holds it.
 export function Inventory({ cid, isLead, items, members }: { cid: string; isLead: boolean; items: Inv[]; members: Member[] }) {
+  const refresh = useRefresh();
   const [item, setItem] = useState("");
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
@@ -132,7 +136,7 @@ export function Inventory({ cid, isLead, items, members }: { cid: string; isLead
             <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="Note (optional)"
               className="min-h-10 w-1/3 rounded-xl border border-border bg-background px-3 text-sm" />
             <button disabled={busy || !item.trim()}
-              onClick={async () => { setBusy(true); setErr(await addInventory(cid, item, note)); setItem(""); setNote(""); setBusy(false); }}
+              onClick={async () => { setBusy(true); setErr(await addInventory(cid, item, note)); setItem(""); setNote(""); setBusy(false); refresh(); }}
               className="press shrink-0 rounded-full bg-primary px-4 text-sm font-semibold text-on-primary disabled:opacity-50">Add</button>
           </div>
           {err && <p className="text-xs text-destructive">{err}</p>}
@@ -147,7 +151,7 @@ export function Inventory({ cid, isLead, items, members }: { cid: string; isLead
           {isLead ? (
             <select
               value={it.holder_id ?? ""}
-              onChange={(e) => setInventoryHolder(it.id, cid, e.target.value)}
+              onChange={async (e) => { await setInventoryHolder(it.id, cid, e.target.value); refresh(); }}
               className="min-h-9 shrink-0 rounded-full border border-border bg-background px-2 text-xs"
             >
               <option value="">In store</option>
