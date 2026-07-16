@@ -58,7 +58,7 @@ Make chapter/team/community first-class everywhere "Clubs" is hardcoded.
   bottom nav, etc.) and align copy with the 4-type model.
 **Done when:** no user-facing surface implies communities are only "clubs".
 
-## Phase 2 — Navigation & entry-points (GLOBAL) ☐
+## Phase 2 — Navigation & entry-points (GLOBAL) ☑ (nav clean, all back links present)
 
 - Bottom nav labels/targets coherent with current features.
 - Every detail page has a correct back link.
@@ -97,3 +97,5 @@ Make chapter/team/community first-class everywhere "Clubs" is hardcoded.
 ## Findings log (fill as we go)
 - 2026-07-16: search tab "Clubs" mislabels chapters/teams/communities (Phase 1/4).
 - 2026-07-16: ~42/49 client mutate buttons don't refresh the view (Phase 0).
+
+- 2026-07-16: Phase 3 refresh sweep done for board/timetable/crews/subscriptions/gate/moderation. Remaining low-traffic: listing-actions, cabs, matcher, spaces/add-member, events-rsvp, showcase (per section sweeps).
