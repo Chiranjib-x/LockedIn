@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { inputClass } from "@/components/ui";
+import { useRefresh } from "@/lib/use-refresh";
 import { setDiscoverable, requestJoin, decideJoin } from "./actions";
 
 export function DiscoverToggle({
@@ -13,6 +14,7 @@ export function DiscoverToggle({
   discoverable: boolean;
   openSeats: number;
 }) {
+  const refresh = useRefresh();
   const [seats, setSeats] = useState(openSeats > 0 ? openSeats : 1);
   const [busy, setBusy] = useState(false);
   return (
@@ -22,7 +24,7 @@ export function DiscoverToggle({
           <span className="font-medium">🌐 Listed on the browse board · {openSeats} open seat{openSeats === 1 ? "" : "s"}</span>
           <button
             disabled={busy}
-            onClick={async () => { setBusy(true); await setDiscoverable(subId, false, 0); setBusy(false); }}
+            onClick={async () => { setBusy(true); await setDiscoverable(subId, false, 0); setBusy(false); refresh(); }}
             className="press rounded-full border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground"
           >
             Unlist
@@ -38,7 +40,7 @@ export function DiscoverToggle({
           />
           <button
             disabled={busy}
-            onClick={async () => { setBusy(true); await setDiscoverable(subId, true, seats); setBusy(false); }}
+            onClick={async () => { setBusy(true); await setDiscoverable(subId, true, seats); setBusy(false); refresh(); }}
             className="press rounded-full bg-primary px-4 py-1.5 text-xs font-semibold text-on-primary"
           >
             {busy ? "Listing…" : "List pool"}
@@ -99,6 +101,7 @@ export function JoinRequestsPanel({
 }: {
   requests: { id: string; note: string | null; requester: string }[];
 }) {
+  const refresh = useRefresh();
   const [busyId, setBusyId] = useState<string | null>(null);
   if (requests.length === 0) return null;
   return (
@@ -113,14 +116,14 @@ export function JoinRequestsPanel({
           <span className="flex gap-2">
             <button
               disabled={busyId === r.id}
-              onClick={async () => { setBusyId(r.id); await decideJoin(r.id, true); }}
+              onClick={async () => { setBusyId(r.id); await decideJoin(r.id, true); refresh(); }}
               className="press min-h-11 rounded-full bg-accent px-4 text-sm font-semibold text-on-accent disabled:opacity-50"
             >
               Approve (prorated)
             </button>
             <button
               disabled={busyId === r.id}
-              onClick={async () => { setBusyId(r.id); await decideJoin(r.id, false); setBusyId(null); }}
+              onClick={async () => { setBusyId(r.id); await decideJoin(r.id, false); setBusyId(null); refresh(); }}
               className="press min-h-11 rounded-full border border-border px-4 text-sm font-medium text-muted-foreground"
             >
               Decline

@@ -3,9 +3,11 @@
 import { useState } from "react";
 import { inputClass } from "@/components/ui";
 import UpiPay from "@/components/upi-pay";
+import { useRefresh } from "@/lib/use-refresh";
 import { joinOrder, leaveOrder, setOrderStatus, markPaid, confirmPaid, updateLogistics } from "./actions";
 
 export function JoinForm({ orderId, unitPrice }: { orderId: string; unitPrice: number | null }) {
+  const refresh = useRefresh();
   const [qty, setQty] = useState(1);
   const [note, setNote] = useState("");
   const [amount, setAmount] = useState<number>(unitPrice ?? 0);
@@ -39,6 +41,7 @@ export function JoinForm({ orderId, unitPrice }: { orderId: string; unitPrice: n
           const e = await joinOrder(orderId, qty, note, owed);
           if (e) setErr(e);
           setBusy(false);
+          if (!e) refresh();
         }}
         className="press min-h-11 rounded-full bg-primary px-5 font-semibold text-on-primary hover:bg-primary-strong disabled:opacity-50"
       >
@@ -49,9 +52,10 @@ export function JoinForm({ orderId, unitPrice }: { orderId: string; unitPrice: n
 }
 
 export function LeaveButton({ orderId }: { orderId: string }) {
+  const refresh = useRefresh();
   return (
     <button
-      onClick={() => { if (confirm("Leave this order?")) leaveOrder(orderId); }}
+      onClick={async () => { if (confirm("Leave this order?")) { await leaveOrder(orderId); refresh(); } }}
       className="press rounded-full border border-border px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-muted"
     >
       Leave order
@@ -71,12 +75,13 @@ const NEXT: Record<
 };
 
 export function OrganizerControls({ orderId, status }: { orderId: string; status: string }) {
+  const refresh = useRefresh();
   const next = NEXT[status];
   return (
     <div className="flex flex-wrap gap-2">
       {next && (
         <button
-          onClick={() => setOrderStatus(orderId, next.to)}
+          onClick={async () => { await setOrderStatus(orderId, next.to); refresh(); }}
           className="press rounded-full bg-primary px-4 py-2 text-sm font-semibold text-on-primary hover:bg-primary-strong"
         >
           {next.label}
@@ -84,7 +89,7 @@ export function OrganizerControls({ orderId, status }: { orderId: string; status
       )}
       {status === "closed" && (
         <button
-          onClick={() => setOrderStatus(orderId, "open")}
+          onClick={async () => { await setOrderStatus(orderId, "open"); refresh(); }}
           className="press rounded-full border border-border px-4 py-2 text-sm font-medium hover:bg-muted"
         >
           Reopen
@@ -92,7 +97,7 @@ export function OrganizerControls({ orderId, status }: { orderId: string; status
       )}
       {status !== "completed" && status !== "cancelled" && (
         <button
-          onClick={() => { if (confirm("Cancel this order for everyone?")) setOrderStatus(orderId, "cancelled"); }}
+          onClick={async () => { if (confirm("Cancel this order for everyone?")) { await setOrderStatus(orderId, "cancelled"); refresh(); } }}
           className="press rounded-full border border-destructive/40 px-4 py-2 text-sm font-medium text-destructive hover:bg-destructive/10"
         >
           Cancel
@@ -172,6 +177,7 @@ export function PayPanel({
   paidMarked: boolean;
   title: string;
 }) {
+  const refresh = useRefresh();
   return (
     <div className="flex flex-col gap-2 rounded-2xl border border-primary/30 bg-primary/5 p-4">
       <p className="text-sm font-semibold">Your share: ₹{amount.toFixed(0)}</p>
@@ -184,7 +190,7 @@ export function PayPanel({
         <p className="text-sm font-medium text-accent">Marked as paid — waiting for organizer to confirm.</p>
       ) : (
         <button
-          onClick={() => markPaid(itemId, orderId)}
+          onClick={async () => { await markPaid(itemId, orderId); refresh(); }}
           className="press min-h-11 rounded-full border border-accent px-5 text-sm font-semibold text-accent hover:bg-accent/10"
         >
           I’ve paid ✓
@@ -195,9 +201,10 @@ export function PayPanel({
 }
 
 export function ConfirmPaidButton({ itemId, orderId, confirmed }: { itemId: string; orderId: string; confirmed: boolean }) {
+  const refresh = useRefresh();
   return (
     <button
-      onClick={() => confirmPaid(itemId, orderId, !confirmed)}
+      onClick={async () => { await confirmPaid(itemId, orderId, !confirmed); refresh(); }}
       className={`press rounded-full px-3 py-1 text-xs font-semibold ${
         confirmed ? "bg-accent text-on-accent" : "border border-border text-muted-foreground hover:bg-muted"
       }`}

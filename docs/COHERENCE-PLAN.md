@@ -69,7 +69,7 @@ Make chapter/team/community first-class everywhere "Clubs" is hardcoded.
 
 ## Phase 3+ — Section sweeps (rubric above), in priority order
 
-3. **Communities** (chapters/clubs/teams) ☐ — most recent churn: profile edit,
+3. **Communities** ☑ live-update fixed (Phase 0) — most recent churn: profile edit,
    achievements, applications, meetings, tasks, dues, polls, deletion, founder
    management. Highest surface area.
 4. **Search / Explore** ☐ — the named example; verify all tabs return + label
