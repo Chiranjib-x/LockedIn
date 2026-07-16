@@ -41,21 +41,19 @@ import { InstallPrompt } from "@/components/pwa";
 // is its own Suspense boundary + owns its error handling internally, so one
 // broken section streams in empty instead of blanking the page.
 
-// Tinted tiles per docs/design/directions.png — six token hues cycling, so
-// neighbouring tiles never share a colour and the grid scans by hue.
-// Marketplace + Gate are flagship hero cards; Cabs/Group-Buy/Pools are the
-// live-stat row. The grid covers the rest (Pools tile kept for "my pools").
-const MODULES: { short: string; href: string; icon: LucideIcon; tint: string }[] = [
-  { short: "Board", href: "/board", icon: Pin, tint: "bg-tint-rose text-tint-rose-fg" },
-  { short: "Events", href: "/events", icon: PartyPopper, tint: "bg-tint-violet text-tint-violet-fg" },
-  { short: "Pools", href: "/subscriptions", icon: Tv, tint: "bg-tint-teal text-tint-teal-fg" },
-  { short: "Match", href: "/matches", icon: Target, tint: "bg-tint-violet text-tint-violet-fg" },
-  { short: "Clubs", href: "/communities", icon: Users, tint: "bg-tint-blue text-tint-blue-fg" },
-  { short: "Crews", href: "/crews", icon: Users2, tint: "bg-tint-rose text-tint-rose-fg" },
-  { short: "Toolbox", href: "/toolbox", icon: Wrench, tint: "bg-tint-amber text-tint-amber-fg" },
-  { short: "Deals", href: "/deals", icon: Tag, tint: "bg-tint-green text-tint-green-fg" },
-  { short: "Timetable", href: "/timetable", icon: CalendarDays, tint: "bg-tint-violet text-tint-violet-fg" },
-  { short: "Study", href: "/study-groups", icon: BookOpen, tint: "bg-tint-teal text-tint-teal-fg" },
+// Every feature gets a flagship-style card (icon chip + title + blurb +
+// arrow) — same visual weight as Marketplace/Gate Runner, no smaller tiles.
+const FEATURES: { short: string; href: string; icon: LucideIcon; tint: string; blurb: string }[] = [
+  { short: "Board", href: "/board", icon: Pin, tint: "bg-tint-rose text-tint-rose-fg", blurb: "Lost & found and campus notices." },
+  { short: "Events", href: "/events", icon: PartyPopper, tint: "bg-tint-violet text-tint-violet-fg", blurb: "What's happening on campus." },
+  { short: "Match", href: "/matches", icon: Target, tint: "bg-tint-violet text-tint-violet-fg", blurb: "Find a compatible roommate." },
+  { short: "Clubs & Teams", href: "/communities", icon: Users, tint: "bg-tint-blue text-tint-blue-fg", blurb: "Chapters, clubs, and student teams." },
+  { short: "Crews", href: "/crews", icon: Users2, tint: "bg-tint-rose text-tint-rose-fg", blurb: "Private groups for roommates & friends." },
+  { short: "Toolbox", href: "/toolbox", icon: Wrench, tint: "bg-tint-amber text-tint-amber-fg", blurb: "Handy tools picked for students." },
+  { short: "Deals", href: "/deals", icon: Tag, tint: "bg-tint-green text-tint-green-fg", blurb: "Offers from campus merchants." },
+  { short: "Timetable", href: "/timetable", icon: CalendarDays, tint: "bg-tint-violet text-tint-violet-fg", blurb: "Classes, attendance, bunk math." },
+  { short: "Study Groups", href: "/study-groups", icon: BookOpen, tint: "bg-tint-teal text-tint-teal-fg", blurb: "Find people studying your course." },
+  { short: "My Pools", href: "/subscriptions", icon: Tv, tint: "bg-tint-teal text-tint-teal-fg", blurb: "Subscriptions you're sharing." },
 ];
 
 function greeting() {
@@ -211,49 +209,71 @@ export default async function HomePage() {
           </Link>
         ))}
 
-        {/* Second-tier live stats: cabs · group-buys · pools */}
-        <div className="animate-fade-up grid grid-cols-3 gap-3" style={{ animationDelay: "200ms" }}>
-          {[
-            { href: "/cabs", icon: CarTaxiFront, tint: "bg-tint-rose text-tint-rose-fg", n: tripCount ?? 0, label: (tripCount ?? 0) === 1 ? "trip to join" : "trips to join" },
-            { href: "/group-buy", icon: Handshake, tint: "bg-tint-amber text-tint-amber-fg", n: orderCount ?? 0, label: (orderCount ?? 0) === 1 ? "order open" : "orders open" },
-            { href: "/subscriptions/browse", icon: Tv, tint: "bg-tint-teal text-tint-teal-fg", n: poolCount ?? 0, label: (poolCount ?? 0) === 1 ? "Netflix/Spotify seat" : "Netflix/Spotify seats" },
-          ].map((s) => (
-            <Link key={s.href} href={s.href} className="press">
-              <div className="glass press-glow flex flex-col items-center gap-1 rounded-3xl px-2 py-3 text-center">
-                <span className={`flex h-9 w-9 items-center justify-center rounded-xl ${s.tint}`}>
-                  <s.icon className="h-4.5 w-4.5" strokeWidth={2} />
-                </span>
-                <span className="font-heading text-lg leading-tight font-bold text-primary">{s.n}</span>
-                <span className="text-[10px] leading-tight font-medium text-muted-foreground">{s.label}</span>
+        <Link href="/cabs" className="animate-fade-up press" style={{ animationDelay: "200ms" }}>
+          <div className="glass press-glow flex items-center gap-4 rounded-3xl p-4">
+            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-tint-rose text-tint-rose-fg">
+              <CarTaxiFront className="h-7 w-7" strokeWidth={2} />
+            </span>
+            <div className="min-w-0 flex-1">
+              <h2 className="font-heading font-bold">Cab Pooling</h2>
+              <p className="text-sm text-muted-foreground">
+                {(tripCount ?? 0) > 0 ? <><span className="font-semibold text-primary">{tripCount}</span> trip{tripCount === 1 ? "" : "s"} to join</> : "Split a ride, split the fare."}
+              </p>
+            </div>
+            <ArrowRight className="h-4 w-4 shrink-0 text-primary" strokeWidth={2.2} />
+          </div>
+        </Link>
+
+        <Link href="/group-buy" className="animate-fade-up press" style={{ animationDelay: "220ms" }}>
+          <div className="glass press-glow flex items-center gap-4 rounded-3xl p-4">
+            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-tint-amber text-tint-amber-fg">
+              <Handshake className="h-7 w-7" strokeWidth={2} />
+            </span>
+            <div className="min-w-0 flex-1">
+              <h2 className="font-heading font-bold">Group-Buys</h2>
+              <p className="text-sm text-muted-foreground">
+                {(orderCount ?? 0) > 0 ? <><span className="font-semibold text-primary">{orderCount}</span> order{orderCount === 1 ? "" : "s"} open</> : "One order, split delivery fee."}
+              </p>
+            </div>
+            <ArrowRight className="h-4 w-4 shrink-0 text-primary" strokeWidth={2.2} />
+          </div>
+        </Link>
+
+        <Link href="/subscriptions/browse" className="animate-fade-up press" style={{ animationDelay: "240ms" }}>
+          <div className="glass press-glow flex items-center gap-4 rounded-3xl p-4">
+            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-tint-teal text-tint-teal-fg">
+              <Tv className="h-7 w-7" strokeWidth={2} />
+            </span>
+            <div className="min-w-0 flex-1">
+              <h2 className="font-heading font-bold">Netflix & Spotify Pools</h2>
+              <p className="text-sm text-muted-foreground">
+                {(poolCount ?? 0) > 0 ? <><span className="font-semibold text-primary">{poolCount}</span> open seat{poolCount === 1 ? "" : "s"}</> : "Share a subscription, split the cost."}
+              </p>
+            </div>
+            <ArrowRight className="h-4 w-4 shrink-0 text-primary" strokeWidth={2.2} />
+          </div>
+        </Link>
+
+        {FEATURES.map((m, i) => (
+          <Link key={m.short} href={m.href} className="animate-fade-up press" style={{ animationDelay: `${260 + i * 20}ms` }}>
+            <div className="glass press-glow flex items-center gap-4 rounded-3xl p-4">
+              <span className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl ${m.tint}`}>
+                <m.icon className="h-7 w-7" strokeWidth={2} />
+              </span>
+              <div className="min-w-0 flex-1">
+                <h2 className="font-heading font-bold">{m.short}</h2>
+                <p className="text-sm text-muted-foreground">{m.blurb}</p>
               </div>
-            </Link>
-          ))}
-        </div>
+              <ArrowRight className="h-4 w-4 shrink-0 text-primary" strokeWidth={2.2} />
+            </div>
+          </Link>
+        ))}
       </div>
 
       {/* Clubs & teams — high on the page so campus life isn't hidden. */}
       <Suspense fallback={<SkeletonSection />}>
         <ClubsStrip />
       </Suspense>
-
-      <div
-        className="animate-fade-up -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 [&::-webkit-scrollbar]:hidden"
-        style={{ animationDelay: "220ms" }}
-      >
-        {MODULES.map((m, i) => (
-          <Link
-            key={m.short}
-            href={m.href}
-            className="animate-fade-up press shrink-0 snap-start"
-            style={{ animationDelay: `${240 + i * 30}ms` }}
-          >
-            <div className={`press-glow flex w-[72px] flex-col items-center gap-2 rounded-2xl px-2 py-4 ${m.tint}`}>
-              <m.icon className="h-6 w-6" strokeWidth={2} />
-              <span className="text-center text-[11px] font-semibold leading-tight">{m.short}</span>
-            </div>
-          </Link>
-        ))}
-      </div>
 
       <InstallPrompt />
 
