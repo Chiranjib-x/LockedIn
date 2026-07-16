@@ -237,15 +237,20 @@ export default async function HomePage() {
       </Suspense>
 
       <div
-        className="animate-fade-up grid grid-cols-4 gap-3"
+        className="animate-fade-up -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 [&::-webkit-scrollbar]:hidden"
         style={{ animationDelay: "220ms" }}
       >
-        {MODULES.map((m) => (
-          <Link key={m.short} href={m.href} className="press flex flex-col items-center gap-1">
-            <span className={`press-glow flex h-14 w-14 items-center justify-center rounded-2xl ${m.tint}`}>
+        {MODULES.map((m, i) => (
+          <Link
+            key={m.short}
+            href={m.href}
+            className="animate-fade-up press shrink-0 snap-start"
+            style={{ animationDelay: `${240 + i * 30}ms` }}
+          >
+            <div className={`press-glow flex w-[72px] flex-col items-center gap-2 rounded-2xl px-2 py-4 ${m.tint}`}>
               <m.icon className="h-6 w-6" strokeWidth={2} />
-            </span>
-            <span className="text-[11px] font-medium text-muted-foreground">{m.short}</span>
+              <span className="text-center text-[11px] font-semibold leading-tight">{m.short}</span>
+            </div>
           </Link>
         ))}
       </div>

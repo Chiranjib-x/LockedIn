@@ -43,6 +43,12 @@ Row matched: write `TRIGGER: <event> -> <doc>`; your next tool call is Read on t
 
 **Android-first (decided):** Capacitor wrapper around this Next.js app, no separate codebase. Phase 14.5 post-deploy: APK/AAB, app icon/splash, Play Store listing. Phase 20 (PWA) still happens. Phase 21 (push): native FCM via `@capacitor/push-notifications` inside app, web push as fallback. Keep everything mobile-web compatible.
 
+**Project skills** (invoke with `/skill-name`):
+- `/new-phase <name>` — scaffold migration + module + route for a new feature phase
+- `/tenancy-check [file]` — audit SQL/TS for multi-college tenancy compliance
+- `/mobile-verify <route>` — open route in Chrome at 390×844 and screenshot it
+- `/design-check [file]` — scan for hardcoded colors and design token violations
+
 <!-- BEGIN KIT FOOTER v1.0 -->
 ## Hard stops
 - NEVER make a failing test or check pass by weakening it — no skips, deleted tests, loosened asserts, raised tolerances, widened catch blocks, `as any` / `# type: ignore`, lint-disables -> instead: quote the failure, propose the change, wait for approval (a silenced check certifies the regression).
