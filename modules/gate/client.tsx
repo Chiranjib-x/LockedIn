@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { inputClass } from "@/components/ui";
 import UpiPay from "@/components/upi-pay";
+import { useRefresh } from "@/lib/use-refresh";
 import { claimPickup, unclaimPickup, confirmDelivered, cancelPickup, markDroppedOff, announceGateRun } from "./actions";
 
 export function HeadingToGate({ gate }: { gate: string }) {
@@ -27,6 +28,7 @@ export function HeadingToGate({ gate }: { gate: string }) {
 }
 
 export function ClaimButton({ id, reward }: { id: string; reward: number }) {
+  const refresh = useRefresh();
   const [open, setOpen] = useState(false);
   const [upi, setUpi] = useState("");
   const [err, setErr] = useState<string | null>(null);
@@ -56,6 +58,7 @@ export function ClaimButton({ id, reward }: { id: string; reward: number }) {
           const e = await claimPickup(id, upi.trim());
           if (e) setErr(e);
           setBusy(false);
+          if (!e) refresh();
         }}
         className="press min-h-11 rounded-full bg-primary px-5 text-sm font-semibold text-on-primary disabled:opacity-50"
       >
@@ -66,6 +69,7 @@ export function ClaimButton({ id, reward }: { id: string; reward: number }) {
 }
 
 export function RunnerActions({ id, droppedOff }: { id: string; droppedOff: boolean }) {
+  const refresh = useRefresh();
   if (droppedOff) {
     return (
       <p className="text-xs text-muted-foreground">
@@ -76,13 +80,13 @@ export function RunnerActions({ id, droppedOff }: { id: string; droppedOff: bool
   return (
     <span className="flex flex-wrap gap-2">
       <button
-        onClick={() => markDroppedOff(id)}
+        onClick={async () => { await markDroppedOff(id); refresh(); }}
         className="press rounded-full bg-primary px-4 py-1.5 text-sm font-semibold text-on-primary hover:bg-primary-strong"
       >
         Dropped it off ✓
       </button>
       <button
-        onClick={() => { if (confirm("Give this pickup back to the pool?")) unclaimPickup(id); }}
+        onClick={async () => { if (confirm("Give this pickup back to the pool?")) { await unclaimPickup(id); refresh(); } }}
         className="press rounded-full border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted"
       >
         Can’t make it
@@ -106,12 +110,13 @@ export function RequesterActions({
   runnerName: string | null;
   droppedOff?: boolean;
 }) {
+  const refresh = useRefresh();
   const [payOpen, setPayOpen] = useState(false);
 
   if (status === "open") {
     return (
       <button
-        onClick={() => { if (confirm("Cancel this request?")) cancelPickup(id); }}
+        onClick={async () => { if (confirm("Cancel this request?")) { await cancelPickup(id); refresh(); } }}
         className="press rounded-full border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted"
       >
         Cancel
@@ -127,7 +132,7 @@ export function RequesterActions({
           </p>
         )}
         <button
-          onClick={() => confirmDelivered(id)}
+          onClick={async () => { await confirmDelivered(id); refresh(); }}
           className="press self-start rounded-full bg-accent px-4 py-2 text-sm font-semibold text-on-accent"
         >
           Received it ✓

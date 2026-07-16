@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { inputClass } from "@/components/ui";
+import { useRefresh } from "@/lib/use-refresh";
 import { submitClaim, decideClaim } from "./actions";
 
 // Phase 30 claim flow. Answers are private (RLS: claimant + post author only).
@@ -76,6 +77,7 @@ export function ClaimsPanel({
   postId: string;
   claims: { id: string; answer: string; status: string; claimant: string }[];
 }) {
+  const refresh = useRefresh();
   const [busyId, setBusyId] = useState<string | null>(null);
   if (claims.length === 0) return null;
 
@@ -94,6 +96,7 @@ export function ClaimsPanel({
                 onClick={async () => {
                   setBusyId(c.id);
                   await decideClaim(c.id, postId, true);
+                  refresh();
                 }}
                 className="press min-h-11 rounded-full bg-accent px-4 text-sm font-semibold text-on-accent disabled:opacity-50"
               >
@@ -105,6 +108,7 @@ export function ClaimsPanel({
                   setBusyId(c.id);
                   await decideClaim(c.id, postId, false);
                   setBusyId(null);
+                  refresh();
                 }}
                 className="press min-h-11 rounded-full border border-border px-4 text-sm font-medium text-muted-foreground"
               >

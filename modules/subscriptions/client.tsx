@@ -3,6 +3,7 @@
 import { useState } from "react";
 import ProfileSearch from "@/components/profile-search";
 import UpiPay from "@/components/upi-pay";
+import { useRefresh } from "@/lib/use-refresh";
 import { addMember, removeMember, setShare, setPaid, splitEvenly } from "./actions";
 
 export function AddPoolMember({
@@ -14,6 +15,7 @@ export function AddPoolMember({
   defaultShare: number;
   memberIds: string[];
 }) {
+  const refresh = useRefresh();
   const [open, setOpen] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
@@ -34,6 +36,7 @@ export function AddPoolMember({
         onPick={async (p) => {
           const e = await addMember(subId, p.id, defaultShare);
           setErr(e);
+          if (!e) refresh();
         }}
       />
       {err && <p className="text-sm text-destructive">{err}</p>}
@@ -61,6 +64,7 @@ export function MemberRow({
   ownerName: string;
   serviceName: string;
 }) {
+  const refresh = useRefresh();
   const [payOpen, setPayOpen] = useState(false);
 
   return (
@@ -70,10 +74,10 @@ export function MemberRow({
           {member.name} {isMe && <span className="text-muted-foreground">(you)</span>}
         </p>
         <button
-          onClick={() => {
+          onClick={async () => {
             if (!isOwner) return;
             const v = prompt("Share amount (₹)", String(member.share_amount));
-            if (v != null && !Number.isNaN(Number(v))) setShare(member.id, subId, Number(v));
+            if (v != null && !Number.isNaN(Number(v))) { await setShare(member.id, subId, Number(v)); refresh(); }
           }}
           className={`font-heading text-sm font-bold ${isOwner ? "underline decoration-dotted" : ""}`}
         >
@@ -82,7 +86,7 @@ export function MemberRow({
         {isOwner ? (
           <>
             <button
-              onClick={() => setPaid(member.id, subId, !member.paid_status)}
+              onClick={async () => { await setPaid(member.id, subId, !member.paid_status); refresh(); }}
               className={`press rounded-full px-3 py-1 text-xs font-semibold ${
                 member.paid_status ? "bg-accent text-on-accent" : "border border-border text-muted-foreground hover:bg-muted"
               }`}
@@ -90,7 +94,7 @@ export function MemberRow({
               {member.paid_status ? "Paid ✓" : "Mark paid"}
             </button>
             <button
-              onClick={() => { if (confirm(`Remove ${member.name}?`)) removeMember(member.id, subId); }}
+              onClick={async () => { if (confirm(`Remove ${member.name}?`)) { await removeMember(member.id, subId); refresh(); } }}
               className="press text-xs text-destructive"
               aria-label="Remove member"
             >
@@ -121,9 +125,10 @@ export function MemberRow({
 }
 
 export function SplitEvenlyButton({ subId }: { subId: string }) {
+  const refresh = useRefresh();
   return (
     <button
-      onClick={() => splitEvenly(subId)}
+      onClick={async () => { await splitEvenly(subId); refresh(); }}
       className="press rounded-full border border-border px-4 py-2 text-sm font-medium hover:bg-muted"
     >
       Split evenly

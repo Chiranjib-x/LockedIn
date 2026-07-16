@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { inputClass } from "@/components/ui";
+import { useRefresh } from "@/lib/use-refresh";
 import { markAttendance } from "./actions";
 
 const STATUSES = [
@@ -21,6 +22,7 @@ export function MarkAttendance({
   date: string;
   current: Status | null;
 }) {
+  const refresh = useRefresh();
   const [status, setStatus] = useState<Status | null>(current);
   const [busy, setBusy] = useState(false);
 
@@ -35,6 +37,7 @@ export function MarkAttendance({
             setStatus(s.value);
             await markAttendance(courseCode, date, s.value);
             setBusy(false);
+            refresh();
           }}
           className={`press rounded-full px-2.5 py-1 text-xs font-semibold disabled:opacity-50 ${
             status === s.value
@@ -54,6 +57,7 @@ export function MarkAttendance({
 }
 
 export function PastAttendanceForm({ courseCode }: { courseCode: string }) {
+  const refresh = useRefresh();
   const [date, setDate] = useState("");
   const [busy, setBusy] = useState(false);
   const today = new Date().toISOString().slice(0, 10);
@@ -73,6 +77,7 @@ export function PastAttendanceForm({ courseCode }: { courseCode: string }) {
                 await markAttendance(courseCode, date, s.value);
                 setBusy(false);
                 setDate("");
+                refresh();
               }}
               className="press rounded-full border border-border px-2.5 py-1 text-xs font-semibold hover:bg-muted disabled:opacity-50"
             >
