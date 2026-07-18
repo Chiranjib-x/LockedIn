@@ -365,6 +365,63 @@ export async function deleteInventory(invId: string, cid: string) {
   revalidatePath(`/communities/${cid}`);
 }
 
+// ── Boxes: named containers with adjustable contents (0061) ──────────────────
+
+export async function addBox(cid: string, name: string) {
+  const { supabase, user } = await ctx();
+  const n = name.trim();
+  if (!n) return "Name the box.";
+  const { data: profile } = await supabase.from("profiles").select("college_id").eq("id", user.id).single();
+  const { error } = await supabase.from("community_boxes").insert({
+    community_id: cid, college_id: profile?.college_id, name: n, created_by: user.id,
+  });
+  revalidatePath(`/communities/${cid}`);
+  return error ? "Couldn't add the box (leads only)." : null;
+}
+
+export async function renameBox(boxId: string, cid: string, name: string) {
+  const { supabase } = await ctx();
+  const n = name.trim();
+  if (!n) return "Name can't be empty.";
+  await supabase.from("community_boxes").update({ name: n }).eq("id", boxId); // RLS: lead
+  revalidatePath(`/communities/${cid}`);
+  return null;
+}
+
+export async function deleteBox(boxId: string, cid: string) {
+  const { supabase } = await ctx();
+  await supabase.from("community_boxes").delete().eq("id", boxId); // items cascade
+  revalidatePath(`/communities/${cid}`);
+}
+
+export async function addBoxItem(boxId: string, cid: string, name: string, quantity: number) {
+  const { supabase, user } = await ctx();
+  const n = name.trim();
+  if (!n) return "Name the item.";
+  const { data: profile } = await supabase.from("profiles").select("college_id").eq("id", user.id).single();
+  const { error } = await supabase.from("community_box_items").insert({
+    box_id: boxId, community_id: cid, college_id: profile?.college_id,
+    name: n, quantity: Math.max(0, Math.floor(quantity) || 1),
+  });
+  revalidatePath(`/communities/${cid}`);
+  return error ? "Couldn't add the item (leads only)." : null;
+}
+
+// Take out / put in: atomic +/- server-side (0062), so rapid taps or two leads
+// at once can't race on a stale count. Clamps at 0. Delete the row explicitly
+// (the ✕), not by hitting zero, so "0 left" stays visible as a restock signal.
+export async function adjustBoxItem(itemId: string, cid: string, delta: number) {
+  const { supabase } = await ctx();
+  await supabase.rpc("adjust_box_item", { iid: itemId, delta });
+  revalidatePath(`/communities/${cid}`);
+}
+
+export async function deleteBoxItem(itemId: string, cid: string) {
+  const { supabase } = await ctx();
+  await supabase.from("community_box_items").delete().eq("id", itemId);
+  revalidatePath(`/communities/${cid}`);
+}
+
 // ── Meetings + roll-call + free windows (0055) ───────────────────────────────
 
 export async function createMeeting(cid: string, title: string, whenLocal: string) {

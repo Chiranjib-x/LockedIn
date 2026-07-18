@@ -9,6 +9,7 @@ import PositionEditor from "@/modules/communities/position-editor";
 import QuestionsEditor from "@/modules/communities/questions-editor";
 import Meetings from "@/modules/communities/meetings";
 import { TaskBoard, Resources, Inventory } from "@/modules/communities/ops";
+import Boxes from "@/modules/communities/boxes";
 import Money from "@/modules/communities/money";
 import { Polls, Scheduled } from "@/modules/communities/polls";
 import ProfileEditor from "@/modules/communities/profile-editor";
@@ -86,7 +87,7 @@ export default async function CommunityPage({
   for (const r of attendanceRows ?? []) (attendance[r.meeting_id] ??= []).push(r.user_id);
 
   // Team ops (0056) — members read all three; writes are lead-gated by RLS.
-  const [{ data: tasks }, { data: resources }, { data: inventory }, { data: collections }] = me
+  const [{ data: tasks }, { data: resources }, { data: inventory }, { data: collections }, { data: boxes }] = me
     ? await Promise.all([
         supabase.from("community_tasks").select("id, title, assignee_id, due_date, status").eq("community_id", id).order("created_at", { ascending: false }),
         supabase.from("community_resources").select("id, label, url").eq("community_id", id).order("created_at", { ascending: false }),
@@ -95,8 +96,14 @@ export default async function CommunityPage({
         supabase.from("community_collections")
           .select("id, title, kind, amount, upi_id, dues:collection_dues(id, user_id, amount, paid)")
           .eq("community_id", id).order("created_at", { ascending: false }),
+        // Boxes (0061): boxes + their items, one nested read.
+        supabase.from("community_boxes")
+          .select("id, name, items:community_box_items(id, name, quantity)")
+          .eq("community_id", id)
+          .order("created_at", { ascending: false })
+          .order("created_at", { referencedTable: "community_box_items", ascending: true }),
       ])
-    : [{ data: null }, { data: null }, { data: null }, { data: null }];
+    : [{ data: null }, { data: null }, { data: null }, { data: null }, { data: null }];
 
   // Polls (0058) — members read + vote; scheduled posts are lead-only (RLS).
   const [{ data: polls }, { data: scheduled }] = me
@@ -255,6 +262,7 @@ export default async function CommunityPage({
       {me && <TaskBoard cid={id} isLead={!!isMod} tasks={tasks ?? []} members={memberList} />}
       {me && <Resources cid={id} isLead={!!isMod} resources={resources ?? []} />}
       {me && <Inventory cid={id} isLead={!!isMod} items={inventory ?? []} members={memberList} />}
+      {me && <Boxes cid={id} isLead={!!isMod} boxes={(boxes ?? []) as Parameters<typeof Boxes>[0]["boxes"]} />}
       {me && (
         <Money
           cid={id}
