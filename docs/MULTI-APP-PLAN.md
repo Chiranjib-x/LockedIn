@@ -104,8 +104,13 @@ new app work starts.
   report/block tables serve all apps (they do — shared DB).
 **Gate:** push routing probed with two apps' subscriptions for one user.
 
-## Phase 2 — GateRunner: finish + launch (the pilot)
-Phase 1 of the app exists. Remaining:
+## Phase 2 — GateRunner: finish + launch (the pilot) — CODE-COMPLETE (2026-07-19, fe6ee0a)
+Status timeline + runner note (0064) + app-aware push (app='gaterunner') + green flame-key
+brand + PWA manifest all built and verified (build green, E2E stepper). REMAINING (user-side):
+Vercel project (Root Directory `apps/gaterunner`) + Cloudflare CNAME `gate.` → Capacitor wrap →
+signed APK → run the 14-point Launch Gate on prod → Play internal track.
+
+Original scope for reference:
 - Status timeline + optional note (the chosen lightweight coordination).
 - Push (claim / heading-to-gate / dropped-off) via the Phase-1 routing.
 - Brand: name, icon (flame-key variant), splash, landing polish.
@@ -114,7 +119,17 @@ Phase 1 of the app exists. Remaining:
 This app is deliberately first: smallest surface, validates the whole
 monorepo + push-routing + multi-APK pipeline before the big ones.
 
-## Phase 3 — CampusClubs: the biggest port
+## Phase 3 — CampusClubs: the biggest port — CODE-COMPLETE (2026-07-19, apps/campusclubs, 68f4b1c)
+Built by SUBTRACTION (forked mother → apps/campusclubs; communities depends on internal
+timetable/board modules so a from-scratch @suite port was the wrong tool). Stripped to clubs-only
+(nav Home·Clubs·[+]·Events·Profile, command-center home, clubs landing + /for-clubs, header
+rebrand), app-aware push registers app='clubs' (DB-probed vs 0063), violet flame-key brand,
+coherence pass (chat Message buttons removed — chat is Trade's; LockedIn→CampusClubs on reachable
+pages; legal pages keep the suite name). Build green ×5, screenshots at 390px, no h-overflow.
+REMAINING (user-side): Vercel project (Root Directory `apps/campusclubs`) + Cloudflare CNAME
+`clubs.` → Capacitor wrap (fix appId/appName/deep-link + push title) → Launch Gate on prod → Play.
+
+Original scope for reference:
 - Port: communities suite (all Wave-F features incl. boxes), events + barcode
   check-in, leader command center, founder tools (approve/official/delete),
   /for-clubs onboarding page, club search.
