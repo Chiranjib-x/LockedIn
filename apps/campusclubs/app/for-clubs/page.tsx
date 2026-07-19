@@ -7,10 +7,10 @@ import ShareLink from "@/modules/communities/share-link";
 const DESC = "Market your club or student team and recruit members — without WhatsApp groups, QR codes, or phone numbers.";
 
 export const metadata: Metadata = {
-  title: "LockedIn for Clubs",
+  title: "CampusClubs for Clubs",
   description: DESC,
   openGraph: {
-    title: "LockedIn for Clubs",
+    title: "CampusClubs for Clubs",
     description: DESC,
     type: "website",
   },
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 const VALUE = [
   { Icon: Megaphone, tint: "bg-tint-rose text-tint-rose-fg", title: "Announce to every member", body: "Post once — all your members get notified instantly. No WhatsApp group to run." },
   { Icon: Sparkles, tint: "bg-tint-violet text-tint-violet-fg", title: "Collect interest, not numbers", body: "Booth visitors tap “I’m interested.” You get a private lead list to follow up — no phone numbers exchanged." },
-  { Icon: Search, tint: "bg-tint-blue text-tint-blue-fg", title: "Found without a QR code", body: "Students search your club by name and join in-app. A handmade “find us on LockedIn” poster is all you need." },
+  { Icon: Search, tint: "bg-tint-blue text-tint-blue-fg", title: "Found without a QR code", body: "Students search your club by name and join in-app. A handmade “find us on CampusClubs” poster is all you need." },
   { Icon: CalendarDays, tint: "bg-tint-amber text-tint-amber-fg", title: "Events that reach people", body: "Post an event and it lands with every member and on the campus events page." },
   { Icon: BarChart3, tint: "bg-tint-teal text-tint-teal-fg", title: "See what's working", body: "A live dashboard: members, weekly growth, interested leads, event check-ins." },
   { Icon: ShieldCheck, tint: "bg-tint-green text-tint-green-fg", title: "Verified students only", body: "Everyone here is a verified campus student — real audience, no spam accounts." },
@@ -31,10 +31,10 @@ export default function ForClubsPage() {
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-4 py-10">
       <div className="animate-fade-up flex flex-col gap-3 text-center">
-        <p className="text-xs font-semibold tracking-wide text-primary uppercase">LockedIn for Clubs & Teams</p>
+        <p className="text-xs font-semibold tracking-wide text-primary uppercase">CampusClubs for Clubs & Teams</p>
         <h1 className="text-3xl font-bold leading-tight">Market your club or team. Recruit members. All in one app.</h1>
         <p className="text-[15px] leading-relaxed text-muted-foreground">
-          Quanta bans WhatsApp groups, QR codes, and collecting phone numbers. LockedIn is the
+          Quanta bans WhatsApp groups, QR codes, and collecting phone numbers. CampusClubs is the
           compliant way to reach students — announcements, recruiting, and leads, built in.
         </p>
         <div className="mt-2 flex justify-center">
@@ -42,7 +42,7 @@ export default function ForClubsPage() {
             href="/communities/new"
             className="press shine gradient-brand glow-primary flex min-h-12 items-center gap-2 rounded-full px-7 font-semibold text-on-primary"
           >
-            Get your club on LockedIn <ArrowRight className="h-4 w-4" strokeWidth={2.4} />
+            Get your club on CampusClubs <ArrowRight className="h-4 w-4" strokeWidth={2.4} />
           </Link>
         </div>
       </div>
@@ -79,7 +79,7 @@ export default function ForClubsPage() {
         <p className="text-sm font-semibold">Share this with a club</p>
         <p className="text-xs text-muted-foreground">Send this page to a club owner — it opens for anyone, no login needed.</p>
         <div className="mt-1">
-          <ShareLink path="/for-clubs" title="LockedIn for Clubs" />
+          <ShareLink path="/for-clubs" title="CampusClubs for Clubs" />
         </div>
       </div>
     </main>

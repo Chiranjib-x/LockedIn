@@ -16,7 +16,6 @@ import ProfileEditor from "@/modules/communities/profile-editor";
 import Achievements from "@/modules/communities/achievements";
 import DeleteControls from "@/modules/communities/delete-controls";
 import { CATEGORY_META } from "@/modules/communities/categories";
-import { openChat } from "@/modules/chat/actions";
 import { decideApplication, withdrawApplication } from "@/modules/communities/actions";
 
 export default async function CommunityPage({
@@ -315,25 +314,14 @@ export default async function CommunityPage({
           <h2 className="flex items-center gap-2 text-lg font-semibold">
             <Sparkles className="h-5 w-5 text-primary" strokeWidth={2} /> Interested · {interests!.length}
           </h2>
-          <p className="text-xs text-muted-foreground">Students who tapped “I’m interested” — reach out to recruit them.</p>
-          {interests!.map((it) => {
-            async function message() {
-              "use server";
-              await openChat(it.user_id, null, null);
-            }
-            return (
-              <Card key={it.user_id} className="flex items-center justify-between gap-2">
-                <span className="truncate font-medium">
-                  {(it.profile as unknown as { name: string } | null)?.name ?? "Student"}
-                </span>
-                <form action={message}>
-                  <button type="submit" className="press min-h-9 shrink-0 rounded-full border border-border px-4 text-sm font-medium hover:bg-muted">
-                    Message
-                  </button>
-                </form>
-              </Card>
-            );
-          })}
+          <p className="text-xs text-muted-foreground">Students who tapped “I’m interested” in joining.</p>
+          {interests!.map((it) => (
+            <Card key={it.user_id} className="flex items-center justify-between gap-2">
+              <span className="truncate font-medium">
+                {(it.profile as unknown as { name: string } | null)?.name ?? "Student"}
+              </span>
+            </Card>
+          ))}
         </section>
       )}
 
@@ -352,10 +340,6 @@ export default async function CommunityPage({
           )}
           {(members ?? []).map((m) => {
             const name = (m.profile as unknown as { name: string } | null)?.name ?? "Student";
-            async function message() {
-              "use server";
-              await openChat(m.user_id, null, null);
-            }
             const position = (m as { position: string | null }).position;
             const attended = attendedByUser[m.user_id] ?? 0;
             return (
@@ -372,13 +356,6 @@ export default async function CommunityPage({
                       </span>
                     )}
                   </span>
-                  {m.user_id !== user.id && (
-                    <form action={message}>
-                      <button type="submit" className="press min-h-9 shrink-0 rounded-full border border-border px-4 text-sm font-medium hover:bg-muted">
-                        Message
-                      </button>
-                    </form>
-                  )}
                 </div>
                 <PositionEditor cid={id} uid={m.user_id} current={position} />
                 <RoleControls cid={id} uid={m.user_id} role={m.role} isSelf={m.user_id === user.id} />

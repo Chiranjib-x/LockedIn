@@ -89,7 +89,7 @@ export default async function CommunitiesPage({
       <Link href="/for-clubs" className="press">
         <Card className="flex items-center justify-between gap-3 border-primary/30 bg-gradient-to-r from-primary/10 to-accent/5 transition-all duration-150 hover:-translate-y-0.5 hover:border-primary hover:shadow-md">
           <div>
-            <h2 className="font-semibold">Run a club or team? Bring it to LockedIn</h2>
+            <h2 className="font-semibold">Run a club or team? Bring it to CampusClubs</h2>
             <p className="text-sm text-muted-foreground">Announce to members, recruit, assign positions, and collect leads — no WhatsApp or QR needed.</p>
           </div>
           <ArrowRight className="h-4 w-4 shrink-0 text-primary" strokeWidth={2.2} />

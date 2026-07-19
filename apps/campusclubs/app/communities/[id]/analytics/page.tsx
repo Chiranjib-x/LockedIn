@@ -43,7 +43,7 @@ export default async function ClubAnalyticsPage({ params }: { params: Promise<{ 
       <BackLink href={`/communities/${id}`} label={community.name} />
       <div>
         <h1 className="text-2xl font-bold">{community.emoji} Analytics</h1>
-        <p className="text-sm text-muted-foreground">How {community.name} is doing on LockedIn.</p>
+        <p className="text-sm text-muted-foreground">How {community.name} is doing on CampusClubs.</p>
       </div>
 
       <div className="grid grid-cols-2 gap-3">

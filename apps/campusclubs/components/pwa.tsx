@@ -59,7 +59,7 @@ export function InstallPrompt() {
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src="/icons/icon-192.png" alt="" className="h-10 w-10 rounded-xl" />
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold">Add LockedIn to your home screen</p>
+        <p className="text-sm font-semibold">Add CampusClubs to your home screen</p>
         <p className="text-xs text-muted-foreground">One tap from lock screen to campus.</p>
       </div>
       <button
