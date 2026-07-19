@@ -177,12 +177,25 @@ Run the Launch Gate AGAIN on all four + mother after everything is live
 
 ---
 
-## Decisions needed from you (recommendations marked)
-1. Real names for apps 2/3/4 (placeholders above). ← naming is branding; your call.
-2. Monorepo migration consent (Phase 0) — recommended strongly; the
-   alternative (4 copy-paste repos) WILL drift.
-3. Map tech (Phase 5b): MapLibre+OSM (recommended) vs custom SVG map.
-4. Chat's home: trade app only (recommended) vs also embedded in clubs.
+## Decisions — LOCKED (user approved recommendations, 2026-07-16)
+1. Names: **GateRunner · CampusTrade · CampusClubs · VIT Compass** (rename
+   any of them anytime before their store listings).
+2. Monorepo: **yes** — done in Phase 0. Deviation from the draft: **npm
+   workspaces** instead of pnpm (toolchain already npm; Vercel-native; one
+   less tool). packages/{ui,lib,auth} exist; gaterunner consumes them;
+   lockedin migrates to them opportunistically (its internal imports were
+   left untouched to keep Phase 0 zero-risk for prod).
+3. Map tech: **MapLibre + OpenStreetMap**.
+4. Chat: **CampusTrade only**.
+
+## Phase 0 — COMPLETE (2026-07-16)
+Monorepo live in the existing repo: apps/lockedin (mother, unchanged),
+apps/gaterunner (consumes @suite/ui + @suite/lib + @suite/auth), packages/*,
+suite-wide supabase/ + docs/ at root. Both apps build green from the
+workspace. ⚠ OPERATIONAL: Vercel project root directory must be set to
+`apps/lockedin` (Settings → Build & Deployment → Root Directory) — until
+then pushes won't produce new mother deployments (prod keeps serving the
+last good build). The original ../GateRunner repo is superseded — archive it.
 
 ## Order & why
 0 → 1 → 2 (pilot proves pipeline) → 3 → 4 → 5 → 6 → 7.

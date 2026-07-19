@@ -1,0 +1,7 @@
+{
+  "name": "@suite/ui",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./index.ts",
+  "dependencies": { "qrcode": "^1.5.4" }
+}
