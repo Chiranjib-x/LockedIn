@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Offline — LockedIn</title>
+  <style>
+    /* Static fallback: token values inlined from app/globals.css @theme
+       (cream #f6f5f1, ink #0b0b0d, cobalt #2251C7) since no CSS pipeline runs here. */
+    body {
+      margin: 0; min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 12px; text-align: center;
+      background: #f6f5f1; color: #0b0b0d; padding: 24px;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+    .icon { font-size: 44px; }
+    h1 { font-size: 22px; margin: 0; }
+    p { margin: 0; color: #6b6e76; font-size: 14px; max-width: 26rem; }
+    button {
+      margin-top: 12px; border: 0; border-radius: 999px; padding: 12px 28px;
+      background: #2251C7; color: #fff; font-size: 15px; font-weight: 600; cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="icon">📡</div>
+  <h1>You’re offline</h1>
+  <p>LockedIn needs a connection. Check your network and try again — campus Wi-Fi being campus Wi-Fi.</p>
+  <button onclick="location.reload()">Retry</button>
+</body>
+</html>

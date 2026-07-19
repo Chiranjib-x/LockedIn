@@ -1,0 +1,43 @@
+"use client";
+
+import { useRefresh } from "@/lib/use-refresh";
+import { dismissReport, removeContent, banUser } from "./actions";
+
+export function ReportActions({
+  reportId,
+  targetType,
+  targetId,
+  authorId,
+}: {
+  reportId: string;
+  targetType: string;
+  targetId: string;
+  authorId: string | null;
+}) {
+  const refresh = useRefresh();
+  const removable =
+    targetType === "listing" || targetType === "post" || targetType === "group_order" || targetType === "request";
+  return (
+    <div className="flex flex-wrap gap-2 text-sm">
+      <button onClick={async () => { await dismissReport(reportId); refresh(); }} className="press rounded-full border border-border px-3 py-1.5 font-medium hover:bg-muted">
+        Dismiss
+      </button>
+      {removable && (
+        <button
+          onClick={async () => { await removeContent(reportId, targetType as "listing" | "post" | "group_order" | "request", targetId); refresh(); }}
+          className="press rounded-full border border-destructive/40 px-3 py-1.5 font-medium text-destructive hover:bg-destructive/10"
+        >
+          Remove content
+        </button>
+      )}
+      {authorId && (
+        <button
+          onClick={async () => { if (confirm("Ban this user? They can log in but can’t post or message.")) { await banUser(reportId, authorId); refresh(); } }}
+          className="press rounded-full bg-destructive px-3 py-1.5 font-semibold text-on-destructive"
+        >
+          Ban user
+        </button>
+      )}
+    </div>
+  );
+}
