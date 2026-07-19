@@ -88,7 +88,7 @@ copy-pasted ui.tsx, upi-pay, auth — fine for one app, fatal for four).
 **Gate:** mother app builds & deploys unchanged from the monorepo before any
 new app work starts.
 
-## Phase 1 — Cross-app backend prep (shared DB, four consumers)
+## Phase 1 — Cross-app backend prep — COMPLETE (2026-07-16, 0063 applied; routing probed: gate→gaterunner only, marketplace→lockedin only, clubs→fallback both)
 - **Push routing**: add `app` column to `push_subscriptions`; dispatch sends
   each notification type to the best-matching app's subscription, falling
   back to any (gate→gaterunner, community/event→clubs, marketplace/chat/
