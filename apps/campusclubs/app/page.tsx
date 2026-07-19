@@ -2,130 +2,81 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
   ArrowRight,
-  CarTaxiFront,
+  CalendarCheck,
+  ClipboardList,
   Download,
-  Footprints,
-  Gamepad2,
-  Handshake,
-  MessageCircle,
-  ShoppingBag,
-  Sparkles,
-  Tv,
+  LayoutDashboard,
+  ScanLine,
   type LucideIcon,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import LogoMark from "@/components/logo";
 
-// Marketing pillars — the three features that sell the app (user-directed):
-// Gate Runner (nothing else has it), campus-only Marketplace, and the
-// gender-specific members-only Spaces.
-const PILLARS: {
-  icon: LucideIcon;
-  tint: string;
-  title: string;
-  body: string;
-}[] = [
+// Marketing pillars — the four things that make CampusClubs worth switching
+// from WhatsApp + Google Forms + spreadsheets.
+const PILLARS: { icon: LucideIcon; tint: string; title: string; body: string }[] = [
   {
-    icon: Footprints,
+    icon: LayoutDashboard,
+    tint: "bg-tint-blue text-tint-blue-fg",
+    title: "One command center",
+    body: "Every application, position, meeting and broadcast in one place. Leads open the app and see exactly what needs them — nothing buried in a group chat.",
+  },
+  {
+    icon: ClipboardList,
+    tint: "bg-tint-violet text-tint-violet-fg",
+    title: "Recruiting, not Google Forms",
+    body: "Custom application questions, one-tap review, and positions you assign to members. No spreadsheets, no lost DMs, no “fill this form” link.",
+  },
+  {
+    icon: CalendarCheck,
     tint: "bg-tint-green text-tint-green-fg",
-    title: "Gate Runner",
-    body: "Your Swiggy's at the gate. Someone's already walking there — they grab it, you reward them. Everyone wins.",
+    title: "Meetings that run themselves",
+    body: "Schedule meetings, take roll-call, and let the app find the one hour your whole team is actually free. Dues, tasks and resources live right beside them.",
   },
   {
-    icon: ShoppingBag,
-    tint: "bg-tint-blue text-tint-blue-fg",
-    title: "Campus Marketplace",
-    body: "Buy, sell, and rent only with verified students from your college. Haggle in chat, meet at the mess. No strangers, no scams.",
-  },
-  {
-    icon: MessageCircle,
-    tint: "bg-tint-violet text-tint-violet-fg",
-    title: "Chat, Built In",
-    body: "Haggle on listings, make offers, coordinate pickups — and every study group and group-buy gets its own room. Your number stays private until you choose to share it.",
-  },
-  {
-    icon: Sparkles,
-    tint: "bg-tint-rose text-tint-rose-fg",
-    title: "Girls' Closet",
-    body: "That lehenga you wore once? Rent it out for the next fest. Dresses, jewellery, heels — rented and sold between girls only, invisible to everyone else.",
-  },
-  {
-    icon: Gamepad2,
-    tint: "bg-tint-blue text-tint-blue-fg",
-    title: "Boys' Den",
-    body: "A boys-only space no one else can see. Rent out the console between sems, sell the keyboard you never use, flip cricket kits and GPU upgrades.",
-  },
-  {
-    icon: CarTaxiFront,
+    icon: ScanLine,
     tint: "bg-tint-amber text-tint-amber-fg",
-    title: "Cab Pooling",
-    body: "Airport run at 4 AM? Find students leaving the same day and split the fare instead of eating it alone.",
-  },
-  {
-    icon: Handshake,
-    tint: "bg-tint-violet text-tint-violet-fg",
-    title: "Group-Buys",
-    body: "One Domino's order, eight people, delivery fee split eight ways — with a live tracker for who's paid and where to collect.",
-  },
-  {
-    icon: Tv,
-    tint: "bg-tint-teal text-tint-teal-fg",
-    title: "Netflix & Spotify Pools",
-    body: "Share subscriptions with your floor and split the cost. Prorated joining, renewal countdowns, zero awkward reminders.",
+    title: "Events + barcode check-in",
+    body: "Publish events, collect RSVPs, and scan college IDs at the door for a live attendee roster you can export.",
   },
 ];
 
-// The complete feature map, grouped the way students think about them.
-// Every entry is a shipped feature — no vaporware on the front page.
+// The complete feature map, grouped the way club leads think about them.
 const EVERYTHING: { group: string; items: { name: string; blurb: string }[] }[] = [
   {
-    group: "Buy, sell & rent",
+    group: "Run the club",
     items: [
-      { name: "Marketplace", blurb: "Buy, sell, and rent with verified students from your own campus." },
-      { name: "Make an offer", blurb: "Haggle right on the listing — offer, counter, deal at one tap." },
-      { name: "Requests", blurb: "Can't find it? Post what you need and let campus come to you." },
-      { name: "Rent & lend", blurb: "Per-day pricing, deposits, due-date reminders, auto-relist on return." },
-      { name: "Student deals", blurb: "Curated offers from shops around campus." },
+      { name: "Command center", blurb: "Pending applications, today's meetings and unpaid dues — surfaced the moment you open the app." },
+      { name: "Applications & recruiting", blurb: "Custom questions, one-tap accept/reject, and an applicant pipeline." },
+      { name: "Positions & roles", blurb: "Lead assigns titles and powers to members — editable any time." },
+      { name: "Roster & analytics", blurb: "Who's in, who's active, and how your club is growing." },
+      { name: "Announcements & scheduled posts", blurb: "Broadcast to members now, or schedule it to go out later." },
     ],
   },
   {
-    group: "Split the cost",
+    group: "Meet & organize",
     items: [
-      { name: "Group-buys", blurb: "One order, one delivery fee, split between everyone who joins." },
-      { name: "Netflix & Spotify pools", blurb: "Browse open seats, join mid-cycle at a prorated share." },
-      { name: "Cab pooling", blurb: "4 AM airport run? Find students leaving the same day, split the fare." },
-      { name: "Gate Runner", blurb: "Someone's already walking to the gate — they grab your parcel, you reward them." },
+      { name: "Meetings + roll-call", blurb: "Schedule, notify, and take attendance in two taps." },
+      { name: "Free-window finder", blurb: "The app finds the one hour your whole team is free." },
+      { name: "Tasks & resources", blurb: "Assign to-dos and keep shared links and files in one place." },
+      { name: "Polls", blurb: "Quick decisions without a 40-message thread." },
     ],
   },
   {
-    group: "Your people",
+    group: "Money & gear",
     items: [
-      { name: "Clubs, chapters & teams", blurb: "Leads run recruiting, positions, broadcasts, analytics, and rosters — no WhatsApp needed." },
-      { name: "Events + barcode check-in", blurb: "Organizers scan college IDs at the door and get a live attendee roster." },
-      { name: "Girls' Closet & Boys' Den", blurb: "Members-only spaces invisible to everyone else — rent out that lehenga or the console." },
-      { name: "Study groups", blurb: "Course-tagged groups with their own built-in group chat." },
-      { name: "Roommate match", blurb: "Compatibility-scored matches — sleep schedule, tidiness, guests, all of it." },
-      { name: "Crews", blurb: "Private groups for roommates & friends with shared to-dos." },
+      { name: "Dues & collections", blurb: "Track who's paid, chase who hasn't — with UPI built in." },
+      { name: "Funds", blurb: "A running ledger of the club's money, visible to the people who should see it." },
+      { name: "Inventory & boxes", blurb: "Name a box, list what's inside, and update it every time something goes in or out." },
     ],
   },
   {
-    group: "Daily drivers",
+    group: "Official & verified",
     items: [
-      { name: "Timetable + bunk math", blurb: "One-tap attendance and the answer to \"can I skip today?\"" },
-      { name: "Campus board", blurb: "Lost & found that auto-matches lost posts to found ones, plus notices." },
-      { name: "Built-in chat", blurb: "DMs and group rooms with context — every deal, ride, and group has its thread." },
-      { name: "Smart notifications", blurb: "Class nudges when your attendance is at risk, deal alerts, event pings." },
-      { name: "Search & alerts", blurb: "One search across everything; save a search and get told when it appears." },
-      { name: "Karma & ratings", blurb: "Good actors are visible — every deal builds your campus reputation." },
-    ],
-  },
-  {
-    group: "Locked down",
-    items: [
-      { name: "College email only", blurb: "Every single person here is a verified student of your college." },
-      { name: "No phone numbers", blurb: "Usernames, not numbers. Your contact stays private until you share it." },
-      { name: "Report & block everywhere", blurb: "Campus moderators act on reports; blocked people can't reach you." },
-      { name: "Your college only", blurb: "Everything you post stays inside your campus — enforced at the database." },
+      { name: "Official club badges", blurb: "Recognised clubs stand apart from casual communities." },
+      { name: "Chapters with branch groups", blurb: "IEEE CS, ACM-W and more get their own spaces under the parent chapter." },
+      { name: "Student teams", blurb: "Racing, robotics and project teams get a home built for how they work." },
+      { name: "College email only", blurb: "Every member is a verified student of your college — enforced at the database." },
     ],
   },
 ];
@@ -139,7 +90,6 @@ export default async function Home() {
 
   return (
     <main className="relative flex flex-1 flex-col items-center overflow-hidden px-6 py-16 text-center">
-      {/* Atmosphere: two soft brand glows anchoring the composition */}
       <div
         aria-hidden
         className="pointer-events-none absolute -top-32 -left-24 h-96 w-96 rounded-full bg-primary/15 blur-3xl"
@@ -151,21 +101,21 @@ export default async function Home() {
 
       <p className="animate-fade-up flex items-center gap-2 font-heading text-sm font-bold tracking-widest uppercase">
         <LogoMark className="h-7 w-auto text-primary" />
-        <span className="gradient-brand-text">LockedIn</span>
+        <span className="gradient-brand-text">CampusClubs</span>
       </p>
       <h1
         className="animate-fade-up mt-4 max-w-2xl text-5xl font-bold sm:text-7xl"
         style={{ animationDelay: "80ms" }}
       >
-        Your campus,
+        Run your club,
         <br />
-        <span className="gradient-brand-text">one app.</span>
+        <span className="gradient-brand-text">all in one place.</span>
       </h1>
       <p
         className="animate-fade-up mt-6 max-w-md text-lg text-muted-foreground"
         style={{ animationDelay: "160ms" }}
       >
-        Verified students only. No outsiders. That&rsquo;s the point.
+        For every club, chapter, team and society on campus. Verified students only.
       </p>
       <Link
         href="/signup"
@@ -186,7 +136,6 @@ export default async function Home() {
         Android APK · iPhone? Open in Safari → Share → Add to Home Screen
       </p>
 
-      {/* The three pillars */}
       <div className="mt-16 flex w-full max-w-md flex-col gap-4 text-left">
         {PILLARS.map((p, i) => (
           <div
@@ -205,13 +154,12 @@ export default async function Home() {
         ))}
       </div>
 
-      {/* The full feature map — everything above is the pitch, this is the receipt. */}
       <section className="mt-16 w-full max-w-md text-left">
         <h2 className="text-center font-heading text-2xl font-bold">
-          Everything inside<span className="gradient-brand-text">.</span>
+          Everything a club needs<span className="gradient-brand-text">.</span>
         </h2>
         <p className="mt-1 text-center text-sm text-muted-foreground">
-          One app instead of eleven WhatsApp groups.
+          One app instead of a WhatsApp group, a Google Form and three spreadsheets.
         </p>
         <div className="mt-6 flex flex-col gap-6">
           {EVERYTHING.map((g) => (
@@ -230,7 +178,6 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Closing CTA — same two actions as the hero, for people who read this far. */}
       <div className="mt-12 flex flex-col items-center gap-3">
         <Link
           href="/signup"

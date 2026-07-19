@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Bell, Search, ShieldCheck, Wrench } from "lucide-react";
+import { Bell, Search, ShieldCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import ThemeToggle from "@/components/theme-toggle";
 import LogoMark from "@/components/logo";
@@ -83,22 +83,17 @@ export default async function Header() {
       >
         <LogoMark className="h-6 w-auto shrink-0 text-primary" />
         {/* tiny screens keep the mark only — a moderator's 6 header icons overflow 360px otherwise */}
-        <span className="gradient-brand-text hidden font-heading text-lg font-bold tracking-tight min-[400px]:inline">LockedIn</span>
+        <span className="gradient-brand-text hidden font-heading text-lg font-bold tracking-tight min-[400px]:inline">CampusClubs</span>
       </Link>
       {user ? (
         <nav className="flex items-center">
           {prof?.is_moderator && (
-            <>
-              <Link href="/admin/moderation" aria-label="Moderation" className="press flex min-h-11 min-w-11 items-center justify-center text-foreground/70 hover:text-foreground">
-                <ShieldCheck className="h-5 w-5" strokeWidth={2} />
-              </Link>
-              <Link href="/admin/showcase" aria-label="Toolbox and Deals admin" className="press flex min-h-11 min-w-11 items-center justify-center text-foreground/70 hover:text-foreground">
-                <Wrench className="h-5 w-5" strokeWidth={2} />
-              </Link>
-            </>
+            <Link href="/admin/moderation" aria-label="Moderation" className="press flex min-h-11 min-w-11 items-center justify-center text-foreground/70 hover:text-foreground">
+              <ShieldCheck className="h-5 w-5" strokeWidth={2} />
+            </Link>
           )}
           <ThemeToggle />
-          <Link href="/search" aria-label="Search" className="press flex min-h-11 min-w-11 items-center justify-center text-foreground/70 hover:text-foreground">
+          <Link href="/communities" aria-label="Find clubs" className="press flex min-h-11 min-w-11 items-center justify-center text-foreground/70 hover:text-foreground">
             <Search className="h-5 w-5" strokeWidth={2} />
           </Link>
           <NotificationBell supabase={supabase} userId={user.id} />
