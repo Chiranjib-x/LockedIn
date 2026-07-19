@@ -17,9 +17,9 @@ const hanken = Hanken_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "LockedIn",
-  description: "Your campus, one app.",
-  appleWebApp: { capable: true, statusBarStyle: "default", title: "LockedIn" },
+  title: "CampusClubs",
+  description: "Run your club, all in one place.",
+  appleWebApp: { capable: true, statusBarStyle: "default", title: "CampusClubs" },
   icons: { apple: "/icons/apple-touch-icon.png" },
 };
 
