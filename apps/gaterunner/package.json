@@ -18,7 +18,8 @@
     "react-dom": "19.2.4",
     "@suite/ui": "*",
     "@suite/lib": "*",
-    "@suite/auth": "*"
+    "@suite/auth": "*",
+    "@capacitor/push-notifications": "^8.1.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

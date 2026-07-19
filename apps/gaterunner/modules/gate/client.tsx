@@ -4,7 +4,37 @@ import { useState } from "react";
 import { inputClass } from "@suite/ui";
 import { UpiPay } from "@suite/ui";
 import { useRefresh } from "@suite/lib/use-refresh";
-import { claimPickup, unclaimPickup, confirmDelivered, cancelPickup, markDroppedOff, announceGateRun } from "./actions";
+import { claimPickup, unclaimPickup, confirmDelivered, cancelPickup, markDroppedOff, announceGateRun, setRunnerNote } from "./actions";
+
+// Runner's one-line coordination note ("blue shirt, gate 2, 5 min").
+export function RunnerNote({ id, current }: { id: string; current: string | null }) {
+  const refresh = useRefresh();
+  const [note, setNote] = useState(current ?? "");
+  const [busy, setBusy] = useState(false);
+  const [sent, setSent] = useState(false);
+  return (
+    <div className="flex w-full gap-2">
+      <input
+        value={note}
+        onChange={(e) => { setNote(e.target.value); setSent(false); }}
+        placeholder="Note for them — e.g. blue shirt, gate 2"
+        className="min-h-10 flex-1 rounded-full border border-border bg-card px-4 text-sm"
+      />
+      <button
+        disabled={busy || note.trim() === "" || sent}
+        onClick={async () => {
+          setBusy(true);
+          const e = await setRunnerNote(id, note);
+          setBusy(false);
+          if (!e) { setSent(true); refresh(); }
+        }}
+        className="press min-h-10 shrink-0 rounded-full border border-primary/40 px-4 text-sm font-semibold text-primary disabled:opacity-50"
+      >
+        {sent ? "Sent ✓" : busy ? "…" : "Send"}
+      </button>
+    </div>
+  );
+}
 
 export function HeadingToGate({ gate }: { gate: string }) {
   const [msg, setMsg] = useState<string | null>(null);

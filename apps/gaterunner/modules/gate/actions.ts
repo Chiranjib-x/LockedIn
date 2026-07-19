@@ -54,6 +54,15 @@ export async function claimPickup(id: string, upi: string) {
   return (data as string | null) ?? null;
 }
 
+// One coordination note from the runner ("blue shirt, gate 2") — 0064 RPC
+// guards runner-only + claimed, and pushes a gate notification to the requester.
+export async function setRunnerNote(id: string, note: string) {
+  const { supabase } = await ctx();
+  const { error } = await supabase.rpc("set_runner_note", { rid: id, note });
+  revalidatePath("/gate");
+  return error ? "Couldn't send the note." : null;
+}
+
 export async function announceGateRun(gate: string) {
   const { supabase } = await ctx();
   // announce_gate_run (0024): -1 = rate-limited, else requesters notified.
