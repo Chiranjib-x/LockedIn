@@ -1,0 +1,299 @@
+@import "tailwindcss";
+
+/* Design system: adopted from the user's Claude Design "Campus" project
+   (docs/design/) — warm cream paper, near-black ink, one saturated cobalt,
+   transaction green kept for money/success states. Fonts: Bricolage Grotesque
+   (display) + Hanken Grotesk (body). Dark mode arrives in Phase 29. */
+@theme {
+  --color-primary: oklch(0.48 0.19 264);
+  --color-primary-strong: oklch(0.42 0.19 264);
+  --color-on-primary: #ffffff;
+  --color-secondary: oklch(0.48 0.19 264 / 0.12);
+  --color-on-secondary: #0b0b0d;
+  --color-accent: #16a34a;
+  --color-on-accent: #ffffff;
+  --color-background: #f6f5f1;
+  --color-foreground: #0b0b0d;
+  --color-card: #ffffff;
+  --color-card-foreground: #0b0b0d;
+  --color-muted: #e7e5df;
+  --color-muted-foreground: #6b6e76;
+  --color-border: #e7e5df;
+  --color-destructive: #dc2626;
+  --color-on-destructive: #ffffff;
+  --color-ring: oklch(0.48 0.19 264);
+  /* Gradient endpoint for brand moments (wordmark, karma bar) — pairs with primary. */
+  --color-violet: oklch(0.5 0.19 300);
+
+  --font-heading: var(--font-bricolage), sans-serif;
+  --font-sans: var(--font-hanken), sans-serif;
+
+  /* Module tile tints (visual refresh) — soft pastel bg + saturated icon fg,
+     per docs/design/directions.png. Six hues cycle across the 12 modules. */
+  --color-tint-blue: oklch(0.93 0.04 264);
+  --color-tint-blue-fg: oklch(0.45 0.16 264);
+  --color-tint-green: oklch(0.93 0.05 155);
+  --color-tint-green-fg: oklch(0.42 0.12 155);
+  --color-tint-amber: oklch(0.94 0.06 85);
+  --color-tint-amber-fg: oklch(0.5 0.12 75);
+  --color-tint-rose: oklch(0.93 0.04 20);
+  --color-tint-rose-fg: oklch(0.5 0.15 20);
+  --color-tint-violet: oklch(0.93 0.04 300);
+  --color-tint-violet-fg: oklch(0.45 0.14 300);
+  --color-tint-teal: oklch(0.93 0.045 200);
+  --color-tint-teal-fg: oklch(0.42 0.1 210);
+}
+
+/* Dark mode (Phase 29): class-based — the inline head script in layout.tsx
+   sets .dark from localStorage('li-theme'), falling back to system. Every
+   component reads tokens, so flipping the vars flips the app. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* :root.dark outranks the :root emission Tailwind generates from @theme.
+   Dark is the showcase — "System window" canvas: deep indigo-black surfaces,
+   electric cobalt accents, luminous hairlines (Solo Leveling direction). */
+:root.dark {
+  --color-primary: oklch(0.66 0.19 262);
+  --color-primary-strong: oklch(0.72 0.19 262);
+  --color-on-primary: #ffffff;
+  --color-secondary: oklch(0.66 0.19 262 / 0.16);
+  --color-on-secondary: #f2f1ed;
+  --color-accent: #22c55e;
+  --color-on-accent: #052e16;
+  --color-background: oklch(0.16 0.02 275);
+  --color-foreground: #f2f1ed;
+  --color-card: oklch(0.21 0.025 275);
+  --color-card-foreground: #f2f1ed;
+  --color-muted: oklch(0.26 0.028 275);
+  --color-muted-foreground: oklch(0.68 0.015 275);
+  --color-border: oklch(0.3 0.03 275);
+  --color-destructive: #f87171;
+  --color-on-destructive: #450a0a;
+  --color-ring: oklch(0.66 0.19 262);
+  --color-violet: oklch(0.68 0.17 300);
+
+  --color-tint-blue: oklch(0.26 0.045 264);
+  --color-tint-blue-fg: oklch(0.78 0.11 264);
+  --color-tint-green: oklch(0.26 0.05 155);
+  --color-tint-green-fg: oklch(0.78 0.12 155);
+  --color-tint-amber: oklch(0.27 0.05 85);
+  --color-tint-amber-fg: oklch(0.8 0.11 85);
+  --color-tint-rose: oklch(0.26 0.045 20);
+  --color-tint-rose-fg: oklch(0.78 0.1 20);
+  --color-tint-violet: oklch(0.26 0.045 300);
+  --color-tint-violet-fg: oklch(0.78 0.1 300);
+  --color-tint-teal: oklch(0.26 0.045 200);
+  --color-tint-teal-fg: oklch(0.78 0.1 200);
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+}
+
+/* Dark ambient: holographic cobalt + violet blooms instead of the dimmed
+   light-mode mesh — the atmosphere behind the System frames. */
+.dark body::before {
+  background:
+    radial-gradient(40% 40% at 15% 12%, oklch(0.55 0.19 262 / 0.2), transparent 70%),
+    radial-gradient(38% 38% at 88% 20%, oklch(0.5 0.19 300 / 0.16), transparent 70%),
+    radial-gradient(45% 45% at 75% 92%, oklch(0.55 0.19 262 / 0.14), transparent 70%);
+  filter: saturate(1.1);
+}
+/* System frame: electric hairline on floating glass layers. */
+.dark .glass {
+  border-color: color-mix(in oklch, var(--color-primary) 26%, transparent);
+  box-shadow:
+    0 8px 32px -12px oklch(0 0 0 / 0.55),
+    0 0 24px -12px color-mix(in oklch, var(--color-primary) 45%, transparent),
+    inset 0 1px 0 0 oklch(1 0 0 / 0.08);
+}
+
+/* Luminous accent for primary elements in dark (buttons, nav +, badges). */
+.glow-primary { box-shadow: none; }
+.dark .glow-primary {
+  box-shadow: 0 0 18px -4px color-mix(in oklch, var(--color-primary) 70%, transparent);
+}
+
+/* Tap feedback that glows (dark) on top of the .press scale. */
+.dark .press-glow:active {
+  box-shadow: 0 0 22px -4px color-mix(in oklch, var(--color-primary) 65%, transparent);
+}
+
+/* Urgency frame — gradient border for time-critical cards (class <15 min away). */
+.urgent-border {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--color-card), var(--color-card)) padding-box,
+    linear-gradient(120deg, var(--color-primary), var(--color-violet)) border-box;
+}
+
+/* Brand gradient — wordmark, karma bar fill, primary buttons. */
+.gradient-brand {
+  background-image: linear-gradient(120deg, var(--color-primary), var(--color-violet));
+}
+.gradient-brand-text {
+  background-image: linear-gradient(105deg, var(--color-primary) 20%, var(--color-violet) 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Ambient gradient mesh — gives the glass surfaces something to refract.
+   Fixed, slow-drifting cobalt + green blooms behind all content. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: -20%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(40% 40% at 15% 12%, oklch(0.48 0.19 264 / 0.22), transparent 70%),
+    radial-gradient(38% 38% at 88% 20%, oklch(0.7 0.15 160 / 0.18), transparent 70%),
+    radial-gradient(45% 45% at 75% 92%, oklch(0.48 0.19 264 / 0.16), transparent 70%);
+  filter: saturate(1.1);
+  animation: mesh-drift 24s ease-in-out infinite alternate;
+}
+
+/* Film grain over everything — the atmosphere layer. Pure CSS, no asset. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Glassmorphism surface — translucent, blurred, hairline top highlight.
+   Only reads over the mesh/scrolling content, so reserve for floating layers
+   (header, bottom nav, sheets, hero cards), not every card. */
+.glass {
+  background: color-mix(in oklch, var(--color-card) 62%, transparent);
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  border: 1px solid color-mix(in oklch, #ffffff 55%, transparent);
+  box-shadow:
+    0 8px 32px -12px oklch(0.2 0.05 264 / 0.25),
+    inset 0 1px 0 0 oklch(1 0 0 / 0.4);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-heading);
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+::selection {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+/* a11y: visible keyboard focus everywhere, once, instead of per-component. */
+:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+.dark :focus-visible {
+  box-shadow: 0 0 16px -2px color-mix(in oklch, var(--color-ring) 60%, transparent);
+}
+
+/* Motion primitives. Shared easing: --ease-out-quint for entrances,
+   --ease-spring for playful pops. Every animation is guarded by
+   prefers-reduced-motion below. */
+@theme {
+  --ease-out-quint: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes sheet-up {
+  from { transform: translateY(100%); }
+  to { transform: none; }
+}
+@keyframes mesh-drift {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to { transform: translate3d(2%, -2%, 0) scale(1.08); }
+}
+@keyframes shimmer {
+  from { background-position: -150% 0; }
+  to { background-position: 150% 0; }
+}
+@keyframes confetti-fall {
+  from { transform: translateY(0) rotate(0deg); opacity: 1; }
+  to { transform: translateY(110vh) rotate(540deg); opacity: 0.3; }
+}
+.confetti-piece { animation: confetti-fall 2s cubic-bezier(0.3, 0, 0.8, 1) both; }
+
+/* Animated dashed route line (cabs, gate) — dashes travel origin → destination. */
+@keyframes dash-travel {
+  to { background-position: 14px 0; }
+}
+.route-dash {
+  height: 2px;
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--color-primary) 0 6px,
+    transparent 6px 14px
+  );
+  animation: dash-travel 0.9s linear infinite;
+}
+
+.animate-fade-up { animation: fade-up 0.55s var(--ease-out-quint) both; }
+.animate-scale-in { animation: scale-in 0.4s var(--ease-spring) both; }
+.animate-sheet-up { animation: sheet-up 0.35s var(--ease-out-quint) both; }
+
+/* Skeleton shimmer for loading states across modules. */
+.shimmer {
+  background: linear-gradient(
+    100deg,
+    var(--color-muted) 30%,
+    color-mix(in oklch, var(--color-muted) 60%, #fff) 50%,
+    var(--color-muted) 70%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+
+/* Press feedback for any tappable — pairs with active:scale on buttons. */
+.press { transition: transform 0.12s var(--ease-out-quint); }
+.press:active { transform: scale(0.97); }
+
+/* Light sweep on hover (uiverse-style), on-brand. Applied to primary buttons. */
+.shine { position: relative; overflow: hidden; isolation: isolate; }
+.shine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(110deg, transparent 35%, rgb(255 255 255 / 0.28) 50%, transparent 65%);
+  transform: translateX(-120%);
+  transition: transform 0.6s var(--ease-out-quint);
+}
+.shine:hover::after { transform: translateX(120%); }
+@media (prefers-reduced-motion: reduce) {
+  .shine::after { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

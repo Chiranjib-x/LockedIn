@@ -1,0 +1,17 @@
+import type { MetadataRoute } from "next";
+
+export default function manifest(): MetadataRoute.Manifest {
+  return {
+    name: "VIT Compass",
+    short_name: "VIT Compass",
+    description: "Find your way around VIT — every building, one tap away.",
+    start_url: "/",
+    display: "standalone",
+    background_color: "#f6f5f1",
+    theme_color: "#f6f5f1",
+    icons: [
+      { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+      { src: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+  };
+}
