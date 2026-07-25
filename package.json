@@ -16,6 +16,10 @@
     "build:gaterunner": "npm run build -w gaterunner",
     "build:campusclubs": "npm run build -w campusclubs",
     "build:campustrade": "npm run build -w campustrade",
-    "build:vitcompass": "npm run build -w vitcompass"
+    "build:vitcompass": "npm run build -w vitcompass",
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.62.0"
   }
 }
