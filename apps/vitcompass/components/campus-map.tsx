@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { MapPin, Navigation, X } from "lucide-react";
@@ -38,12 +38,21 @@ export default function CampusMap({ buildings }: { buildings: Building[] }) {
   const [ready, setReady] = useState(false);
   const [filter, setFilter] = useState<Category | null>(null);
   const [selected, setSelected] = useState<Building | null>(null);
+  const [showWeek, setShowWeek] = useState(false);
 
   // Only categories that actually have buildings get a chip.
   const presentCats = useMemo(
     () => ORDER.filter((c) => buildings.some((b) => b.category === c)),
     [buildings]
   );
+
+  // Centre the map on a building and open its sheet — shared by the markers and
+  // the first-week checklist.
+  const focusBuilding = useCallback((b: Building) => {
+    setSelected(b);
+    const map = mapRef.current;
+    if (map) map.flyTo({ center: [b.lng, b.lat], zoom: Math.max(map.getZoom(), 16.5), speed: 0.8 });
+  }, []);
 
   // Init the map exactly once.
   useEffect(() => {
@@ -94,13 +103,12 @@ export default function CampusMap({ buildings }: { buildings: Building[] }) {
       el.style.cssText = `width:18px;height:18px;border-radius:9999px;border:2px solid #fff;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.35);background:${CAT[b.category].color}`;
       el.addEventListener("click", (e) => {
         e.stopPropagation();
-        setSelected(b);
-        map.flyTo({ center: [b.lng, b.lat], zoom: Math.max(map.getZoom(), 16.5), speed: 0.8 });
+        focusBuilding(b);
       });
       const marker = new maplibregl.Marker({ element: el }).setLngLat([b.lng, b.lat]).addTo(map);
       markersRef.current.push(marker);
     }
-  }, [filter, buildings, ready]);
+  }, [filter, buildings, ready, focusBuilding]);
 
   return (
     <main className="fixed inset-0 overflow-hidden">
@@ -131,8 +139,118 @@ export default function CampusMap({ buildings }: { buildings: Building[] }) {
         </div>
       </div>
 
+      {/* First-week helper — hidden while a sheet is open to avoid overlap. */}
+      {!selected && !showWeek && (
+        <button
+          onClick={() => setShowWeek(true)}
+          className="press glass absolute bottom-3 left-3 z-10 flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold"
+        >
+          🧭 First week
+        </button>
+      )}
+
+      {showWeek && (
+        <FirstWeek
+          buildings={buildings}
+          onGo={(b) => {
+            setShowWeek(false);
+            focusBuilding(b);
+          }}
+          onClose={() => setShowWeek(false)}
+        />
+      )}
+
       {selected && <BuildingSheet b={selected} onClose={() => setSelected(null)} />}
     </main>
+  );
+}
+
+// Curated "your first week at VIT" checklist. Each step points at a building
+// (matched by name/aka) so tapping it flies the map there. Check-state is
+// per-device (localStorage) since VIT Compass has no login.
+const WEEK_STEPS: { emoji: string; label: string; match: string }[] = [
+  { emoji: "🛏️", label: "Find the hostel zone", match: "Men's Hostels (A" },
+  { emoji: "🪪", label: "Get your ID at the Main Building", match: "M.G.R" },
+  { emoji: "💻", label: "Find SJT — your IT & CS classes", match: "Silver Jubilee" },
+  { emoji: "⚙️", label: "Find TT — core engineering", match: "Technology Tower" },
+  { emoji: "🍽️", label: "Grab a bite at Foodys", match: "Foodys" },
+  { emoji: "📚", label: "Visit the Central Library", match: "Central Library" },
+  { emoji: "🎤", label: "Spot Anna Auditorium", match: "Anna" },
+  { emoji: "⚽", label: "Check out the sports ground", match: "Outdoor Stadium" },
+];
+const WEEK_KEY = "vc-firstweek-done";
+
+function FirstWeek({
+  buildings,
+  onGo,
+  onClose,
+}: {
+  buildings: Building[];
+  onGo: (b: Building) => void;
+  onClose: () => void;
+}) {
+  const [done, setDone] = useState<Record<string, boolean>>({});
+  useEffect(() => {
+    try {
+      setDone(JSON.parse(localStorage.getItem(WEEK_KEY) || "{}"));
+    } catch {}
+  }, []);
+  const toggle = (label: string) =>
+    setDone((d) => {
+      const next = { ...d, [label]: !d[label] };
+      try {
+        localStorage.setItem(WEEK_KEY, JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+  const find = (m: string) => buildings.find((b) => b.name.includes(m) || (b.aka?.includes(m) ?? false));
+  const doneCount = WEEK_STEPS.filter((s) => done[s.label]).length;
+
+  return (
+    <div className="animate-fade-up absolute inset-x-0 bottom-0 z-20 p-3">
+      <div className="glass mx-auto flex max-h-[70vh] max-w-md flex-col gap-3 overflow-y-auto rounded-3xl p-4">
+        <div className="flex items-center gap-2">
+          <span className="text-xl">🧭</span>
+          <div className="flex-1">
+            <h2 className="font-heading text-lg font-bold">Your first week</h2>
+            <p className="text-xs text-muted-foreground">
+              {doneCount}/{WEEK_STEPS.length} done · tap a step to find it
+            </p>
+          </div>
+          <button onClick={onClose} aria-label="Close" className="press -m-1 p-1 text-muted-foreground">
+            <X className="h-5 w-5" strokeWidth={2.2} />
+          </button>
+        </div>
+        <ul className="flex flex-col gap-1.5">
+          {WEEK_STEPS.map((s) => {
+            const b = find(s.match);
+            const isDone = !!done[s.label];
+            return (
+              <li key={s.label} className="flex items-center gap-2">
+                <button
+                  onClick={() => toggle(s.label)}
+                  aria-label={isDone ? "Mark not done" : "Mark done"}
+                  className={`press flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-xs ${
+                    isDone ? "border-primary bg-primary text-on-primary" : "border-border"
+                  }`}
+                >
+                  {isDone ? "✓" : ""}
+                </button>
+                <button
+                  onClick={() => b && onGo(b)}
+                  disabled={!b}
+                  className={`press flex-1 rounded-xl px-3 py-2 text-left text-sm ${
+                    b ? "bg-card/60 hover:bg-card" : "opacity-60"
+                  } ${isDone ? "text-muted-foreground line-through" : ""}`}
+                >
+                  {s.emoji} {s.label}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </div>
   );
 }
 
