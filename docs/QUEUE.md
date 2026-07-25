@@ -64,11 +64,11 @@ would agree. "Improve X" is not an item. "X passes Y" is.
 - **Evidence:** grep of all 5 configs — appId: com.lockedin.{campus,gaterunner,campusclubs,campustrade,vitcompass}; server.url: www|gate|clubs|trade|map.chiranjib.online; cross-host check = "all self-hosted ✓". Both new configs are plain objects (no @capacitor/cli dep); gaterunner+vitcompass typecheck PASS. Commit 59b316f. Deep-link scheme registration is native (cap-add) + U4. NOTE: gaterunner+vitcompass lint pre-existing-red (vitcompass campus-map.tsx:195 setState-in-effect; capacitor.config.ts clean) → rolled into A13.
 
 ### A5 · Per-app push notification title
-- **State:** open
+- **State:** done
 - **Why:** STATE: "push /api/push/dispatch title still 'LockedIn' (cosmetic)". Four apps, one name in every notification.
 - **Do:** derive the title from the `app` field the dispatch route already routes on (`gaterunner`/`clubs`/`trade`/`lockedin`). No schema change — 0063 already carries the routing.
 - **Done when:** the title mapping is read back from the route file, and a dispatch for each of the four app values is shown producing its own title.
-- **Evidence:**
+- **Evidence:** PLAN CHANGE — the route received no `app` field (only message/link/nid/subs); 0063 computes the routed app but didn't pass it. Migration 0066 adds `'app', preferred` to the pg_net body (applied; `pg_get_functiondef` includes `'app', preferred` = true, function-only, no table change). New pure `app/api/push/title.ts` `titleFor(app)` → GateRunner/CampusClubs/CampusTrade/LockedIn (default LockedIn); route.ts imports it for web-push + FCM titles. `npm run test:unit` → tests 7, pass 7 (title: 4 values + fallback). lockedin typecheck PASS. Commit e99d5a1. NOTE: activates in prod on next deploy; fork dispatch routes are dormant copies (pg_net targets the lockedin alias only).
 
 ### A6 · Migration: `posts_community_id_fkey` ON DELETE CASCADE
 - **State:** open
@@ -156,3 +156,4 @@ Nothing here is a failure of the loop. These need you.
 2026-07-25 · A2 · done · 454a253 · automated Gate #2/#4/#5/#8 specs; 6 passed; fixed shared-user global-signout interference
 2026-07-25 · A3 · done · b4df691 · IST TZ-regression unit tests (node:test) 5/5 under TZ=UTC and TZ=Asia/Kolkata; filed A13 (pre-existing lint)
 2026-07-25 · A4 · done · 59b316f · capacitor configs for gaterunner+vitcompass; all 5 apps self-hosted; typecheck PASS
+2026-07-25 · A5 · done · e99d5a1 · per-app push title (0066 passes app; titleFor 4/4); test:unit 7/7; activates on deploy
