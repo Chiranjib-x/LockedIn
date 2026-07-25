@@ -78,11 +78,11 @@ would agree. "Improve X" is not an item. "X passes Y" is.
 - **Evidence:** PLAN CHANGE — FK was already SET NULL (0060), not RESTRICT; the "deletion errors" premise was already fixed, so this is the orphan→cascade cleanup the item's CASCADE directive wants. All child FKs of posts (event_rsvps/checkins/feedback, post_claims) verified CASCADE, so no RESTRICT in the chain. 0067 applied: `confdeltype` → CASCADE. Probe (rolled back): inserted scratch community + a post (type 'event'), deleted the community → `post cascaded away: true, community gone: true`. Commit 0f0aa2a.
 
 ### A7 · Regenerate Android launcher mipmaps from the current brand mark
-- **State:** open
+- **State:** done
 - **Why:** STATE `## Facts`: "Android launcher mipmaps still the OLD icon — regenerate at next APK/AAB rebuild."
 - **Do:** regenerate from `components/logo.tsx` geometry via the sharp/Pillow tooling noted in STATE. Keep the cream adaptive background `#F6F5F1` and the `#2251C7` foreground already verified in the v1.1 APK.
 - **Done when:** the new mipmap PNGs are in the tree and the foreground pixel colour is verified on the generated asset. The AAB rebuild + upload is **U3**.
-- **Evidence:**
+- **Evidence:** regenerated 18 PNGs (6 densities × ic_launcher/ic_launcher_round/ic_launcher_foreground) from logo.tsx geometry via sharp. Foreground = cobalt flame-key on transparent (adaptive 108dp safe zone, frac 0.44); legacy/round on cream #F6F5F1. Verified: xxxhdpi foreground center pixel = (34,81,199) = #2251C7; 5503 cobalt + 181142 transparent px. Legacy ic_launcher visually confirmed (cream + cobalt mark). Background stays @color/ic_launcher_background #F6F5F1. `git ls-files mipmap-*/*.png` = 18. Commit 26f295a. AAB rebuild = U3.
 
 ### A8 · Migrate lockedin's internal imports onto `packages/{ui,lib,auth}`
 - **State:** open
@@ -158,3 +158,5 @@ Nothing here is a failure of the loop. These need you.
 2026-07-25 · A4 · done · 59b316f · capacitor configs for gaterunner+vitcompass; all 5 apps self-hosted; typecheck PASS
 2026-07-25 · A5 · done · e99d5a1 · per-app push title (0066 passes app; titleFor 4/4); test:unit 7/7; activates on deploy
 2026-07-25 · A6 · done · 0f0aa2a · posts.community_id FK SET NULL→CASCADE (0067); probe: community-delete cascades post
+2026-07-25 · A7 · done · 26f295a · regenerated 18 launcher mipmaps from brand mark; foreground #2251C7 verified
+2026-07-25 · LOOP PAUSED by user after A7 ("stop after this and push"). Next open: A8. Actionable remain: A8-A13.
