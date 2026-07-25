@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import webpush from "web-push";
 import { cert, getApps, initializeApp } from "firebase-admin/app";
 import { getMessaging } from "firebase-admin/messaging";
+import { titleFor } from "../title";
 
 // Phase 21a fan-out: pg_net trigger (0025) POSTs { message, link, nid, subs }
 // here; we web-push each subscription. No DB reads — the payload is complete
@@ -60,18 +61,20 @@ export async function POST(req: Request) {
   }
   webpush.setVapidDetails("mailto:dashchiranjib2004@gmail.com", pub, priv);
 
-  let body: { message?: unknown; link?: unknown; nid?: unknown; subs?: unknown };
+  let body: { message?: unknown; link?: unknown; nid?: unknown; subs?: unknown; app?: unknown };
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: "bad json" }, { status: 400 });
   }
-  const { message, link, nid, subs } = body;
+  const { message, link, nid, subs, app } = body;
   if (typeof message !== "string" || typeof link !== "string" || !Array.isArray(subs)) {
     return NextResponse.json({ error: "bad shape" }, { status: 400 });
   }
 
-  const payload = JSON.stringify({ title: "LockedIn", body: message, link, nid });
+  // Title = the routed app's name (0063 passes `app`); defaults to LockedIn.
+  const title = titleFor(app);
+  const payload = JSON.stringify({ title, body: message, link, nid });
   let sent = 0;
   let pruned = 0;
   let failed = 0;
@@ -93,7 +96,7 @@ export async function POST(req: Request) {
         try {
           await messaging.send({
             token: s.endpoint,
-            notification: { title: "LockedIn", body: message },
+            notification: { title, body: message },
             data: { link, nid: String(nid ?? "") },
             android: { priority: "high" },
           });

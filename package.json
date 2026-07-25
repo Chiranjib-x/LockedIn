@@ -18,7 +18,7 @@
     "build:campustrade": "npm run build -w campustrade",
     "build:vitcompass": "npm run build -w vitcompass",
     "test:e2e": "playwright test",
-    "test:ist": "node --test packages/lib/ist.test.ts apps/lockedin/modules/timetable/helpers.test.ts"
+    "test:unit": "node --test packages/lib/ist.test.ts apps/lockedin/modules/timetable/helpers.test.ts apps/lockedin/app/api/push/title.test.ts"
   },
   "devDependencies": {
     "@playwright/test": "^1.62.0"
