@@ -45,3 +45,4 @@ apps/*/android/build/
 apps/*/android/app/build/
 apps/*/android/capacitor-cordova-android-plugins/
 apps/*/android/local.properties
+dist-apks/
