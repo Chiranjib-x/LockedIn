@@ -57,11 +57,11 @@ would agree. "Improve X" is not an item. "X passes Y" is.
 - **Evidence:** `TZ=UTC node --test packages/lib/ist.test.ts apps/lockedin/modules/timetable/helpers.test.ts` → `tests 5, pass 5, fail 0`; `TZ=Asia/Kolkata …` → `tests 5, pass 5, fail 0`. Root `test:ist` script added. lockedin typecheck PASS after excluding `*.test.ts` (Node type-stripping needs the .ts import extension; next-build tsc rejected it — TS5097). Commit b4df691. NOTE: lockedin lint is red on 17 PRE-EXISTING react/no-unescaped-entities errors (proven via stash: identical 18 problems on clean tree, typecheck PASS) — not from A3; filed as A13.
 
 ### A4 · Capacitor configs for gaterunner and vitcompass
-- **State:** open
+- **State:** done
 - **Why:** STATE: "gaterunner/vitcompass have NO capacitor config yet." campusclubs/campustrade shipped the *mother's* config once (738b7d0) and would have loaded the wrong site — the same hole is still open on two apps.
 - **Do:** add `apps/gaterunner/capacitor.config.ts` and `apps/vitcompass/capacitor.config.ts` modelled on `apps/campusclubs/capacitor.config.ts`. Each gets its own `appId` (`com.lockedin.gaterunner`, `com.lockedin.vitcompass`), `appName`, `server.url` (`gate.chiranjib.online`, `map.chiranjib.online`), and brand splash. Register the per-app deep-link scheme `com.<app>.campus://auth/callback`.
 - **Done when:** each config file's `appId` and `server.url` grepped back and pasted, and no config's `server.url` points at another app's host. Supabase allow-listing of the new schemes is **U4**, not yours.
-- **Evidence:**
+- **Evidence:** grep of all 5 configs — appId: com.lockedin.{campus,gaterunner,campusclubs,campustrade,vitcompass}; server.url: www|gate|clubs|trade|map.chiranjib.online; cross-host check = "all self-hosted ✓". Both new configs are plain objects (no @capacitor/cli dep); gaterunner+vitcompass typecheck PASS. Commit 59b316f. Deep-link scheme registration is native (cap-add) + U4. NOTE: gaterunner+vitcompass lint pre-existing-red (vitcompass campus-map.tsx:195 setState-in-effect; capacitor.config.ts clean) → rolled into A13.
 
 ### A5 · Per-app push notification title
 - **State:** open
@@ -122,9 +122,9 @@ would agree. "Improve X" is not an item. "X passes Y" is.
 
 ### A13 · Fix pre-existing react/no-unescaped-entities lint errors (gate is red)
 - **State:** open
-- **Why:** `node scripts/gate.mjs lockedin` lint fails with 18 problems (17 errors, all `react/no-unescaped-entities`) on the CLEAN tree — pre-existing debt, surfaced while gating A3. Typecheck is green; only lint is red. The four child apps are forks of the mother, so the same JSX files carry the same errors. A red lint gate means the loop cannot cleanly gate any app it touches.
-- **Do:** escape the bare `'`/`"`/`’` in JSX text (use `&apos;`/`&rsquo;`/`&quot;` or a `{"…"}` expression) — style-only, no behavior change. Fix lockedin first; then the same files in campusclubs/campustrade/gaterunner/vitcompass. Run REFERENCE SWEEP is not needed (no symbol change).
-- **Done when:** `node scripts/gate.mjs lockedin` passes lint (0 errors); repeat for each app whose files you changed, pasted.
+- **Why:** the lint gate is pre-existing-red on EVERY app (typecheck is green on all). lockedin/campusclubs/campustrade: 17 `react/no-unescaped-entities` (fork copies of the same JSX). gaterunner: react errors too. vitcompass: `setState synchronously within an effect` at campus-map.tsx:195. Surfaced while gating A3/A4. A red lint gate means the loop cannot cleanly gate any app it touches.
+- **Do:** per rule — escape bare `'`/`"`/`’` in JSX (`&apos;`/`&rsquo;`/`&quot;` or `{"…"}`); for the vitcompass setState-in-effect, guard/restructure the localStorage init (it's a benign one-time read, but satisfy the rule without disabling it). Style/structure only, no behavior change. Fix each app, gate after each.
+- **Done when:** `node scripts/gate.mjs <app>` passes lint (0 errors) for every app, pasted per app.
 - **Evidence:**
 
 ---
@@ -155,3 +155,4 @@ Nothing here is a failure of the loop. These need you.
 2026-07-25 · A1 · done · 27e2e6c · root Playwright smoke (login→marketplace→board→logout) 1 passed 27.2s
 2026-07-25 · A2 · done · 454a253 · automated Gate #2/#4/#5/#8 specs; 6 passed; fixed shared-user global-signout interference
 2026-07-25 · A3 · done · b4df691 · IST TZ-regression unit tests (node:test) 5/5 under TZ=UTC and TZ=Asia/Kolkata; filed A13 (pre-existing lint)
+2026-07-25 · A4 · done · 59b316f · capacitor configs for gaterunner+vitcompass; all 5 apps self-hosted; typecheck PASS
