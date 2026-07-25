@@ -4,7 +4,11 @@ import { test, expect } from "@playwright/test";
 // are the flows that regress most. Selectors are scoped to `main`: the header
 // has a form whose submit button matches `button[type=submit]` first (this has
 // bitten twice — see STATE.md ## Failed attempts).
-const EMAIL = "lockedin.phase1.test@gmail.com";
+//
+// Uses a DEDICATED account (test.boy): the app's logout is a Supabase GLOBAL
+// signOut, which invalidates every session for that user — so the one test that
+// logs out must not share a user with the specs that stay logged in (phase1.test).
+const EMAIL = "lockedin.test.boy@gmail.com";
 const PASSWORD = "testpass1234";
 
 test("mother app smoke: login → marketplace → board → logout", async ({ page }) => {
