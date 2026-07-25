@@ -48,12 +48,13 @@ would agree. "Improve X" is not an item. "X passes Y" is.
 - **Evidence:** `npx playwright test --workers=1` → `6 passed (1.9m)` PW_EXIT=0. Four new specs, each names its Gate point in a top comment: gate5-mobile-overflow (#5, 390+360 scrollWidth<=clientWidth on 5 main routes), gate8-unknown-route (#8, /bogus → 404), gate4-empty-states (#4, no-match /search → "Nothing on campus for"), gate2-refresh (#2, gate cancel → useRefresh removes card, URL unchanged). Debug: gate2 flaked in-suite (reload hit /login) — root cause = smoke's logout is a Supabase GLOBAL signOut invalidating the shared user; fixed by giving smoke its own user (test.boy). Commit 454a253. NOTE: gate2 leaves one 'cancelled' scratch pickup per run (filtered from all queries, inert).
 
 ### A3 · Timezone regression test (Gate #3 — shipped broken twice)
-- **State:** open
+- **State:** done
+- **PLAN CHANGE (2026-07-25):** assumed all 4 fns in packages/lib/ist.ts; actually only istParse is there — toIST/istNow/istTodayISO/istParse live in apps/lockedin/modules/timetable/helpers.ts (pure, no imports; duplicated across the 4 forked apps + a partial copy in packages/lib/ist.ts). Revised: test both files where the code actually is. istParse duplication flagged for A8.
 - **Blocked by:** A1
 - **Why:** IST/UTC has been the single most repeated bug class in this repo — render side and parse side, both directions, ⚠×2.
 - **Do:** unit-test `packages/lib/ist.ts` (`toIST`/`istNow`/`istTodayISO`/`istParse`) with `TZ=UTC` **and** `TZ=Asia/Kolkata` set, asserting identical results — that asymmetry is exactly what Vercel-vs-dev-machine exposed. Node's built-in test runner is enough; no new dep.
 - **Done when:** `TZ=UTC node --test` and `TZ=Asia/Kolkata node --test` both pass with identical output.
-- **Evidence:**
+- **Evidence:** `TZ=UTC node --test packages/lib/ist.test.ts apps/lockedin/modules/timetable/helpers.test.ts` → `tests 5, pass 5, fail 0`; `TZ=Asia/Kolkata …` → `tests 5, pass 5, fail 0`. Root `test:ist` script added. lockedin typecheck PASS after excluding `*.test.ts` (Node type-stripping needs the .ts import extension; next-build tsc rejected it — TS5097). Commit b4df691. NOTE: lockedin lint is red on 17 PRE-EXISTING react/no-unescaped-entities errors (proven via stash: identical 18 problems on clean tree, typecheck PASS) — not from A3; filed as A13.
 
 ### A4 · Capacitor configs for gaterunner and vitcompass
 - **State:** open
@@ -119,6 +120,13 @@ would agree. "Improve X" is not an item. "X passes Y" is.
 - **Done when:** `node scripts/gate.mjs all` completes under 3 minutes total, with lint included and no rules disabled to get there.
 - **Evidence:**
 
+### A13 · Fix pre-existing react/no-unescaped-entities lint errors (gate is red)
+- **State:** open
+- **Why:** `node scripts/gate.mjs lockedin` lint fails with 18 problems (17 errors, all `react/no-unescaped-entities`) on the CLEAN tree — pre-existing debt, surfaced while gating A3. Typecheck is green; only lint is red. The four child apps are forks of the mother, so the same JSX files carry the same errors. A red lint gate means the loop cannot cleanly gate any app it touches.
+- **Do:** escape the bare `'`/`"`/`’` in JSX text (use `&apos;`/`&rsquo;`/`&quot;` or a `{"…"}` expression) — style-only, no behavior change. Fix lockedin first; then the same files in campusclubs/campustrade/gaterunner/vitcompass. Run REFERENCE SWEEP is not needed (no symbol change).
+- **Done when:** `node scripts/gate.mjs lockedin` passes lint (0 errors); repeat for each app whose files you changed, pasted.
+- **Evidence:**
+
 ---
 
 ## USER-GATED — `/loop` reports these, never attempts them
@@ -146,3 +154,4 @@ Nothing here is a failure of the loop. These need you.
 2026-07-25 · A0 · done · edb1ad8 · landed /loop scaffolding, deleted gate probe, 0038 left untracked
 2026-07-25 · A1 · done · 27e2e6c · root Playwright smoke (login→marketplace→board→logout) 1 passed 27.2s
 2026-07-25 · A2 · done · 454a253 · automated Gate #2/#4/#5/#8 specs; 6 passed; fixed shared-user global-signout interference
+2026-07-25 · A3 · done · b4df691 · IST TZ-regression unit tests (node:test) 5/5 under TZ=UTC and TZ=Asia/Kolkata; filed A13 (pre-existing lint)
