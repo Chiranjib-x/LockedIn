@@ -5,20 +5,18 @@ import type { CapacitorConfig } from "@capacitor/cli";
 // Capacitor but unused at runtime while server.url is set.
 // appId is renameable until first Play Store publish — locked after that.
 const config: CapacitorConfig = {
-  appId: "com.lockedin.campus",
-  appName: "LockedIn",
+  appId: "com.lockedin.campusclubs",
+  appName: "CampusClubs",
   webDir: "public",
   server: {
-    // Load the primary host DIRECTLY (www is primary in Vercel; the bare apex
-    // 308-redirects to it). A Capacitor server.url must not redirect on the
-    // app's root origin, so we point at www, not the apex. The .vercel.app
-    // alias still resolves, so the previously-distributed APK keeps working.
-    url: "https://www.chiranjib.online",
+    // Load this app's own subdomain (set up post-deploy). Must NOT redirect on
+    // the root origin, so use the exact host Vercel serves.
+    url: "https://clubs.chiranjib.online",
     androidScheme: "https",
   },
   plugins: {
     SplashScreen: {
-      backgroundColor: "#2251C7", // cobalt token, inlined — no CSS pipeline in native config
+      backgroundColor: "#7c3aed", // CampusClubs violet
       launchAutoHide: true,
     },
   },
