@@ -2,7 +2,7 @@ import styles from "./splash-loader.module.css";
 
 // Full-screen branded splash. Use on app launch (PWA/Android open), not for
 // inline content loading — skeletons are the better UX there.
-export default function SplashLoader({ label = "LockedIn" }: { label?: string }) {
+export default function SplashLoader({ label = "CampusTrade" }: { label?: string }) {
   return (
     <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-8 bg-background">
       <div className={styles.loader}>
