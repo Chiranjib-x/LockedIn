@@ -4,7 +4,9 @@
 User-approved sequence (2026-07-12): Phase 28 (saves+alerts, IN PROGRESS) → Phase 29 (dark mode) → 🚢 ship Wave C → Play Store release → Wave D in plan order. Keep going without asking until user input is genuinely required.
 
 ## Now
-SUITE PHASES 2 + 3 CODE-COMPLETE (2026-07-19, committed locally, NOT pushed — no push request this convo).
+SUITE PHASES 2 + 3 + 4 CODE-COMPLETE (through 2026-07-20, committed locally, NOT pushed — no push request this convo).
+- Phase 4 CampusTrade (apps/campustrade, 46bdbd7→643d3a2→7b9f41d): forked mother by subtraction, stripped gate+clubs+events surfaces, kept marketplace/L&F/daily-life/chat, amber flame-key brand, push registers app='trade' (0063 fallback delivers — DB-probed). Build green ×4, 390px screenshots trade-only. Deploy blocked on user (Vercel project Root=apps/campustrade + Cloudflare CNAME trade.).
+- Three suite apps now stand alongside the mother: apps/{gaterunner,campusclubs,campustrade}. Remaining new build: Phase 5 VIT Compass (freshers' campus map — MapLibre+OSM, new campus_buildings schema/CMS + user-verified seed).
 - Phase 2 GateRunner (fe6ee0a): status timeline + runner note (0064 applied+probed) + app-aware push (registers app='gaterunner') + green flame-key icons + PWA manifest. Build green, E2E stepper verified.
 - Phase 3 CampusClubs (80fb29b→3b83275→4e46c9a→68f4b1c): forked mother → apps/campusclubs (subtraction), stripped to clubs-only (nav Home·Clubs·[+]·Events·Profile, command-center home, clubs landing, header rebrand), app-aware push (registers app='clubs' — DB-probed against 0063 routing), violet flame-key icons + manifest, coherence pass (removed chat Message buttons, LockedIn→CampusClubs on reachable pages). Build green ×5, screenshots at 390px verified, no h-overflow.
 - BLOCKED ON USER (both apps): create per-app Vercel project (same repo, Root Directory apps/gaterunner | apps/campusclubs, copy env vars), Cloudflare CNAME gate. + clubs. → vercel (DNS-only). Then Capacitor wrap (fix capacitor.config.ts appId/appName + deep-link scheme per app) → signed APK → Launch Gate on prod.

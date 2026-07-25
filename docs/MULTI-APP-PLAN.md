@@ -139,7 +139,18 @@ Original scope for reference:
 - Strip everything else. Home = command center + my clubs + discover shelves.
 - **Launch Gate**, ship.
 
-## Phase 4 — CampusTrade (+ daily life): the biggest app
+## Phase 4 — CampusTrade (+ daily life): the biggest app — CODE-COMPLETE (2026-07-20, apps/campustrade, 7b9f41d)
+Built by SUBTRACTION as recommended (forked mother → apps/campustrade). Stripped the gate +
+clubs/communities/events surfaces (Gate Runner card + data, LeaderStrip/ClubsStrip/FreeWindow/
+QuantaBanner, Events/Clubs FEATURE entries, gate pillar + clubs/events feature-map rows). Kept
+marketplace/spaces/cabs/group-buys/pools/board/timetable/study-groups/crews/deals/toolbox/chat
+(chat's primary home). Amber flame-key brand, metadata/manifest → CampusTrade, push registers
+app='trade' (0063 fallback delivers marketplace/chat/board — DB-probed; dual-install `else→'trade'`
+refinement deferred to Phase 6). Build green ×4, 390px screenshots trade-only, no h-overflow.
+REMAINING (user-side): Vercel project (Root Directory `apps/campustrade`) + Cloudflare CNAME
+`trade.` → Capacitor wrap (fix appId/appName/deep-link + push title) → Launch Gate on prod → Play.
+
+Original scope for reference:
 - Port: marketplace complete (listings/offers/rent/requests/spaces), board
   L&F + claims + smart matching, chat (DMs + group rooms — chat's primary
   home), cabs, group-buys, pools, timetable+attendance, study groups, crews,
