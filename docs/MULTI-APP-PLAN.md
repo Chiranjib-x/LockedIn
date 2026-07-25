@@ -170,8 +170,11 @@ reach" directions (5d partial). Teal flame-key brand. Verified: prod build green
 (full-height canvas, 24 markers, sheet with correct info).
 5a CMS DONE (b961223): moderator screen at /admin/campus in the mother app (add/edit/delete
 via the 0065 RPCs; the 17 estimated coords are now fixable in-app — build green, CRUD E2E +
-delete DB-probed college-scoped). REMAINING: (5d) freshers' checklist + events-overlay-from-
-shared-DB; deploy: Vercel Root `apps/vitcompass` + Cloudflare CNAME `map.` → Capacitor wrap →
+delete DB-probed college-scoped). 5d checklist DONE (b8ff687): freshers' "First week" 8-step
+checklist, each step flies to its building; check-state in localStorage (build green, E2E).
+REMAINING: (5d) events-overlay-from-shared-DB — DEFERRED (events store free-text venues, no
+coords; needs a venue→building link before pins are possible; do it when event data is
+structured). Deploy: Vercel Root `apps/vitcompass` + Cloudflare CNAME `map.` → Capacitor wrap →
 Launch Gate (offline matters extra here).
 
 Original scope for reference:
