@@ -10,8 +10,10 @@
     "dev:lockedin": "npm run dev -w lockedin",
     "dev:gaterunner": "npm run dev -w gaterunner",
     "dev:campusclubs": "npm run dev -w campusclubs",
+    "dev:campustrade": "npm run dev -w campustrade",
     "build:lockedin": "npm run build -w lockedin",
     "build:gaterunner": "npm run build -w gaterunner",
-    "build:campusclubs": "npm run build -w campusclubs"
+    "build:campusclubs": "npm run build -w campusclubs",
+    "build:campustrade": "npm run build -w campustrade"
   }
 }

@@ -1,0 +1,49 @@
+"use client";
+
+import { useState } from "react";
+import { inputClass } from "@/components/ui";
+import { SubmitButton } from "@/components/submit-button";
+import ImageUpload from "@/components/image-upload";
+import { createShowcaseItem, createMerchant } from "./actions";
+
+const TOOL_CATEGORIES = ["study", "productivity", "finance", "fun", "other"];
+const DEAL_CATEGORIES = ["food", "print", "grocery", "services", "other"];
+
+export function ShowcaseForm() {
+  const [logo, setLogo] = useState<string[]>([]);
+  return (
+    <form action={createShowcaseItem} className="flex flex-col gap-3">
+      <input type="hidden" name="logo_url" value={logo[0] ?? ""} />
+      <ImageUpload bucket="showcase-images" value={logo} onChange={setLogo} max={1} />
+      <input name="name" required placeholder="Tool name" className={inputClass} />
+      <input name="url" required type="url" placeholder="https://…" className={inputClass} />
+      <input name="tagline" placeholder="One line — why it's useful" className={inputClass} />
+      <select name="category" className={inputClass} defaultValue="other">
+        {TOOL_CATEGORIES.map((c) => (
+          <option key={c} value={c}>{c}</option>
+        ))}
+      </select>
+      <SubmitButton pendingLabel="Adding…">Add to Toolbox</SubmitButton>
+    </form>
+  );
+}
+
+export function MerchantForm() {
+  const [logo, setLogo] = useState<string[]>([]);
+  return (
+    <form action={createMerchant} className="flex flex-col gap-3">
+      <input type="hidden" name="logo_url" value={logo[0] ?? ""} />
+      <ImageUpload bucket="showcase-images" value={logo} onChange={setLogo} max={1} />
+      <input name="name" required placeholder="Merchant / shop name" className={inputClass} />
+      <select name="category" className={inputClass} defaultValue="other">
+        {DEAL_CATEGORIES.map((c) => (
+          <option key={c} value={c}>{c}</option>
+        ))}
+      </select>
+      <input name="offer_text" required placeholder="Offer — e.g. 10% off with student ID" className={inputClass} />
+      <textarea name="details" rows={2} placeholder="Details (optional)" className={inputClass} />
+      <input name="link_or_contact" placeholder="Link or contact (optional)" className={inputClass} />
+      <SubmitButton pendingLabel="Adding…">Add deal</SubmitButton>
+    </form>
+  );
+}
