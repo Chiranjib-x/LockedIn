@@ -193,7 +193,13 @@ export default async function Home() {
         </a>
       </div>
 
-      <p className="mt-8 flex gap-4 text-xs text-muted-foreground">
+      <p className="mt-10 text-center text-xs text-muted-foreground">
+        Part of the{" "}
+        <a href="https://www.chiranjib.online" className="font-medium text-primary hover:underline">LockedIn</a>{" "}
+        campus suite ·{" "}
+        <a href="https://www.chiranjib.online/download" className="font-medium text-primary hover:underline">get the apps</a>
+      </p>
+      <p className="mt-4 flex justify-center gap-4 text-xs text-muted-foreground">
         <Link href="/terms" className="hover:underline">Terms</Link>
         <Link href="/privacy" className="hover:underline">Privacy</Link>
         <Link href="/delete-account" className="hover:underline">Delete account</Link>

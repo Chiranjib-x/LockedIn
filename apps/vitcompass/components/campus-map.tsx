@@ -123,6 +123,9 @@ export default function CampusMap({ buildings }: { buildings: Building[] }) {
           <div className="leading-tight">
             <p className="font-heading text-sm font-bold">VIT Compass</p>
             <p className="text-[11px] text-muted-foreground">Tap a building to see what&rsquo;s inside</p>
+            <a href="https://www.chiranjib.online" className="text-[10px] font-medium text-primary hover:underline">
+              Part of LockedIn ↗
+            </a>
           </div>
         </div>
         <div className="pointer-events-auto flex gap-2 overflow-x-auto pb-1">
