@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">CampusClubs</string>
+    <string name="title_activity_main">CampusClubs</string>
+    <string name="package_name">com.lockedin.campusclubs</string>
+    <string name="custom_url_scheme">com.lockedin.campusclubs</string>
+</resources>
