@@ -168,10 +168,11 @@ standalone public app apps/vitcompass (MapLibre + OSM raster, no auth/@suite dep
 category-colored markers, filter chips, tap-to-open building sheet, and Google-Maps "How to
 reach" directions (5d partial). Teal flame-key brand. Verified: prod build green, 390px E2E
 (full-height canvas, 24 markers, sheet with correct info).
-REMAINING: (5a) moderator CMS screen to add/edit buildings + fix the 17 estimated coords —
-lives in the mother app (has auth+moderator) or add light auth to vitcompass, TBD; (5d) freshers'
-checklist + events-overlay-from-shared-DB; deploy: Vercel Root `apps/vitcompass` + Cloudflare
-CNAME `map.` → Capacitor wrap → Launch Gate (offline matters extra here).
+5a CMS DONE (b961223): moderator screen at /admin/campus in the mother app (add/edit/delete
+via the 0065 RPCs; the 17 estimated coords are now fixable in-app — build green, CRUD E2E +
+delete DB-probed college-scoped). REMAINING: (5d) freshers' checklist + events-overlay-from-
+shared-DB; deploy: Vercel Root `apps/vitcompass` + Cloudflare CNAME `map.` → Capacitor wrap →
+Launch Gate (offline matters extra here).
 
 Original scope for reference:
 - **5a Data**: `campus_buildings` table (college_id — the map is per-college
