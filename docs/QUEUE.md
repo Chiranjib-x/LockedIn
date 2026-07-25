@@ -33,11 +33,11 @@ would agree. "Improve X" is not an item. "X passes Y" is.
 - **Evidence:** deleted `apps/vitcompass/__gate_probe.ts.bak` (throwaway type-error probe); committed loop scaffolding (CLAUDE.md ## Autonomous loop, .claude/commands/loop.md, docs/QUEUE.md, scripts/gate.mjs) as edb1ad8. `git status --short` → only `?? supabase/migrations/0038_drop_contact_pref.sql` (deferred per U6, named in STATE ## Open items "DEFERRED DROP").
 
 ### A1 · Commit an actual E2E suite (the project has zero tests tracked)
-- **State:** open
+- **State:** done
 - **Why:** `git ls-files | grep -iE "test|spec|playwright"` returns nothing but two stock Capacitor Java stubs. Every verification this project has ever done was an ad-hoc script that was then deleted. That is why the same bugs recur (⚠ markers in MULTI-APP-PLAN's Launch Gate are all repeats). Tests are the only item here that makes the *other* items cheaper.
 - **Do:** add Playwright at the repo root (`npm i -D @playwright/test` at the workspace root, `playwright.config.ts` with a 390×844 project, `baseURL` from env). Write `e2e/smoke.spec.ts` covering, for the mother app: login with the Demo College test account → `/marketplace` renders → `/board` renders → logout completes. Scope selectors to `main` — `button[type=submit]` matches the header logout form first (this has bitten twice; see STATE `## Failed attempts`). Add root script `"test:e2e": "playwright test"`.
 - **Done when:** `npx playwright test` passes against a dev server on :3001, and the spec files are tracked by git.
-- **Evidence:**
+- **Evidence:** `npx playwright test` → `1 passed (27.2s)` PW_EXIT=0 (webServer auto-started mother dev on :3001; spec drove login→/marketplace(h1 "Marketplace")→/board(h1 "Campus board")→/profile logout→/login). `git ls-files` tracks `e2e/smoke.spec.ts` + `playwright.config.ts`. Commit 27e2e6c. Root `test:e2e` script added; selectors scoped to `main`.
 
 ### A2 · Extend the suite to the Launch Gate items that can be automated
 - **State:** open
@@ -144,3 +144,4 @@ Nothing here is a failure of the loop. These need you.
 
 <!-- LOOP-LOG -->
 2026-07-25 · A0 · done · edb1ad8 · landed /loop scaffolding, deleted gate probe, 0038 left untracked
+2026-07-25 · A1 · done · 27e2e6c · root Playwright smoke (login→marketplace→board→logout) 1 passed 27.2s
