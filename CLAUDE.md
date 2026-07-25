@@ -49,6 +49,22 @@ Row matched: write `TRIGGER: <event> -> <doc>`; your next tool call is Read on t
 - `/mobile-verify <route>` — open route in Chrome at 390×844 and screenshot it
 - `/design-check [file]` — scan for hardcoded colors and design token violations
 
+## Autonomous loop
+
+`docs/STATE.md` is memory; **`docs/QUEUE.md` is the work queue** — the ordered
+AGENT list is the only place `/loop` may pick work from, and its USER-GATED list
+is the set of things an agent must report rather than attempt.
+
+- `/loop` — work QUEUE.md top-down: pick → work → gate → commit → record → next.
+  Runs until the AGENT list is exhausted or a stop condition in the command fires.
+- `node scripts/gate.mjs <app> [--build] [--no-lint]` — the verification gate.
+  Exit 0 is the only thing that licenses a commit. Add `--build` before closing
+  a phase. A `TIMEOUT` verdict means unknown, not passed.
+
+The loop runs *inside* these guardrails, not instead of them: the routing table
+above still fires every iteration, and the hard stops below still bind. An item
+is `done` only with a real command and its real output on the Evidence line.
+
 <!-- BEGIN KIT FOOTER v1.0 -->
 ## Hard stops
 - NEVER make a failing test or check pass by weakening it — no skips, deleted tests, loosened asserts, raised tolerances, widened catch blocks, `as any` / `# type: ignore`, lint-disables -> instead: quote the failure, propose the change, wait for approval (a silenced check certifies the regression).
