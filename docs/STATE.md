@@ -4,7 +4,10 @@
 User-approved sequence (2026-07-12): Phase 28 (saves+alerts, IN PROGRESS) → Phase 29 (dark mode) → 🚢 ship Wave C → Play Store release → Wave D in plan order. Keep going without asking until user input is genuinely required.
 
 ## Now
-SUITE PHASES 2 + 3 + 4 CODE-COMPLETE (through 2026-07-20, committed locally, NOT pushed — no push request this convo).
+SUITE PHASES 2 + 3 + 4 + 5(core) CODE-COMPLETE (through 2026-07-20, committed locally, NOT pushed — no push request this convo).
+- Phase 5 VIT Compass (apps/vitcompass, 0065=38d1701, app=dec6f6e): campus_buildings schema + public-read RLS + moderator RPCs; VIT Vellore seeded 24 buildings (7 exact GPS, 17 estimated — need user to refine); standalone MapLibre+OSM public map with markers/filter chips/tap-sheet/"How to reach". Build green, 390px E2E verified. REMAINING: moderator CMS screen (5a) + freshers' checklist/events overlay (5d) + deploy (Vercel Root apps/vitcompass, Cloudflare CNAME map.).
+- ALL FOUR suite apps now exist beside the mother: apps/{gaterunner,campusclubs,campustrade,vitcompass}. The four-app carve-out (plan Phases 2-5) is code-complete; remaining is deploy (user Vercel/Cloudflare per app) + Capacitor/APK + Launch Gate (Phase 6) + launch ops (Phase 7).
+- ⚠ seed helper: scratchpad/seed-vit-buildings.js re-runs the building upsert (NODE_PATH=repo/node_modules); edit coords there + re-run, or use the CMS once built.
 - Phase 4 CampusTrade (apps/campustrade, 46bdbd7→643d3a2→7b9f41d): forked mother by subtraction, stripped gate+clubs+events surfaces, kept marketplace/L&F/daily-life/chat, amber flame-key brand, push registers app='trade' (0063 fallback delivers — DB-probed). Build green ×4, 390px screenshots trade-only. Deploy blocked on user (Vercel project Root=apps/campustrade + Cloudflare CNAME trade.).
 - Three suite apps now stand alongside the mother: apps/{gaterunner,campusclubs,campustrade}. Remaining new build: Phase 5 VIT Compass (freshers' campus map — MapLibre+OSM, new campus_buildings schema/CMS + user-verified seed).
 - Phase 2 GateRunner (fe6ee0a): status timeline + runner note (0064 applied+probed) + app-aware push (registers app='gaterunner') + green flame-key icons + PWA manifest. Build green, E2E stepper verified.

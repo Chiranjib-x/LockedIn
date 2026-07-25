@@ -161,8 +161,19 @@ Original scope for reference:
   clubs, rebrand) rather than by addition. Decide at phase start.
 - **Launch Gate**, ship.
 
-## Phase 5 — VIT Compass: the new build (freshers' map)
-The only from-scratch product. Sub-phases:
+## Phase 5 — VIT Compass: the new build (freshers' map) — CORE COMPLETE (2026-07-20, apps/vitcompass, dec6f6e)
+Built: `campus_buildings` schema + public-read RLS + moderator definer RPCs (0065, 38d1701);
+VIT Vellore seeded with 24 buildings (7 exact GPS from user, 17 estimated — CMS-refinable);
+standalone public app apps/vitcompass (MapLibre + OSM raster, no auth/@suite deps) with
+category-colored markers, filter chips, tap-to-open building sheet, and Google-Maps "How to
+reach" directions (5d partial). Teal flame-key brand. Verified: prod build green, 390px E2E
+(full-height canvas, 24 markers, sheet with correct info).
+REMAINING: (5a) moderator CMS screen to add/edit buildings + fix the 17 estimated coords —
+lives in the mother app (has auth+moderator) or add light auth to vitcompass, TBD; (5d) freshers'
+checklist + events-overlay-from-shared-DB; deploy: Vercel Root `apps/vitcompass` + Cloudflare
+CNAME `map.` → Capacitor wrap → Launch Gate (offline matters extra here).
+
+Original scope for reference:
 - **5a Data**: `campus_buildings` table (college_id — the map is per-college
   from day one; name, aka, category academic/hostel/mess/sports/admin/
   landmark, description, photos[], lat/lng or svg_id, floor info, timings).
