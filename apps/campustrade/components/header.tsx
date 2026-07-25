@@ -83,7 +83,7 @@ export default async function Header() {
       >
         <LogoMark className="h-6 w-auto shrink-0 text-primary" />
         {/* tiny screens keep the mark only — a moderator's 6 header icons overflow 360px otherwise */}
-        <span className="gradient-brand-text hidden font-heading text-lg font-bold tracking-tight min-[400px]:inline">LockedIn</span>
+        <span className="gradient-brand-text hidden font-heading text-lg font-bold tracking-tight min-[400px]:inline">CampusTrade</span>
       </Link>
       {user ? (
         <nav className="flex items-center">

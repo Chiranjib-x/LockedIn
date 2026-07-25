@@ -2,9 +2,9 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "LockedIn",
-    short_name: "LockedIn",
-    description: "Your campus, one app.",
+    name: "CampusTrade",
+    short_name: "CampusTrade",
+    description: "Buy, sell, split. Campus only.",
     start_url: "/home",
     display: "standalone",
     background_color: "#f6f5f1",

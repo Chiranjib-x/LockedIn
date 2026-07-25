@@ -49,6 +49,7 @@ export async function ensureNativePushSubscription(
       p_endpoint: token,
       p_keys: null,
       p_kind: "fcm",
+      p_app: "trade", // 0063 fallback delivers marketplace/chat/board pushes here
     });
 
     // tap on a native notification deep-links via the data.link we send
@@ -88,6 +89,7 @@ export async function ensurePushSubscription(
     const { error } = await supabase.rpc("save_push_subscription", {
       p_endpoint: sub.endpoint,
       p_keys: sub.toJSON().keys ?? null,
+      p_app: "trade", // 0063 fallback delivers marketplace/chat/board pushes here
     });
     return error ? "failed" : "subscribed";
   } catch {

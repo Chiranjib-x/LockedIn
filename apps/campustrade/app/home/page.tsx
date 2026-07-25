@@ -5,17 +5,14 @@ import {
   BookOpen,
   CalendarDays,
   CarTaxiFront,
-  Footprints,
   Handshake,
   MapPin,
-  PartyPopper,
   Pin,
   Search,
   ShoppingBag,
   Tag,
   Target,
   Tv,
-  Users,
   Users2,
   Wrench,
   type LucideIcon,
@@ -24,15 +21,11 @@ import { requireUser } from "@/lib/auth";
 import { istNow } from "@/modules/timetable/helpers";
 import { SkeletonSection } from "@/components/skeleton";
 import NowStrip from "@/modules/feed/now-strip";
-import LeaderStrip from "@/modules/feed/leader-strip";
-import ClubsStrip from "@/modules/feed/clubs-strip";
 import RecentChats from "@/modules/feed/recent-chats";
 import RenewalsSoon from "@/modules/feed/renewals-soon";
 import FreshListings from "@/modules/feed/fresh-listings";
 import BoardHighlights from "@/modules/feed/board-highlights";
 import GroupBuysClosing from "@/modules/feed/group-buys-closing";
-import FreeWindow from "@/modules/feed/free-window";
-import QuantaBanner from "@/modules/communities/quanta-banner";
 import { InstallPrompt } from "@/components/pwa";
 
 // Personalized home feed (Phase 26, pulled forward). The chip row below is
@@ -45,9 +38,7 @@ import { InstallPrompt } from "@/components/pwa";
 // arrow) — same visual weight as Marketplace/Gate Runner, no smaller tiles.
 const FEATURES: { short: string; href: string; icon: LucideIcon; tint: string; blurb: string }[] = [
   { short: "Board", href: "/board", icon: Pin, tint: "bg-tint-rose text-tint-rose-fg", blurb: "Lost & found and campus notices." },
-  { short: "Events", href: "/events", icon: PartyPopper, tint: "bg-tint-violet text-tint-violet-fg", blurb: "What's happening on campus." },
   { short: "Match", href: "/matches", icon: Target, tint: "bg-tint-violet text-tint-violet-fg", blurb: "Find a compatible roommate." },
-  { short: "Clubs & Teams", href: "/communities", icon: Users, tint: "bg-tint-blue text-tint-blue-fg", blurb: "Chapters, clubs, and student teams." },
   { short: "Crews", href: "/crews", icon: Users2, tint: "bg-tint-rose text-tint-rose-fg", blurb: "Private groups for roommates & friends." },
   { short: "Toolbox", href: "/toolbox", icon: Wrench, tint: "bg-tint-amber text-tint-amber-fg", blurb: "Handy tools picked for students." },
   { short: "Deals", href: "/deals", icon: Tag, tint: "bg-tint-green text-tint-green-fg", blurb: "Offers from campus merchants." },
@@ -67,7 +58,7 @@ function greeting() {
 
 export default async function HomePage() {
   const { supabase, user } = await requireUser();
-  const [{ data: profile }, { data: mySpaces }, { data: openPickups }, { count: listingCount }] =
+  const [{ data: profile }, { data: mySpaces }, { count: listingCount }] =
     await Promise.all([
       supabase
         .from("profiles")
@@ -77,8 +68,7 @@ export default async function HomePage() {
       // RLS: only spaces the user is a member of come back. Everyone else
       // never sees this section exists.
       supabase.from("spaces").select("id, name, emoji"),
-      // Live flagship stats — both RLS-scoped to the user's college.
-      supabase.from("pickup_requests").select("reward").eq("status", "open"),
+      // Live flagship stat — RLS-scoped to the user's college.
       supabase
         .from("listings")
         .select("id", { count: "exact", head: true })
@@ -98,8 +88,6 @@ export default async function HomePage() {
   ]);
 
   const firstName = profile?.name?.split(" ")[0] ?? "";
-  const gateCount = openPickups?.length ?? 0;
-  const gateRewards = (openPickups ?? []).reduce((s, r) => s + Number(r.reward || 0), 0);
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-4 py-6">
@@ -121,12 +109,6 @@ export default async function HomePage() {
         <Search className="h-4 w-4" strokeWidth={2.2} />
         Search campus…
       </Link>
-
-      {/* Club owners & team leads get their management command center first —
-          renders nothing for normal students, so no toggle, no confusion. */}
-      <Suspense fallback={<SkeletonSection />}>
-        <LeaderStrip />
-      </Suspense>
 
       {/* Personal & dynamic — your next class + any attendance warning.
           Self-hides for anyone without a timetable, so new users skip it. */}
@@ -154,36 +136,6 @@ export default async function HomePage() {
                   "Buy, sell, and rent — students from your college only."
                 )}
               </p>
-            </div>
-            <ArrowRight className="h-4 w-4 shrink-0 text-primary" strokeWidth={2.2} />
-          </div>
-        </Link>
-
-        <Link href="/gate" className="animate-fade-up press" style={{ animationDelay: "120ms" }}>
-          <div className="glass press-glow flex items-center gap-4 rounded-3xl p-4">
-            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-tint-green text-tint-green-fg">
-              <Footprints className="h-7 w-7" strokeWidth={2} />
-            </span>
-            <div className="min-w-0 flex-1">
-              <h2 className="flex items-center gap-2 font-heading font-bold">
-                Gate Runner
-                {gateCount > 0 && (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-tint-green px-2 py-0.5 text-[10px] font-bold text-tint-green-fg">
-                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-current" /> LIVE
-                  </span>
-                )}
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                {gateCount > 0 ? (
-                  <>
-                    {gateCount} deliver{gateCount === 1 ? "y" : "ies"} waiting at the gate
-                    {gateRewards > 0 && <> · <span className="font-semibold text-accent">₹{gateRewards.toFixed(0)} up for grabs</span></>}
-                  </>
-                ) : (
-                  "Your delivery, picked up by someone already at the gate."
-                )}
-              </p>
-              <span className="route-dash mt-2 block w-3/4" />
             </div>
             <ArrowRight className="h-4 w-4 shrink-0 text-primary" strokeWidth={2.2} />
           </div>
@@ -270,18 +222,7 @@ export default async function HomePage() {
         ))}
       </div>
 
-      {/* Clubs & teams — high on the page so campus life isn't hidden. */}
-      <Suspense fallback={<SkeletonSection />}>
-        <ClubsStrip />
-      </Suspense>
-
       <InstallPrompt />
-
-      <Suspense fallback={<SkeletonSection />}>
-        <FreeWindow />
-      </Suspense>
-
-      <QuantaBanner />
 
       <Suspense fallback={<SkeletonSection />}>
         <RecentChats />

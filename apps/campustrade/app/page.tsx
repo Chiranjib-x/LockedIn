@@ -4,7 +4,6 @@ import {
   ArrowRight,
   CarTaxiFront,
   Download,
-  Footprints,
   Gamepad2,
   Handshake,
   MessageCircle,
@@ -16,8 +15,7 @@ import {
 import { createClient } from "@/lib/supabase/server";
 import LogoMark from "@/components/logo";
 
-// Marketing pillars — the three features that sell the app (user-directed):
-// Gate Runner (nothing else has it), campus-only Marketplace, and the
+// Marketing pillars — campus-only Marketplace, built-in Chat, and the
 // gender-specific members-only Spaces.
 const PILLARS: {
   icon: LucideIcon;
@@ -25,12 +23,6 @@ const PILLARS: {
   title: string;
   body: string;
 }[] = [
-  {
-    icon: Footprints,
-    tint: "bg-tint-green text-tint-green-fg",
-    title: "Gate Runner",
-    body: "Your Swiggy's at the gate. Someone's already walking there — they grab it, you reward them. Everyone wins.",
-  },
   {
     icon: ShoppingBag,
     tint: "bg-tint-blue text-tint-blue-fg",
@@ -94,14 +86,11 @@ const EVERYTHING: { group: string; items: { name: string; blurb: string }[] }[] 
       { name: "Group-buys", blurb: "One order, one delivery fee, split between everyone who joins." },
       { name: "Netflix & Spotify pools", blurb: "Browse open seats, join mid-cycle at a prorated share." },
       { name: "Cab pooling", blurb: "4 AM airport run? Find students leaving the same day, split the fare." },
-      { name: "Gate Runner", blurb: "Someone's already walking to the gate — they grab your parcel, you reward them." },
     ],
   },
   {
     group: "Your people",
     items: [
-      { name: "Clubs, chapters & teams", blurb: "Leads run recruiting, positions, broadcasts, analytics, and rosters — no WhatsApp needed." },
-      { name: "Events + barcode check-in", blurb: "Organizers scan college IDs at the door and get a live attendee roster." },
       { name: "Girls' Closet & Boys' Den", blurb: "Members-only spaces invisible to everyone else — rent out that lehenga or the console." },
       { name: "Study groups", blurb: "Course-tagged groups with their own built-in group chat." },
       { name: "Roommate match", blurb: "Compatibility-scored matches — sleep schedule, tidiness, guests, all of it." },
@@ -114,7 +103,7 @@ const EVERYTHING: { group: string; items: { name: string; blurb: string }[] }[] 
       { name: "Timetable + bunk math", blurb: "One-tap attendance and the answer to \"can I skip today?\"" },
       { name: "Campus board", blurb: "Lost & found that auto-matches lost posts to found ones, plus notices." },
       { name: "Built-in chat", blurb: "DMs and group rooms with context — every deal, ride, and group has its thread." },
-      { name: "Smart notifications", blurb: "Class nudges when your attendance is at risk, deal alerts, event pings." },
+      { name: "Smart notifications", blurb: "Class nudges when your attendance is at risk, deal alerts, price drops." },
       { name: "Search & alerts", blurb: "One search across everything; save a search and get told when it appears." },
       { name: "Karma & ratings", blurb: "Good actors are visible — every deal builds your campus reputation." },
     ],
@@ -151,15 +140,15 @@ export default async function Home() {
 
       <p className="animate-fade-up flex items-center gap-2 font-heading text-sm font-bold tracking-widest uppercase">
         <LogoMark className="h-7 w-auto text-primary" />
-        <span className="gradient-brand-text">LockedIn</span>
+        <span className="gradient-brand-text">CampusTrade</span>
       </p>
       <h1
         className="animate-fade-up mt-4 max-w-2xl text-5xl font-bold sm:text-7xl"
         style={{ animationDelay: "80ms" }}
       >
-        Your campus,
+        Buy, sell, split.
         <br />
-        <span className="gradient-brand-text">one app.</span>
+        <span className="gradient-brand-text">Campus only.</span>
       </h1>
       <p
         className="animate-fade-up mt-6 max-w-md text-lg text-muted-foreground"
