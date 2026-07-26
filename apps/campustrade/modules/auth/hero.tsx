@@ -1,4 +1,4 @@
-import LogoMark from "@/components/logo";
+import { LogoMark } from "@suite/ui";
 
 // Shared brand hero for the auth pages — the first screens anyone sees.
 // Theme-aware: warm cream in light, "System window" over the mesh in dark.

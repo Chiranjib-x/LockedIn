@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
-import { Card } from "@/components/ui";
+import { Card } from "@suite/ui";
 import { PastAttendanceForm } from "@/modules/timetable/attendance-marker";
 import { attendancePercent, bunkMessage } from "@/modules/timetable/bunk-math";
 import { DAY_NAMES, formatTime } from "@/modules/timetable/helpers";

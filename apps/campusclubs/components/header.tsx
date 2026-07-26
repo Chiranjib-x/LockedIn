@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Bell, Search, ShieldCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import ThemeToggle from "@/components/theme-toggle";
-import LogoMark from "@/components/logo";
+import { LogoMark } from "@suite/ui";
 
 async function NotificationBell({
   supabase,

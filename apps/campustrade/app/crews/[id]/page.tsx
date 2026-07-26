@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
-import { Card } from "@/components/ui";
-import BackLink from "@/components/back-link";
+import { Card } from "@suite/ui";
+import { BackLink } from "@suite/ui";
 import { LogOut } from "lucide-react";
 import AddCrewMember from "@/modules/crews/add-member";
 import NoteForm from "@/modules/crews/note-form";

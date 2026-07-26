@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { inputClass } from "@/components/ui";
-import { SubmitButton } from "@/components/submit-button";
+import { inputClass } from "@suite/ui";
+import { SubmitButton } from "@suite/ui";
 import ImageUpload from "@/components/image-upload";
 import { CATEGORIES, CONDITIONS } from "./constants";
 import { saveListing } from "./actions";

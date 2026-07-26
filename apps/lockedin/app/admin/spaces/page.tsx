@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
-import { Card } from "@/components/ui";
+import { Card } from "@suite/ui";
 import FounderInvite from "@/modules/spaces/founder-invite";
 
 // FINDINGS F7: a space with no members can never be joined — every door needs

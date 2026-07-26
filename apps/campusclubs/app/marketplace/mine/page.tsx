@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { ShoppingBag } from "lucide-react";
 import { requireUser } from "@/lib/auth";
-import { Card } from "@/components/ui";
-import BackLink from "@/components/back-link";
-import EmptyState from "@/components/empty-state";
+import { Card } from "@suite/ui";
+import { BackLink } from "@suite/ui";
+import { EmptyState } from "@suite/ui";
 import ListingActions from "@/modules/marketplace/listing-actions";
 import { rupees } from "@/modules/marketplace/format";
 

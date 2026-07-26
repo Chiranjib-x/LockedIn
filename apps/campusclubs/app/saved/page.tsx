@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { Bookmark } from "lucide-react";
 import { requireUser } from "@/lib/auth";
-import { Card, Section } from "@/components/ui";
-import BackLink from "@/components/back-link";
-import EmptyState from "@/components/empty-state";
+import { Card, Section } from "@suite/ui";
+import { BackLink } from "@suite/ui";
+import { EmptyState } from "@suite/ui";
 import { rupees } from "@/modules/marketplace/format";
 import TypeBadge from "@/modules/board/badge";
 import { deleteSavedSearch } from "@/modules/saves/actions";

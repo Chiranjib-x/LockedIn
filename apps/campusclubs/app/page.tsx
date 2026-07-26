@@ -10,7 +10,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
-import LogoMark from "@/components/logo";
+import { LogoMark } from "@suite/ui";
 
 // Marketing pillars — the four things that make CampusClubs worth switching
 // from WhatsApp + Google Forms + spreadsheets.

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth";
-import { Card } from "@/components/ui";
+import { Card } from "@suite/ui";
 
 // Invite redemption (0027). The RPC owns every check (exists / unused /
 // unexpired / same college / inviter still a member / not already in) and

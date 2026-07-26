@@ -1,5 +1,5 @@
 import { requireUser } from "@/lib/auth";
-import BackLink from "@/components/back-link";
+import { BackLink } from "@suite/ui";
 import ListingForm from "@/modules/marketplace/listing-form";
 
 export default async function NewListingPage({

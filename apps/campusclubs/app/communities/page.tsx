@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { ArrowRight, Users } from "lucide-react";
 import { requireUser } from "@/lib/auth";
-import { Card } from "@/components/ui";
-import EmptyState from "@/components/empty-state";
+import { Card } from "@suite/ui";
+import { EmptyState } from "@suite/ui";
 import { ApproveButtons } from "@/modules/communities/client";
 import QuantaBanner from "@/modules/communities/quanta-banner";
 import { CATEGORY_META, catGroup } from "@/modules/communities/categories";

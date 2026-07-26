@@ -1,7 +1,7 @@
 import { requireUser } from "@/lib/auth";
-import BackLink from "@/components/back-link";
-import { inputClass } from "@/components/ui";
-import { SubmitButton } from "@/components/submit-button";
+import { BackLink } from "@suite/ui";
+import { inputClass } from "@suite/ui";
+import { SubmitButton } from "@suite/ui";
 import { createCrew } from "@/modules/crews/actions";
 
 export default async function NewCrewPage({

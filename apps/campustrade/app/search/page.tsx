@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { requireUser } from "@/lib/auth";
-import { Card } from "@/components/ui";
+import { Card } from "@suite/ui";
 import { rupees } from "@/modules/marketplace/format";
 import TypeBadge from "@/modules/board/badge";
 import { KarmaBadge } from "@/modules/karma/badge";

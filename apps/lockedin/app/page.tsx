@@ -14,7 +14,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
-import LogoMark from "@/components/logo";
+import { LogoMark } from "@suite/ui";
 
 // Marketing pillars — the three features that sell the app (user-directed):
 // Gate Runner (nothing else has it), campus-only Marketplace, and the

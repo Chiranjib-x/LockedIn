@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { requireUser } from "@/lib/auth";
-import { Card } from "@/components/ui";
+import { Card } from "@suite/ui";
 import { scoreMatch, lookingForCompatible, type Prefs } from "@/modules/matcher/score";
 import ConnectButton from "@/modules/matcher/connect-button";
 import { KarmaBadge } from "@/modules/karma/badge";
 import CountUp from "@/components/count-up";
 import { Target } from "lucide-react";
-import EmptyState from "@/components/empty-state";
+import { EmptyState } from "@suite/ui";
 import VerifiedName from "@/components/verified-name";
 
 // Match % as a rank-ring (REVAMP-PLAN Phase 4) — fill fraction = score/100.

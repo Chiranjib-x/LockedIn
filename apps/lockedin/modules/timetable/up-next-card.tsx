@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Card } from "@/components/ui";
+import { Card } from "@suite/ui";
 import { attendancePercent, canMissMore } from "./bunk-math";
 import { formatTime } from "./helpers";
 import type { TimetableEntry } from "./helpers";

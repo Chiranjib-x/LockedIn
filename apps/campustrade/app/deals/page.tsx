@@ -1,7 +1,7 @@
 import { Tag } from "lucide-react";
 import { requireUser } from "@/lib/auth";
-import { Card } from "@/components/ui";
-import EmptyState from "@/components/empty-state";
+import { Card } from "@suite/ui";
+import { EmptyState } from "@suite/ui";
 
 export default async function DealsPage() {
   const { supabase } = await requireUser();

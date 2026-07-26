@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { Tv } from "lucide-react";
 import { requireUser } from "@/lib/auth";
-import { Card } from "@/components/ui";
+import { Card } from "@suite/ui";
 import { rupees } from "@/modules/marketplace/format";
 import { KarmaBadge } from "@/modules/karma/badge";
-import EmptyState from "@/components/empty-state";
+import { EmptyState } from "@suite/ui";
 
 // Phase 31 discovery board: pools that opened their seats to campus.
 // service_name is freeform text, so there are no category chips — plain

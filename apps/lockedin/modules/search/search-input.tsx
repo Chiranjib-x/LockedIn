@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { inputClass } from "@/components/ui";
+import { inputClass } from "@suite/ui";
 
 // Debounced URL-synced search box: typing rewrites ?q=, the server component
 // re-runs the queries. initialQ comes from the server page — no

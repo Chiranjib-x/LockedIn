@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
-import BackLink from "@/components/back-link";
+import { BackLink } from "@suite/ui";
 import CheckinClient from "@/modules/events/checkin-client";
 
 export default async function EventCheckinPage({ params }: { params: Promise<{ id: string }> }) {

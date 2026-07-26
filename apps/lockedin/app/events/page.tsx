@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { CalendarDays, MapPin, PartyPopper } from "lucide-react";
 import { requireUser } from "@/lib/auth";
-import EmptyState from "@/components/empty-state";
-import { Card } from "@/components/ui";
+import { EmptyState } from "@suite/ui";
+import { Card } from "@suite/ui";
 import { blockedIds, notInList } from "@/modules/moderation/blocks";
 import { istTodayISO } from "@/modules/timetable/helpers";
 

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { inputClass } from "@/components/ui";
+import { inputClass } from "@suite/ui";
 
 export type ProfileHit = {
   id: string;

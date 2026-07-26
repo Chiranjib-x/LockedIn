@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { HandHelping } from "lucide-react";
 import { requireUser } from "@/lib/auth";
-import BackLink from "@/components/back-link";
-import EmptyState from "@/components/empty-state";
+import { BackLink } from "@suite/ui";
+import { EmptyState } from "@suite/ui";
 import RequestCard, { type RequestRow } from "@/modules/requests/request-card";
 import { blockedIds, notInList } from "@/modules/moderation/blocks";
 

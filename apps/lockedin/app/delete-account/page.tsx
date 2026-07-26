@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { deleteAccount } from "@/app/auth/actions";
-import { SubmitButton } from "@/components/submit-button";
-import { inputClass } from "@/components/ui";
+import { SubmitButton } from "@suite/ui";
+import { inputClass } from "@suite/ui";
 
 export const metadata = {
   title: "Delete account — LockedIn",

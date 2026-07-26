@@ -1,4 +1,4 @@
-import { Card } from "@/components/ui";
+import { Card } from "@suite/ui";
 import { rupees } from "@/modules/marketplace/format";
 import { openChat } from "@/modules/chat/actions";
 import ReportSheet from "@/modules/moderation/report-sheet";

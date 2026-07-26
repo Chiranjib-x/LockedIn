@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { inputClass } from "@/components/ui";
+import { inputClass } from "@suite/ui";
 import { submitRating } from "./actions";
 
 export default function RateForm({

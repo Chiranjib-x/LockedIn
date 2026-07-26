@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { Card, Section } from "@/components/ui";
+import { Card, Section } from "@suite/ui";
 import { getChatRows, ago, type ChatRow } from "@/modules/chat/recent";
 
 export default async function RecentChats() {

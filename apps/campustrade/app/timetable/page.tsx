@@ -1,7 +1,7 @@
 import { CalendarDays } from "lucide-react";
 import { requireUser } from "@/lib/auth";
-import { Card } from "@/components/ui";
-import EmptyState from "@/components/empty-state";
+import { Card } from "@suite/ui";
+import { EmptyState } from "@suite/ui";
 import { MarkAttendance } from "@/modules/timetable/attendance-marker";
 import { AddClassForm, DeleteEntryButton } from "@/modules/timetable/client";
 import { AttendanceSummary, type CourseAttendance } from "@/modules/timetable/attendance-summary";

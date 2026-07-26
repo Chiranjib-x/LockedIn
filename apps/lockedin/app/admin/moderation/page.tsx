@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
-import { Card } from "@/components/ui";
+import { Card } from "@suite/ui";
 import { ReportActions } from "@/modules/moderation/mod-actions";
 
 const TARGET_TABLE: Record<string, string> = {

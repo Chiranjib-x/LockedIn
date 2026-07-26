@@ -2,8 +2,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { login } from "@/app/auth/actions";
-import { inputClass } from "@/components/ui";
-import { SubmitButton } from "@/components/submit-button";
+import { inputClass } from "@suite/ui";
+import { SubmitButton } from "@suite/ui";
 import AuthHero from "@/modules/auth/hero";
 import GoogleAuthButton from "@/components/google-auth-button";
 

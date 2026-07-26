@@ -1,7 +1,7 @@
 import { requireUser } from "@/lib/auth";
-import { inputClass } from "@/components/ui";
-import BackLink from "@/components/back-link";
-import { SubmitButton } from "@/components/submit-button";
+import { inputClass } from "@suite/ui";
+import { BackLink } from "@suite/ui";
+import { SubmitButton } from "@suite/ui";
 import { createTrip } from "@/modules/cabs/actions";
 
 export default async function NewTripPage({

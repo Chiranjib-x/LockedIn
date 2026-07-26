@@ -13,7 +13,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
-import LogoMark from "@/components/logo";
+import { LogoMark } from "@suite/ui";
 
 // Marketing pillars — campus-only Marketplace, built-in Chat, and the
 // gender-specific members-only Spaces.

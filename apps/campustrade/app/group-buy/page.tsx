@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { Handshake } from "lucide-react";
 import { requireUser } from "@/lib/auth";
-import { Card } from "@/components/ui";
-import EmptyState from "@/components/empty-state";
+import { Card } from "@suite/ui";
+import { EmptyState } from "@suite/ui";
 
 const STATUS_LABEL: Record<string, string> = {
   open: "Open",

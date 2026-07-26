@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { ArrowRight, CalendarDays, MapPin, PartyPopper, Search, Users } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { istNow, istTodayISO } from "@/modules/timetable/helpers";
-import { SkeletonSection } from "@/components/skeleton";
+import { SkeletonSection } from "@suite/ui";
 import LeaderStrip from "@/modules/feed/leader-strip";
 import ClubsStrip from "@/modules/feed/clubs-strip";
 import QuantaBanner from "@/modules/communities/quanta-banner";

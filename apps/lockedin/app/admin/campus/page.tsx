@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
-import { Card } from "@/components/ui";
+import { Card } from "@suite/ui";
 import { BuildingForm, BuildingRow, type Building } from "@/modules/campus/admin-client";
 
 // Moderator CMS for the VIT Compass campus map. Buildings are public-read but

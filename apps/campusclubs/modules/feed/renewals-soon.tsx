@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { Card, Section } from "@/components/ui";
+import { Card, Section } from "@suite/ui";
 import { rupees } from "@/modules/marketplace/format";
 
 // Date.now() lives in these standalone helpers, not inline in the component

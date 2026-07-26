@@ -14,9 +14,9 @@ import {
 } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { istNow, toIST } from "@/modules/timetable/helpers";
-import { Card } from "@/components/ui";
-import BackLink from "@/components/back-link";
-import EmptyState from "@/components/empty-state";
+import { Card } from "@suite/ui";
+import { BackLink } from "@suite/ui";
+import { EmptyState } from "@suite/ui";
 
 // Per-type icon + tint, matching the module hues (REVAMP-PLAN Phase 5).
 const KINDS: Record<string, { Icon: LucideIcon; cls: string }> = {

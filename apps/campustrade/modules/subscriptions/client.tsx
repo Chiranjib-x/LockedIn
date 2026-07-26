@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import ProfileSearch from "@/components/profile-search";
-import UpiPay from "@/components/upi-pay";
+import { UpiPay } from "@suite/ui";
 import { useRefresh } from "@suite/lib/use-refresh";
 import { addMember, removeMember, setShare, setPaid, splitEvenly } from "./actions";
 

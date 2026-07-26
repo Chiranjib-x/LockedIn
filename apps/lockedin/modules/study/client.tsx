@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { inputClass } from "@/components/ui";
-import { SubmitButton } from "@/components/submit-button";
+import { inputClass } from "@suite/ui";
+import { SubmitButton } from "@suite/ui";
 import { createGroup, joinGroup, leaveGroup } from "./actions";
 
 export function CreateGroupForm({ error }: { error?: string }) {

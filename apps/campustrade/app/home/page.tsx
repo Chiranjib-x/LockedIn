@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { istNow } from "@/modules/timetable/helpers";
-import { SkeletonSection } from "@/components/skeleton";
+import { SkeletonSection } from "@suite/ui";
 import NowStrip from "@/modules/feed/now-strip";
 import RecentChats from "@/modules/feed/recent-chats";
 import RenewalsSoon from "@/modules/feed/renewals-soon";

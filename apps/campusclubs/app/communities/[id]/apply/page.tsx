@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
-import BackLink from "@/components/back-link";
-import { inputClass } from "@/components/ui";
-import { SubmitButton } from "@/components/submit-button";
+import { BackLink } from "@suite/ui";
+import { inputClass } from "@suite/ui";
+import { SubmitButton } from "@suite/ui";
 import { applyToJoin } from "@/modules/communities/actions";
 
 // Application form — shown instead of instant join once a community has

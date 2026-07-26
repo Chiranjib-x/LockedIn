@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Card } from "@/components/ui";
+import { Card } from "@suite/ui";
 import { attendancePercent } from "./bunk-math";
 
 export type CourseAttendance = { code: string; title: string; attended: number; held: number; threshold: number };

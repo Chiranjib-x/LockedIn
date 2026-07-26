@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { Card, Section } from "@/components/ui";
+import { Card, Section } from "@suite/ui";
 import { rupees } from "@/modules/marketplace/format";
 
 type Listing = { id: string; title: string; price: number; images: string[]; category: string };

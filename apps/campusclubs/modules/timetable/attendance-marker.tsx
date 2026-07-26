@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { inputClass } from "@/components/ui";
+import { inputClass } from "@suite/ui";
 import { useRefresh } from "@suite/lib/use-refresh";
 import { markAttendance } from "./actions";
 

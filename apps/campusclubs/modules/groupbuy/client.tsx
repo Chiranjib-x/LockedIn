@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { inputClass } from "@/components/ui";
-import UpiPay from "@/components/upi-pay";
+import { inputClass } from "@suite/ui";
+import { UpiPay } from "@suite/ui";
 import { useRefresh } from "@suite/lib/use-refresh";
 import { joinOrder, leaveOrder, setOrderStatus, markPaid, confirmPaid, updateLogistics } from "./actions";
 

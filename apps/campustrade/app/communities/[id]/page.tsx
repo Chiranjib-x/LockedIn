@@ -2,7 +2,7 @@ import Link from "next/link";
 import { BarChart3, CalendarDays, Download, MapPin, Megaphone, Sparkles, Users } from "lucide-react";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
-import { Card } from "@/components/ui";
+import { Card } from "@suite/ui";
 import TypeBadge from "@/modules/board/badge";
 import { JoinLeaveButton, InterestButton, RecruitingToggle, RoleControls } from "@/modules/communities/client";
 import PositionEditor from "@/modules/communities/position-editor";

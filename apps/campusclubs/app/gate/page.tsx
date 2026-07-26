@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { Footprints } from "lucide-react";
 import { requireUser } from "@/lib/auth";
-import { Card } from "@/components/ui";
+import { Card } from "@suite/ui";
 import { ClaimButton, RunnerActions, RequesterActions, HeadingToGate } from "@/modules/gate/client";
-import EmptyState from "@/components/empty-state";
+import { EmptyState } from "@suite/ui";
 
 function eta(ts: string) {
   const ms = new Date(ts).getTime() - Date.now();

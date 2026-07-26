@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { MapPin, Pin } from "lucide-react";
 import { requireUser } from "@/lib/auth";
-import EmptyState from "@/components/empty-state";
-import { Card } from "@/components/ui";
+import { EmptyState } from "@suite/ui";
+import { Card } from "@suite/ui";
 import BoardFilter from "@/modules/board/board-filter";
 import TypeBadge from "@/modules/board/badge";
 import { blockedIds, notInList } from "@/modules/moderation/blocks";

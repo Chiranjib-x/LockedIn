@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { Users2, ChevronRight } from "lucide-react";
 import { requireUser } from "@/lib/auth";
-import { Card } from "@/components/ui";
-import EmptyState from "@/components/empty-state";
+import { Card } from "@suite/ui";
+import { EmptyState } from "@suite/ui";
 
 // Private groups you're in (RLS returns only your crews). Distinct from Clubs.
 export default async function CrewsPage() {

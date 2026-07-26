@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { Card, Section } from "@/components/ui";
+import { Card, Section } from "@suite/ui";
 import { getFreeWindow, istNow, type TimetableEntry } from "@/modules/timetable/helpers";
 
 // "While you're free" — the timetable is the moat: things you could actually

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import UpiPay from "@/components/upi-pay";
+import { UpiPay } from "@suite/ui";
 import { useRefresh } from "@suite/lib/use-refresh";
 import { createCollection, setDuePaid, deleteCollection } from "./actions";
 

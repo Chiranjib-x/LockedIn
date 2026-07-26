@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { Card } from "@/components/ui";
+import { Card } from "@suite/ui";
 
 // ponytail: hardcoded one-off event window, delete after 2026-07-18
 const QUANTA_START = new Date("2026-07-13T00:00:00+05:30").getTime();

@@ -1,7 +1,7 @@
 import { BookOpen, MapPin } from "lucide-react";
 import { requireUser } from "@/lib/auth";
-import { Card } from "@/components/ui";
-import EmptyState from "@/components/empty-state";
+import { Card } from "@suite/ui";
+import { EmptyState } from "@suite/ui";
 import { KarmaBadge } from "@/modules/karma/badge";
 import { CreateGroupForm, JoinLeaveButton } from "@/modules/study/client";
 

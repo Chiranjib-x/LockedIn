@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeftRight, Hourglass } from "lucide-react";
-import { inputClass } from "@/components/ui";
+import { inputClass } from "@suite/ui";
 import { makeOffer, decideOffer } from "./offer-actions";
 
 function StatusChip({ kind }: { kind: "waiting" | "countered" }) {

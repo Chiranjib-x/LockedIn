@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { Megaphone, Search, Sparkles, CalendarDays, BarChart3, ShieldCheck, ArrowRight } from "lucide-react";
-import { Card } from "@/components/ui";
+import { Card } from "@suite/ui";
 import ShareLink from "@/modules/communities/share-link";
 
 const DESC = "Market your club or student team and recruit members — without WhatsApp groups, QR codes, or phone numbers.";

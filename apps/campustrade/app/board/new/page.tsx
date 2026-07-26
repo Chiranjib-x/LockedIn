@@ -1,5 +1,5 @@
 import { requireUser } from "@/lib/auth";
-import BackLink from "@/components/back-link";
+import { BackLink } from "@suite/ui";
 import PostForm from "@/modules/board/post-form";
 
 export default async function NewPostPage({

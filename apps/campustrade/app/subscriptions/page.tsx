@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { Tv } from "lucide-react";
 import { requireUser } from "@/lib/auth";
-import { Card } from "@/components/ui";
+import { Card } from "@suite/ui";
 import { rupees } from "@/modules/marketplace/format";
-import EmptyState from "@/components/empty-state";
+import { EmptyState } from "@suite/ui";
 
 function daysUntil(date: string) {
   return Math.ceil((new Date(date).getTime() - Date.now()) / 86400000);

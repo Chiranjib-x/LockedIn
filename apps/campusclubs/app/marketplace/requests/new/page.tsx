@@ -1,5 +1,5 @@
 import { requireUser } from "@/lib/auth";
-import BackLink from "@/components/back-link";
+import { BackLink } from "@suite/ui";
 import RequestForm from "@/modules/requests/request-form";
 
 export default async function NewRequestPage({

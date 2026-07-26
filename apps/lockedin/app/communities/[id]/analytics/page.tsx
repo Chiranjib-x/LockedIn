@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
 import { UserPlus, Users, Sparkles, CalendarDays, UserCheck, Megaphone } from "lucide-react";
 import { requireUser } from "@/lib/auth";
-import { Card } from "@/components/ui";
-import BackLink from "@/components/back-link";
+import { Card } from "@suite/ui";
+import { BackLink } from "@suite/ui";
 
 type Stats = {
   members: number;

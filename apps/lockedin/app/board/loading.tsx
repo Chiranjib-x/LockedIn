@@ -1,4 +1,4 @@
-import { SkeletonList } from "@/components/skeleton";
+import { SkeletonList } from "@suite/ui";
 export default function Loading() {
   return <SkeletonList />;
 }

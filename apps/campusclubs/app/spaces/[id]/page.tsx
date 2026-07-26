@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
-import { Card } from "@/components/ui";
-import BackLink from "@/components/back-link";
+import { Card } from "@suite/ui";
+import { BackLink } from "@suite/ui";
 import ListingCard from "@/modules/marketplace/listing-card";
 import RequestCard, { type RequestRow } from "@/modules/requests/request-card";
 import AddMember from "@/modules/spaces/add-member";

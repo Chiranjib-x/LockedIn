@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { BrowserMultiFormatReader } from "@zxing/browser";
 import { DecodeHintType, BarcodeFormat } from "@zxing/library";
-import { inputClass } from "@/components/ui";
+import { inputClass } from "@suite/ui";
 
 // Formats seen on student / government ID cards: PDF417 (dense 2D block) is the
 // most common, plus the 1D families and QR/DataMatrix. Listing them + TRY_HARDER

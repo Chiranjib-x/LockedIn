@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { MessageCirclePlus } from "lucide-react";
 import { requireUser } from "@/lib/auth";
-import { Card } from "@/components/ui";
+import { Card } from "@suite/ui";
 import { getChatRows, ago } from "@/modules/chat/recent";
 import PushOptIn from "@/components/push-opt-in";
 
