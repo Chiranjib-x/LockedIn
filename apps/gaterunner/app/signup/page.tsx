@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+import { createClient } from "@suite/auth/server";
 import Link from "next/link";
 import { signup } from "@/app/auth/actions";
 import { inputClass } from "@suite/ui";
@@ -10,6 +12,13 @@ export default async function SignupPage({
 }: {
   searchParams: Promise<{ error?: string }>;
 }) {
+  // Already signed in? This page has nothing to offer — send them in.
+  const supabaseAuth = await createClient();
+  const {
+    data: { user },
+  } = await supabaseAuth.auth.getUser();
+  if (user) redirect("/gate");
+
   const { error } = await searchParams;
 
   return (
