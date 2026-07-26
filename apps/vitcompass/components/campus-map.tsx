@@ -192,12 +192,16 @@ function FirstWeek({
   onGo: (b: Building) => void;
   onClose: () => void;
 }) {
-  const [done, setDone] = useState<Record<string, boolean>>({});
-  useEffect(() => {
+  // Lazy initialiser, not an effect: this panel only mounts after the user taps
+  // "First week", so it never renders on the server and cannot hydration-mismatch.
+  const [done, setDone] = useState<Record<string, boolean>>(() => {
+    if (typeof window === "undefined") return {};
     try {
-      setDone(JSON.parse(localStorage.getItem(WEEK_KEY) || "{}"));
-    } catch {}
-  }, []);
+      return JSON.parse(localStorage.getItem(WEEK_KEY) || "{}");
+    } catch {
+      return {};
+    }
+  });
   const toggle = (label: string) =>
     setDone((d) => {
       const next = { ...d, [label]: !d[label] };

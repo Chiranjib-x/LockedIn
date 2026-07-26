@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { createClient } from "@suite/auth/client";
 import {
   ensureNativePushSubscription,
@@ -13,19 +13,23 @@ const DONE_KEY = "gr-push-optin-done";
 
 // Contextual permission ask — pickups are time-critical, so this is the one
 // app where push is near-mandatory for a good experience.
-export default function PushOptIn() {
-  const [show, setShow] = useState(false);
-  const [busy, setBusy] = useState(false);
+// Whether this device should be asked at all — a browser-state read, so it goes
+// through useSyncExternalStore rather than an effect: the server snapshot is
+// `false`, which both avoids a hydration mismatch and satisfies
+// react-hooks/set-state-in-effect. Nothing external emits changes here, so
+// `subscribe` is a no-op.
+const noopSubscribe = () => () => {};
+function eligibleSnapshot() {
+  if (localStorage.getItem(DONE_KEY) !== null) return false;
+  if (isNativeApp()) return true;
+  return pushSupported() && Notification.permission !== "denied";
+}
 
-  useEffect(() => {
-    if (localStorage.getItem(DONE_KEY) !== null) return;
-    if (isNativeApp()) {
-      setShow(true);
-      return;
-    }
-    if (!pushSupported() || Notification.permission === "denied") return;
-    setShow(true);
-  }, []);
+export default function PushOptIn() {
+  const eligible = useSyncExternalStore(noopSubscribe, eligibleSnapshot, () => false);
+  const [dismissed, setDismissed] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const show = eligible && !dismissed;
 
   if (!show) return null;
 
@@ -43,7 +47,7 @@ export default function PushOptIn() {
           if (isNativeApp()) await ensureNativePushSubscription(supabase, "gaterunner");
           else await ensurePushSubscription(supabase, "gaterunner");
           localStorage.setItem(DONE_KEY, "1");
-          setShow(false);
+          setDismissed(true);
         }}
         className="press min-h-11 shrink-0 rounded-full bg-primary px-4 text-sm font-semibold text-on-primary hover:bg-primary-strong disabled:opacity-50"
       >
@@ -53,7 +57,7 @@ export default function PushOptIn() {
         aria-label="Not now"
         onClick={() => {
           localStorage.setItem(DONE_KEY, "1");
-          setShow(false);
+          setDismissed(true);
         }}
         className="press min-h-11 shrink-0 px-1 text-muted-foreground"
       >
