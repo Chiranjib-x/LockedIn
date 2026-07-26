@@ -29,7 +29,14 @@ export function JoinForm({ orderId, unitPrice }: { orderId: string; unitPrice: n
       {unitPrice == null && (
         <label className="flex flex-col gap-1 text-sm font-medium">
           Your share (₹)
-          <input type="number" min={0} value={amount || ""} onChange={(e) => setAmount(Number(e.target.value))} className={inputClass} />
+          {/* `amount || ""` blanked the field at a real 0 (zero is falsy). */}
+          <input
+            type="number"
+            min={0}
+            value={Number.isFinite(amount) ? amount : ""}
+            onChange={(e) => setAmount(Number(e.target.value))}
+            className={inputClass}
+          />
         </label>
       )}
       <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="Note (flavour, size…)" className={inputClass} />

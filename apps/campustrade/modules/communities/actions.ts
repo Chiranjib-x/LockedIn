@@ -401,7 +401,9 @@ export async function addBoxItem(boxId: string, cid: string, name: string, quant
   const { data: profile } = await supabase.from("profiles").select("college_id").eq("id", user.id).single();
   const { error } = await supabase.from("community_box_items").insert({
     box_id: boxId, community_id: cid, college_id: profile?.college_id,
-    name: n, quantity: Math.max(0, Math.floor(quantity) || 1),
+    // `Math.floor(q) || 1` turned an explicit 0 into 1 (zero is falsy) — a lead
+    // adding a known-empty item got it stocked at 1. Zero is real data here.
+    name: n, quantity: Number.isFinite(quantity) ? Math.max(0, Math.floor(quantity)) : 1,
   });
   revalidatePath(`/communities/${cid}`);
   return error ? "Couldn't add the item (leads only)." : null;

@@ -19,8 +19,13 @@ export async function createSubscription(formData: FormData) {
   const service = String(formData.get("service_name") ?? "").trim();
   const total = Number(formData.get("total_cost") ?? 0);
   const renewal = String(formData.get("renewal_date") ?? "").trim();
-  if (!service || !total || !renewal) {
-    redirect("/subscriptions/new?error=" + encodeURIComponent("Service, cost, and renewal date are required."));
+  // Deliberate: a ₹0 pool has nothing to split, so 0 is rejected — but say so
+  // instead of calling it "missing" (the old `!total` conflated the two).
+  if (!service || !renewal) {
+    redirect("/subscriptions/new?error=" + encodeURIComponent("Service and renewal date are required."));
+  }
+  if (!Number.isFinite(total) || total <= 0) {
+    redirect("/subscriptions/new?error=" + encodeURIComponent("Enter a cost greater than ₹0 — that's what gets split."));
   }
 
   const { data: profile } = await supabase
