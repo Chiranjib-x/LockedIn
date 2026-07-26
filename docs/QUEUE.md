@@ -209,11 +209,52 @@ would agree. "Improve X" is not an item. "X passes Y" is.
 - **Done when:** the badge count on the page that visits `/notifications` matches the post-mark-read DB state within that same render, demonstrated with a before/after count pasted.
 - **Evidence:**
 
+### A33 · vitcompass has no OpenGraph metadata — the launch wedge shares as a bare URL
+- **State:** open
+- **Where:** `apps/vitcompass/app/layout.tsx` (no `openGraph`, no `metadataBase`), `apps/vitcompass/app/` (no `opengraph-image.tsx`)
+- **Why:** `docs/LAUNCH.md` W-1 is the one broad move of the whole launch, and it is a
+  link pasted into student groups. Grep across `apps/vitcompass` for
+  `openGraph|opengraph-image|metadataBase|twitter` returns **zero hits** — so the link
+  renders with no title card, no image, no description. A bare URL in a group chat is
+  the difference between "here's a map of VIT" and "some guy dropped a link".
+- **Do:** add `metadataBase` + `openGraph` to the root layout metadata and a static
+  `app/opengraph-image.tsx`. Copy the structure of the existing example in this repo:
+  `apps/lockedin/app/for-clubs/opengraph-image.tsx` (static-route OG image, same
+  pattern) — match its import style, size/contentType exports, and token colours.
+- **Done when:** `curl -s https://map.chiranjib.online | grep -o 'og:[a-z:]*'` lists
+  `og:title`, `og:description`, `og:image`, and the image URL returns `200 image/png`.
+- **Evidence:**
+
 ---
 
 ## USER-GATED — `/loop` reports these, never attempts them
 
 Nothing here is a failure of the loop. These need you.
+
+### 🚀 LAUNCH BLOCKERS — do these first, in this order
+
+Stage 0 of `docs/LAUNCH.md`. **No stage of the launch plan starts until all six are
+done** — the funnel is broken at the top until U4 lands, and every later stage spends
+first impressions that cannot be re-spent. IDs below are the same items listed further
+down, re-ordered by launch dependency (not renumbered).
+
+1. **U4** — the signup funnel. Google provider (button is live and *errors* today),
+   Confirm email back on, deep-link schemes allow-listed. Nothing else matters first.
+2. **U5** — rotate the two leaked credentials *before* inviting a campus in.
+3. **U10** — delete the `gmail.com` seed college + test accounts. A real student
+   seeing "Demo College" in the picker is an instant credibility loss.
+4. **F7 follow-through** — mint founding invites for Girls' Closet + Boys' Den at
+   `/admin/spaces` (both at 0 members). Bootstrap RPCs shipped in 0070/0071.
+5. **U7** — all 24 VIT building coordinates exact, not 7. VIT Compass is the launch
+   wedge; a fresher walking to a pin 200m off kills it in one try.
+6. **U11 · Neutral domain** *(new)* — `map.chiranjib.online` pasted to 200 strangers
+   reads as a personal side project. ~₹1000/yr, the cheapest credibility buy available.
+
+Then by stage, not before: **U8** phone QA during W-3 seeding · **U2** Play Console
+by W+2 (web link beats an APK for the wedge — the unknown-sources warning is the most
+desperate-looking thing in the funnel) · **U9** monitoring before W+4 campus-wide.
+
+### Everything else
 
 - **U1 · Vercel projects + DNS per app** — create a Vercel project per app (same repo, Root Directory `apps/<name>`, copy env vars) and a Cloudflare CNAME (`gate.`, `clubs.`, `trade.`, `map.`) → vercel, DNS-only. Blocks every deploy item.
 - **U2 · Play Console** — $25 account, listing per `docs/playstore/LISTING.md`, data-safety form, upload the AAB.
@@ -225,6 +266,7 @@ Nothing here is a failure of the loop. These need you.
 - **U8 · Manual phone QA** — the unautomatable set: barcode camera scan, photo upload, two-account realtime chat, UPI QR, Continue-with-Google inside the installed APK.
 - **U9 · Monitoring (Gate #12)** — Sentry or equivalent needs an account and a DSN before the wiring can be done.
 - **U10 · Launch-day data cleanup** — delete the `gmail.com` seed college and test accounts; re-point Girls' Closet / Boys' Den founding members to real hostel reps.
+- **U11 · Neutral domain** — buy and point a domain that isn't a personal name. `map.chiranjib.online` in a group of strangers reads as a side project, not a product; it undercuts `docs/LAUNCH.md` W-1, which depends on the link being shared by other people. Keep `chiranjib.online` as the origin, add the new domain in Vercel per app, and update `capacitor.config.ts` `server.url` + Supabase Site URL / redirect allow-list to match.
 
 ---
 
