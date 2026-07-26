@@ -155,6 +155,20 @@ would agree. "Improve X" is not an item. "X passes Y" is.
 - **Done when:** rendering with `buildings=[]` shows the message (test by stubbing the query), and `grep -c '#[0-9a-fA-F]\{6\}' apps/vitcompass/components/campus-map.tsx` is 0.
 - **Evidence:**
 
+### A20 · Whole-app Y3 label pass (unlabeled inputs, repo-wide)
+- **State:** open
+- **Why:** FINDINGS F4 has been extended by three separate beats now (B1 auth, B12 gaterunner, B6/B8 daily-life+timetable) without ever getting its own queue item — each beat found more unlabeled inputs and the fix note has said "do the whole Y3 class in one pass, not per-beat" since B1. Left per-beat, it never gets fixed.
+- **Do:** `node scripts/sweep.mjs <app> --id=Y3 --json` per app, add `aria-label` (smallest change) or wrap in `<label htmlFor>` for every hit. Known sites so far: auth pages (all 4 apps), `apps/gaterunner/modules/gate/client.tsx:17,82`, `app/cabs/page.tsx:59,65`, `modules/subscriptions/discovery.tsx:36`, `modules/communities/boxes.tsx:29,123,129`, `modules/showcase/forms.tsx:16,18,19`, `modules/timetable/attendance-marker.tsx:68` — plus whatever the full per-app sweep turns up outside beats already walked.
+- **Done when:** `node scripts/sweep.mjs <app> --id=Y3` returns 0 hits for every app, pasted per app.
+- **Evidence:**
+
+### A21 · Truthiness-on-zero cleanup (FINDINGS F31)
+- **State:** open
+- **Why:** FINDINGS F31 — three small `0`-is-falsy bugs in B6: `modules/communities/actions.ts:404` (`addBoxItem` coerces an explicit quantity of `0` to `1`), `modules/groupbuy/client.tsx:32` (share amount input visually blanks at `0`), `modules/subscriptions/actions.ts:22` (rejects `total_cost = 0` as "required"). None are data-breaking, all match the CLAUDE.md "zero is data" iron rule.
+- **Do:** `addBoxItem` — `Number.isFinite(quantity) ? Math.max(0, Math.floor(quantity)) : 1` instead of `Math.floor(quantity) || 1`. `JoinForm` — decide whether a literal-zero display matters enough to fix (e.g. track a separate "touched" flag) or close as intentional. `createSubscription` — switch to an explicit `total == null || Number.isNaN(total)` check, or confirm rejecting `0` is deliberate product behaviour and close as won't-fix.
+- **Done when:** each of the three sites either has a passing before/after example pasted (input `0` → stored `0`), or a dated won't-fix note in STATE `## Decisions` for the ones that are deliberate.
+- **Evidence:**
+
 ---
 
 ## USER-GATED — `/loop` reports these, never attempts them
