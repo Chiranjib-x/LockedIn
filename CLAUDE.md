@@ -57,9 +57,16 @@ is the set of things an agent must report rather than attempt.
 
 - `/loop` — work QUEUE.md top-down: pick → work → gate → commit → record → next.
   Runs until the AGENT list is exhausted or a stop condition in the command fires.
+- `/hunt` — the discovery loop. Sweeps a feature beat at a time, confirms each
+  suspect by reading code, fixes P0/P1, files P2/P3 to QUEUE. Ledger and coverage
+  table live in `docs/FINDINGS.md`. `/loop` executes known work; `/hunt` finds it.
 - `node scripts/gate.mjs <app> [--build] [--no-lint]` — the verification gate.
   Exit 0 is the only thing that licenses a commit. Add `--build` before closing
   a phase. A `TIMEOUT` verdict means unknown, not passed.
+- `node scripts/sweep.mjs [app] [--axis=…] [--id=…] [--fork]` — static detectors
+  encoding this repo's own bug history (the ⚠ Launch Gate markers and STATE
+  `## Failed attempts`). Every hit is a SUSPECT: confirm by reading the code
+  before fixing. `--fork` reports drift across the three forked apps.
 
 The loop runs *inside* these guardrails, not instead of them: the routing table
 above still fires every iteration, and the hard stops below still bind. An item
