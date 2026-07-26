@@ -1,4 +1,5 @@
 import Link from "next/link";
+import MarkAllRead from "@/modules/notifications/mark-read";
 import {
   Award,
   Bell,
@@ -57,10 +58,10 @@ export default async function NotificationsPage() {
     .order("created_at", { ascending: false })
     .limit(50);
 
-  // Opening the page marks everything read — no per-item ceremony.
-  if (items?.some((n) => !n.read)) {
-    await supabase.from("notifications").update({ read: true }).eq("user_id", user.id).eq("read", false);
-  }
+  // Opening the page marks everything read — done from <MarkAllRead /> after
+  // mount, not here: a write during render left the header's badge stale for
+  // that pass (FINDINGS F42).
+  const hasUnread = items?.some((n) => !n.read) ?? false;
 
   // Day separators are derived, not accumulated: mutating a variable while
   // mapping is a render side effect (react-hooks "cannot reassign after render").
@@ -70,6 +71,7 @@ export default async function NotificationsPage() {
     <main className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-4 px-4 py-6">
       <BackLink href="/home" label="Home" />
       <h1 className="text-2xl font-bold">Notifications</h1>
+      {hasUnread && <MarkAllRead />}
 
       {!items?.length ? (
         <EmptyState icon={Bell} tint="blue" title="Nothing yet">

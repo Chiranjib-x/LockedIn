@@ -22,6 +22,9 @@ export default async function ShowcaseAdminPage() {
         <h2 className="text-lg font-semibold">🧰 Toolbox</h2>
         <Card><ShowcaseForm /></Card>
         <div className="flex flex-col gap-2">
+          {items?.length === 0 && (
+            <p className="text-sm text-muted-foreground">No tools yet — add the first one above.</p>
+          )}
           {items?.map((it) => (
             <Card key={it.id} className={`flex items-center justify-between gap-3 ${it.is_active ? "" : "opacity-50"}`}>
               <div className="min-w-0">
@@ -38,6 +41,9 @@ export default async function ShowcaseAdminPage() {
         <h2 className="text-lg font-semibold">🏷️ Deals</h2>
         <Card><MerchantForm /></Card>
         <div className="flex flex-col gap-2">
+          {merchants?.length === 0 && (
+            <p className="text-sm text-muted-foreground">No deals yet — add the first one above.</p>
+          )}
           {merchants?.map((m) => (
             <Card key={m.id} className={`flex items-center justify-between gap-3 ${m.is_active ? "" : "opacity-50"}`}>
               <div className="min-w-0">

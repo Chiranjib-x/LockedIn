@@ -47,6 +47,7 @@ export function BuildingForm({ building }: { building?: Building }) {
 export function BuildingRow({ building }: { building: Building }) {
   const refresh = useRefresh();
   const [editing, setEditing] = useState(false);
+  const [busy, setBusy] = useState(false); // FINDINGS F41: no feedback while deleting
   const hasPin = building.lat != null && building.lng != null;
   return (
     <div className="flex flex-col gap-2 rounded-2xl border border-border bg-card p-3">
@@ -67,15 +68,17 @@ export function BuildingRow({ building }: { building: Building }) {
             {editing ? "Close" : "Edit"}
           </button>
           <button
+            disabled={busy}
             onClick={async () => {
-              if (confirm(`Delete “${building.name}” from the campus map?`)) {
-                await deleteBuilding(building.id);
-                refresh();
-              }
+              if (!confirm(`Delete “${building.name}” from the campus map?`)) return;
+              setBusy(true);
+              await deleteBuilding(building.id);
+              setBusy(false);
+              refresh();
             }}
-            className="press rounded-full border border-destructive/40 px-3 py-1 text-xs font-medium text-destructive hover:bg-destructive/10"
+            className="press rounded-full border border-destructive/40 px-3 py-1 text-xs font-medium text-destructive hover:bg-destructive/10 disabled:opacity-50"
           >
-            Delete
+            {busy ? "…" : "Delete"}
           </button>
         </div>
       </div>

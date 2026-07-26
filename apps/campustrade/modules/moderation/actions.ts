@@ -49,8 +49,9 @@ export async function unblockUser(blockedId: string) {
 // ── moderator-only ──
 export async function dismissReport(reportId: string) {
   const { supabase } = await me();
-  await supabase.from("reports").update({ status: "dismissed" }).eq("id", reportId);
+  const { error } = await supabase.from("reports").update({ status: "dismissed" }).eq("id", reportId);
   revalidatePath("/admin/moderation");
+  return error ? "Couldn't dismiss that report — refresh and try again." : null;
 }
 
 export async function removeContent(
@@ -59,14 +60,18 @@ export async function removeContent(
   tid: string
 ) {
   const { supabase } = await me();
-  await supabase.rpc("mod_remove_content", { ttype, tid });
+  const { error } = await supabase.rpc("mod_remove_content", { ttype, tid });
+  if (error) return "Couldn't remove that content — refresh and try again.";
   await supabase.from("reports").update({ status: "actioned" }).eq("id", reportId);
   revalidatePath("/admin/moderation");
+  return null;
 }
 
 export async function banUser(reportId: string, userId: string) {
   const { supabase } = await me();
-  await supabase.rpc("mod_ban_user", { uid: userId });
+  const { error } = await supabase.rpc("mod_ban_user", { uid: userId });
+  if (error) return "Couldn't ban that user — refresh and try again.";
   await supabase.from("reports").update({ status: "actioned" }).eq("id", reportId);
   revalidatePath("/admin/moderation");
+  return null;
 }
