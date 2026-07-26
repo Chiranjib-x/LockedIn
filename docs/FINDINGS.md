@@ -36,7 +36,7 @@ beat it has not actually walked.
 | B1 | auth | login, signup, logout, OAuth return, delete-account, middleware | 2026-07-26 | none (F4 filed, D4/D5 dismissed) |
 | B2 | marketplace | listings, new, mine, requests, offers, saved | partial 2026-07-26 (static+read+probe; run pass pending) | F6 fixed (P1); D11 dismissed |
 | B3 | chat | threads, realtime, unread, contact flows | 2026-07-26 | F1 fixed, F5 fixed (P0), D1 verified, D6 dismissed |
-| B4 | board & events | posts, events, RSVP, check-in, feedback | — | — |
+| B4 | board & events | posts, events, RSVP, check-in, feedback | partial 2026-07-26 (events read+probe; board/claims + run pass pending) | none (D12 dismissed) |
 | B5 | communities | clubs, teams, applications, roles, ops, money, polls | partial 2026-07-26 (static+read+probe; run pass pending) | none (D7 dismissed) |
 | B6 | daily life | cabs, group-buy, subscriptions, toolbox, deals, boxes | — | — |
 | B7 | spaces & matching | spaces, vouching, matches, prefs, crews | — | — |
@@ -152,6 +152,11 @@ beat it has not actually walked.
 Findings the sweep raised and a human or agent ruled out. Keep these — they are
 what stops the next sweep re-litigating settled ground.
 
+### D12 · B4 events authorization — probed, no defects
+- **Swept:** read of `record_checkin()` (0042) + adversarial probe of the event surface. **Board / lost-&-found claims and the run pass are still pending** — B4 is recorded partial.
+- **Why clean:** `record_checkin` checks `post_college <> my_college` then requires `post_author = auth.uid()` OR an app moderator in that college, before it will resolve a roll number. Probed as a non-moderator, non-author user in the same college (`lockedin.test.boy@gmail.com`) against event "Silverstone GP watch party": `record_checkin` → `not authorized to check in for this event`; attendee roster (`event_checkins`) → `0 rows visible`; other people's `roll_number` → `permission denied for table profiles` (the 0041 column-level revoke doing its job); `insert into event_rsvps` for another `user_id` → `new row violates row-level security policy`; `update posts set title` on someone else's event → `0 rows`.
+- **Note:** no profile in the probed college has a `roll_number` set yet, so the check-in *happy* path (organizer scans a real code → attendee resolves by name) is still unproven end-to-end. That is the camera-scan item already tracked in QUEUE U8 (manual phone QA), not a code defect.
+
 ### D11 · C7 on `listings: seller update` — escapes are blocked in practice
 - **Detector:** C7 (UPDATE policy without WITH CHECK) — flagged P0
 - **Why dismissed:** the policy really does lack a WITH CHECK (`pg_policy` on the live DB: `qual = (seller_id = auth.uid())`, `with_check = null`), but every escape it could theoretically permit is rejected. Probed as the seller against a live listing, each in a rolled-back savepoint: `title only -> ALLOWED (1 row)` (normal editing still works — no regression), `college_id change -> ERROR: new row violates row-level security policy`, `space_id inject into "Boys' Den" (not a member) -> ERROR: same`, `seller_id steal -> ERROR: same`. So tenancy, gendered-space membership, and ownership all hold on UPDATE.
@@ -239,3 +244,4 @@ what stops the next sweep re-litigating settled ground.
 2026-07-26 · B12 gaterunner · 0 P0/P1, 3 P2/P3 confirmed of ~12 raised · (docs-only, see commit) · static+read+run(390/360)+adversarial-probe all four passes; pickup_requests RLS clean (D9); F10 auth-page redirect gap, F11 no pending/error state on lifecycle buttons, F4 extended w/ 2 more Y3 hits filed; C4/U2 dismissed (D8)
 2026-07-26 · B13 vitcompass · 0 P0/P1, 2 P3 confirmed of ~2 raised · (docs-only, see commit) · static+read+run(390/360, WebGL)+adversarial-probe all four passes; campus_buildings RLS clean incl. cross-college write/delete (D10); F13 empty-state+hardcoded-colour filed; F12 (shared w/ B12) covers sub-44px map markers/chips
 2026-07-26 · B2 marketplace (partial) · 1 confirmed / 21 C7 hits triaged · 7cfa58e · F6 P1 offer self-accept closed at DB (0068); D11 dismisses C7-on-listings after probing all 4 escapes
+2026-07-26 · B4 board+events (partial) · 0 confirmed / 5 probed · (no fix commit) · event check-in, roster, roll_number, RSVP-spoof and post-edit all correctly blocked for a non-organizer; D12 records what is still pending
