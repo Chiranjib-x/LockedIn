@@ -92,7 +92,9 @@ would agree. "Improve X" is not an item. "X passes Y" is.
 - **Evidence:**
 
 ### A9 · N+1 and index review across the shared DB (Gate #11)
-- **State:** open
+- **State:** done 2026-07-26 — migration `0072_hot_query_indexes.sql`, applied and verified.
+- **Finding:** existing coverage on the big list tables was already good (listings/posts/trips/group_orders/pickup_requests all had `(college_id, …)` composites + GIN fts). The real gap was a consistent class: membership tables indexed `(thing_id, user_id)`, which serves "who is in this thing?" but CANNOT serve the reverse "what things is this user in?" — and those reverse lookups run on nearly every page load (my communities/LeaderStrip, unread chat badge, my spaces, my RSVPs). Also found: `subscriptions` had no index but its PK, `push_subscriptions` was indexed on `user_id` while 0063's dispatch selects `user_id AND app`, `listings` browse filters on `status` which was not a leading column, and community shelves filter `(college_id, category)`.
+- **Evidence:** 8 additive indexes created; each verified usable by its intended query with `set enable_seqscan=off` + EXPLAIN, every plan naming its own index — `Index Scan using community_members_user_idx`, `… conversation_participants_user_idx`, `… space_members_user_idx`, `Bitmap Heap Scan on event_rsvps`, `… push_subscriptions_user_app_idx`, `… subscriptions_discover_idx`, `… listings_college_status_idx`, `… communities_college_category_idx`. NOTE on method: at today's row counts (5–159 rows) Postgres correctly prefers a seq scan, so a plain EXPLAIN would show seq scans no matter how good the index is; forcing `enable_seqscan=off` is what actually proves the index *matches the predicate*. These exist for the data shape in a year.
 - **Why:** five apps now hit one Postgres. List pages with nested selects are the classic storm, and the cost lands on every app at once.
 - **Do:** for each app's main list routes, read the query and record rows-fetched-per-render. Add indexes for the hottest per-app predicates (`college_id` + the app's own filter column). Additive migrations only.
 - **Done when:** each hot query has its `EXPLAIN` output pasted showing an index scan, not a seq scan, on the tables that matter.
@@ -230,3 +232,4 @@ Nothing here is a failure of the loop. These need you.
 2026-07-26 · A13 (partial) · 8af4385.. · vitcompass + gaterunner gates now fully green (typecheck+lint); mother+2 forks measured at ~51 fixes in 4 rule classes across deployed components — stopped for a decision rather than rewriting live theme/PWA/animation code on launch day
 2026-07-26 · A13 · done · (this commit) · all five apps green on typecheck+lint; 17 errors/fork -> 0; 6 E2E passed after the refactor
 2026-07-26 · A12 · done · (this commit) · lint measured at ~5.8s/app natively — the 130s figure was a network-FS artifact; no config change needed
+2026-07-26 · A9 · done · (this commit) · 0072: 8 additive indexes closing the reverse-lookup gap (user_id not a leading column on membership tables) + subscriptions/push/listings/communities predicates; all 8 verified usable via enable_seqscan=off EXPLAIN
