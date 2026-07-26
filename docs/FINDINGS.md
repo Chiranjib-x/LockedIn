@@ -34,7 +34,7 @@ beat it has not actually walked.
 | # | Beat | Surfaces | Last swept | Findings |
 |---|---|---|---|---|
 | B1 | auth | login, signup, logout, OAuth return, delete-account, middleware | 2026-07-26 | none (F4 filed, D4/D5 dismissed) |
-| B2 | marketplace | listings, new, mine, requests, offers, saved | — | — |
+| B2 | marketplace | listings, new, mine, requests, offers, saved | partial 2026-07-26 (static+read+probe; run pass pending) | F6 fixed (P1); D11 dismissed |
 | B3 | chat | threads, realtime, unread, contact flows | 2026-07-26 | F1 fixed, F5 fixed (P0), D1 verified, D6 dismissed |
 | B4 | board & events | posts, events, RSVP, check-in, feedback | — | — |
 | B5 | communities | clubs, teams, applications, roles, ops, money, polls | partial 2026-07-26 (static+read+probe; run pass pending) | none (D7 dismissed) |
@@ -137,10 +137,26 @@ beat it has not actually walked.
 - **Fix:** add a "no buildings mapped yet" message when `buildings.length === 0`; pull marker colours from CSS custom properties (the markers are imperative DOM via `document.createElement`, so this needs `getComputedStyle` or inline `var(--color-x)`, not a Tailwind class — worth a small design decision, not a blind token swap).
 - **Evidence:** `apps/vitcompass/components/campus-map.tsx:21-27` (literal hex map), `:133` (`presentCats.map` with no `length === 0` branch); `app/page.tsx:17-26` shows `buildings` can legitimately be `[]` if the college lookup or coordinate filter yields nothing.
 
+### F6 · Buyer could self-accept their own offer (RLS UPDATE with no WITH CHECK)
+- **Severity:** P1 · **Axis:** authorization · **State:** fixed
+- **Detector:** C7 (UPDATE policy without WITH CHECK), confirmed by read + scratch-row probe
+- **Where:** `offers: parties update` policy in `supabase/migrations/0033_offers.sql:45-50`; fixed by `supabase/migrations/0068_offer_transition_guard.sql`
+- **What:** the policy's USING is "I am the buyer OR the listing's seller" and there is no WITH CHECK, so Postgres reuses USING for the new row. A buyer therefore satisfied the check for *any* edit of their own offer — including `status='accepted'`. The app-layer guard exists and is correct (`modules/marketplace/offer-actions.ts:105` — "A buyer can't 'accept' their own uncountered offer") but a direct PostgREST `PATCH /rest/v1/offers?id=eq.<id>` never runs it.
+- **Impact:** a buyer could mark their own lowball offer accepted (the seller sees a deal they never agreed to, and the accept path fires "Deal 🤝" notifications + chat lines) and could mutate `amount`. Same class as F5: guarded in one layer only. Not a tenancy escape — `college_id` and `buyer_id` changes were already blocked.
+- **Fork echo:** DB-side, so the fix covers all five apps at once. `offer-actions.ts` is identical in lockedin + campustrade; campusclubs' copy is unreachable (see F20).
+- **Fix:** RLS `WITH CHECK` cannot see the OLD row, so transition rules need a `BEFORE UPDATE` trigger. 0068 adds `enforce_offer_transition()` mirroring `decideOffer` exactly, plus immutability for `amount` / `buyer_id` / `listing_id`.
+- **Evidence:** BEFORE (scratch offer, rolled back): `buyer SELF-ACCEPTS own offer -> ALLOWED`, `buyer raises amount to 999999 -> ALLOWED`, `buyer reassigns buyer_id -> blocked`. AFTER 0068, 9/9 scenarios correct — attacks: self-accept → `wait for the seller to respond`, amount raise → `offer amount and parties cannot be changed`, buyer-counters → `only the seller counters`, edit-closed → `this offer is already closed`; legitimate flows all still `ALLOWED`: seller accept / decline / counter, buyer accepts a counter, buyer withdraws. `offers left in db: 0`. Commit `7cfa58e`.
+
 ## Dismissed
 
 Findings the sweep raised and a human or agent ruled out. Keep these — they are
 what stops the next sweep re-litigating settled ground.
+
+### D11 · C7 on `listings: seller update` — escapes are blocked in practice
+- **Detector:** C7 (UPDATE policy without WITH CHECK) — flagged P0
+- **Why dismissed:** the policy really does lack a WITH CHECK (`pg_policy` on the live DB: `qual = (seller_id = auth.uid())`, `with_check = null`), but every escape it could theoretically permit is rejected. Probed as the seller against a live listing, each in a rolled-back savepoint: `title only -> ALLOWED (1 row)` (normal editing still works — no regression), `college_id change -> ERROR: new row violates row-level security policy`, `space_id inject into "Boys' Den" (not a member) -> ERROR: same`, `seller_id steal -> ERROR: same`. So tenancy, gendered-space membership, and ownership all hold on UPDATE.
+- **Caveat, recorded honestly:** the blocking expression was not traced to a specific migration line — the dismissal rests on the empirical probe above, not on reading a WITH CHECK clause. If `listings` is ever re-policied, re-run those four probes rather than assuming.
+- **Contrast with F6:** the same detector on `offers: parties update` was a REAL finding. C7 hits must be probed individually; the detector cannot tell these two apart.
 
 ### D7 · B5 communities authorization — probed, no defects
 - **Swept:** static (baseline sweep) + read (`is_app_moderator` / `is_community_moderator` / `is_community_member` in 0017 + 0055; guards on `set_community_role`, `create_collection`, `decide_application`, `update_community_profile`, `request_community_deletion`, `adjust_box_item`) + adversarial probe. **Run pass still pending** — this beat is recorded partial, not swept.
@@ -222,3 +238,4 @@ what stops the next sweep re-litigating settled ground.
 2026-07-26 · B5 communities (partial) · 0 confirmed / 6 probed · (no fix commit) · all role/money/profile RPC guards hold vs outsider + non-mod member + cross-college; D7 records the is_moderator probe pitfall
 2026-07-26 · B12 gaterunner · 0 P0/P1, 3 P2/P3 confirmed of ~12 raised · (docs-only, see commit) · static+read+run(390/360)+adversarial-probe all four passes; pickup_requests RLS clean (D9); F10 auth-page redirect gap, F11 no pending/error state on lifecycle buttons, F4 extended w/ 2 more Y3 hits filed; C4/U2 dismissed (D8)
 2026-07-26 · B13 vitcompass · 0 P0/P1, 2 P3 confirmed of ~2 raised · (docs-only, see commit) · static+read+run(390/360, WebGL)+adversarial-probe all four passes; campus_buildings RLS clean incl. cross-college write/delete (D10); F13 empty-state+hardcoded-colour filed; F12 (shared w/ B12) covers sub-44px map markers/chips
+2026-07-26 · B2 marketplace (partial) · 1 confirmed / 21 C7 hits triaged · 7cfa58e · F6 P1 offer self-accept closed at DB (0068); D11 dismisses C7-on-listings after probing all 4 escapes
