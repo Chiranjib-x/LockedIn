@@ -37,8 +37,8 @@ export default async function LoginPage({
           </p>
         )}
         <form action={login} className="flex flex-col gap-3">
-          <input name="email" type="email" required autoComplete="email" placeholder="you@vitstudent.ac.in" className={inputClass} />
-          <input name="password" type="password" required autoComplete="current-password" placeholder="Password" className={inputClass} />
+          <input aria-label="you@vitstudent.ac.in" name="email" type="email" required autoComplete="email" placeholder="you@vitstudent.ac.in" className={inputClass} />
+          <input aria-label="Password" name="password" type="password" required autoComplete="current-password" placeholder="Password" className={inputClass} />
           <SubmitButton pendingLabel="Logging in…">Log in</SubmitButton>
         </form>
         <GoogleAuthButton />

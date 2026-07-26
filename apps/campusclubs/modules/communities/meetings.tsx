@@ -83,7 +83,7 @@ export default function Meetings({
       {isLead && (
         <div className="flex flex-col gap-2 rounded-2xl border border-border bg-card p-3">
           <p className="text-sm font-semibold">Schedule a meeting</p>
-          <input
+          <input aria-label="Weekly sync"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="e.g. Weekly sync"
@@ -91,6 +91,7 @@ export default function Meetings({
           />
           <div className="flex gap-2">
             <input
+              aria-label="Meeting date &amp; time"
               type="datetime-local"
               value={when}
               onChange={(e) => setWhen(e.target.value)}

@@ -26,7 +26,7 @@ export default function Boxes({ cid, isLead, boxes }: { cid: string; isLead: boo
 
       {isLead && (
         <div className="flex gap-2 rounded-2xl border border-border bg-card p-3">
-          <input
+          <input aria-label="New box name (e.g. Robotics kit)"
             value={newBox}
             onChange={(e) => setNewBox(e.target.value)}
             placeholder="New box name (e.g. Robotics kit)"
@@ -120,13 +120,14 @@ function BoxCard({ cid, isLead, box, onChange }: { cid: string; isLead: boolean;
 
       {isLead && (
         <div className="flex gap-2">
-          <input
+          <input aria-label="Item name"
             value={item}
             onChange={(e) => setItem(e.target.value)}
             placeholder="Item name"
             className="min-h-9 flex-1 rounded-xl border border-border bg-background px-3 text-sm"
           />
           <input
+            aria-label="Quantity"
             type="number"
             min={0}
             value={qty}

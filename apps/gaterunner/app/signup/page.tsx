@@ -36,9 +36,9 @@ export default async function SignupPage({
           </p>
         )}
         <form action={signup} className="flex flex-col gap-3">
-          <input name="name" type="text" required autoComplete="name" placeholder="Your name" className={inputClass} />
-          <input name="email" type="email" required autoComplete="email" placeholder="you@vitstudent.ac.in" className={inputClass} />
-          <input
+          <input aria-label="Your name" name="name" type="text" required autoComplete="name" placeholder="Your name" className={inputClass} />
+          <input aria-label="you@vitstudent.ac.in" name="email" type="email" required autoComplete="email" placeholder="you@vitstudent.ac.in" className={inputClass} />
+          <input aria-label="Password (min 8 characters)"
             name="password"
             type="password"
             required

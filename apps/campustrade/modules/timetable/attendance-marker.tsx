@@ -65,7 +65,7 @@ export function PastAttendanceForm({ courseCode }: { courseCode: string }) {
   return (
     <div className="flex flex-col gap-2 rounded-2xl border border-border bg-card p-3">
       <p className="text-sm font-medium">Mark a past date</p>
-      <input type="date" max={today} value={date} onChange={(e) => setDate(e.target.value)} className={inputClass} />
+      <input aria-label="Mark a past date" type="date" max={today} value={date} onChange={(e) => setDate(e.target.value)} className={inputClass} />
       {date && (
         <div className="flex gap-1.5">
           {STATUSES.map((s) => (

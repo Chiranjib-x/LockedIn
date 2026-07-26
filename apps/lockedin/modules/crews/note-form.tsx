@@ -20,7 +20,7 @@ export default function NoteForm({ crewId }: { crewId: string }) {
 
   return (
     <div className="flex gap-2">
-      <input
+      <input aria-label="Add a reminder — e.g. Clean the room by Sunday"
         value={body}
         onChange={(e) => setBody(e.target.value)}
         onKeyDown={(e) => e.key === "Enter" && submit()}

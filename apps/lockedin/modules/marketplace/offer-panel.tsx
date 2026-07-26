@@ -83,7 +83,7 @@ export function BuyerOffer({ listingId, mine }: { listingId: string; mine: Offer
     <div className="flex flex-col gap-2 rounded-2xl border border-border bg-card p-3">
       <p className="text-sm font-medium">Make an offer</p>
       <span className="flex gap-2">
-        <input
+        <input aria-label="₹ your price"
           type="number" min={1} value={amount}
           onChange={(e) => setAmount(e.target.value)}
           placeholder="₹ your price"
@@ -134,7 +134,7 @@ export function SellerOffers({ offers }: { offers: OfferRow[] }) {
           {o.status === "pending" &&
             (counterFor === o.id ? (
               <span className="flex gap-2">
-                <input
+                <input aria-label="₹ counter"
                   type="number" min={1} value={counter}
                   onChange={(e) => setCounter(e.target.value)}
                   placeholder="₹ counter"

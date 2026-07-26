@@ -49,7 +49,7 @@ export function ClaimButton({ id, reward }: { id: string; reward: number }) {
       <p className="text-xs text-muted-foreground">
         Your UPI ID so they can send the reward (optional):
       </p>
-      <input value={upi} onChange={(e) => setUpi(e.target.value)} placeholder="you@upi" className={inputClass} />
+      <input aria-label="you@upi" value={upi} onChange={(e) => setUpi(e.target.value)} placeholder="you@upi" className={inputClass} />
       {err && <p className="text-sm text-destructive">{err}</p>}
       <button
         disabled={busy}

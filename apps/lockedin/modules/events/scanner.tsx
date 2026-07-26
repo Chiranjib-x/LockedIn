@@ -96,7 +96,7 @@ export default function BarcodeScanner({ onScan }: { onScan: (code: string) => v
         }}
         className="flex gap-2"
       >
-        <input
+        <input aria-label="Or enter ID number"
           value={manual}
           onChange={(e) => setManual(e.target.value)}
           placeholder="Or enter ID number"

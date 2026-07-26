@@ -28,16 +28,16 @@ export function Polls({ cid, isLead, meId, polls }: { cid: string; isLead: boole
       <h2 className="text-lg font-semibold">🗳️ Polls</h2>
       {isLead && (
         <div className="flex flex-col gap-2 rounded-2xl border border-border bg-card p-3">
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Question"
+          <input aria-label="Question" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Question"
             className="min-h-10 rounded-xl border border-border bg-background px-3 text-sm" />
           {opts.map((o, i) => (
-            <input key={i} value={o} onChange={(e) => setOpts(opts.map((x, j) => (j === i ? e.target.value : x)))}
+            <input key={i} aria-label={`Option ${i + 1}`} value={o} onChange={(e) => setOpts(opts.map((x, j) => (j === i ? e.target.value : x)))}
               placeholder={`Option ${i + 1}`}
               className="min-h-10 rounded-xl border border-border bg-background px-3 text-sm" />
           ))}
           <div className="flex items-center justify-between gap-2">
             <button onClick={() => setOpts([...opts, ""])} className="press text-xs font-medium text-primary">+ option</button>
-            <input type="datetime-local" value={closes} onChange={(e) => setCloses(e.target.value)}
+            <input aria-label="Poll closes at (optional)" type="datetime-local" value={closes} onChange={(e) => setCloses(e.target.value)}
               title="Closes at (optional)"
               className="min-h-9 rounded-xl border border-border bg-background px-2 text-xs" />
           </div>
@@ -108,12 +108,12 @@ export function Scheduled({ cid, scheduled }: { cid: string; scheduled: Schedule
     <section className="flex flex-col gap-2">
       <h2 className="text-lg font-semibold">⏰ Scheduled announcements</h2>
       <div className="flex flex-col gap-2 rounded-2xl border border-border bg-card p-3">
-        <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Announcement title"
+        <input aria-label="Announcement title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Announcement title"
           className="min-h-10 rounded-xl border border-border bg-background px-3 text-sm" />
-        <textarea value={body} onChange={(e) => setBody(e.target.value)} rows={2} placeholder="Details (optional)"
+        <textarea aria-label="Details (optional)" value={body} onChange={(e) => setBody(e.target.value)} rows={2} placeholder="Details (optional)"
           className="rounded-xl border border-border bg-background px-3 py-2 text-sm" />
         <div className="flex gap-2">
-          <input type="datetime-local" value={when} onChange={(e) => setWhen(e.target.value)}
+          <input aria-label="Publish at" type="datetime-local" value={when} onChange={(e) => setWhen(e.target.value)}
             className="min-h-10 flex-1 rounded-xl border border-border bg-background px-3 text-sm" />
           <button
             disabled={busy || !title.trim() || !when}

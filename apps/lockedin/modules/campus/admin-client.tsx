@@ -23,22 +23,22 @@ export function BuildingForm({ building }: { building?: Building }) {
   return (
     <form action={saveBuilding} className="flex flex-col gap-3">
       {building && <input type="hidden" name="id" value={building.id} />}
-      <input name="name" required defaultValue={building?.name ?? ""} placeholder="Building name" className={inputClass} />
-      <input name="aka" defaultValue={building?.aka ?? ""} placeholder="AKA / nickname (optional)" className={inputClass} />
-      <select name="category" defaultValue={building?.category ?? "academic"} className={inputClass}>
+      <input aria-label="Building name" name="name" required defaultValue={building?.name ?? ""} placeholder="Building name" className={inputClass} />
+      <input aria-label="AKA / nickname (optional)" name="aka" defaultValue={building?.aka ?? ""} placeholder="AKA / nickname (optional)" className={inputClass} />
+      <select aria-label="Category" name="category" defaultValue={building?.category ?? "academic"} className={inputClass}>
         {CATEGORIES.map((c) => (
           <option key={c} value={c}>{c}</option>
         ))}
       </select>
-      <textarea name="description" rows={2} defaultValue={building?.description ?? ""} placeholder="What happens here" className={inputClass} />
+      <textarea aria-label="What happens here" name="description" rows={2} defaultValue={building?.description ?? ""} placeholder="What happens here" className={inputClass} />
       <div className="flex gap-2">
-        <input name="lat" defaultValue={building?.lat ?? ""} inputMode="decimal" placeholder="Latitude" className={inputClass} />
-        <input name="lng" defaultValue={building?.lng ?? ""} inputMode="decimal" placeholder="Longitude" className={inputClass} />
+        <input aria-label="Latitude" name="lat" defaultValue={building?.lat ?? ""} inputMode="decimal" placeholder="Latitude" className={inputClass} />
+        <input aria-label="Longitude" name="lng" defaultValue={building?.lng ?? ""} inputMode="decimal" placeholder="Longitude" className={inputClass} />
       </div>
       <p className="text-xs text-muted-foreground">
         Tip: in Google Maps, right-click the exact spot → click the “lat, lng” at the top to copy it.
       </p>
-      <input name="near_landmark" defaultValue={building?.near_landmark ?? ""} placeholder="Near… (optional)" className={inputClass} />
+      <input aria-label="Near… (optional)" name="near_landmark" defaultValue={building?.near_landmark ?? ""} placeholder="Near… (optional)" className={inputClass} />
       <SubmitButton pendingLabel="Saving…">{building ? "Save changes" : "Add building"}</SubmitButton>
     </form>
   );

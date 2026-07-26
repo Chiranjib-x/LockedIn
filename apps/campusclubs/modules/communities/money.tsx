@@ -48,7 +48,7 @@ export default function Money({
 
       {isLead && (
         <div className="flex flex-col gap-2 rounded-2xl border border-border bg-card p-3">
-          <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Term dues / Fest fund"
+          <input aria-label="Term dues / Fest fund" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Term dues / Fest fund"
             className="min-h-10 rounded-xl border border-border bg-background px-3 text-sm" />
           <div className="flex gap-2">
             <select value={kind} onChange={(e) => setKind(e.target.value as "dues" | "fund")}
@@ -56,11 +56,11 @@ export default function Money({
               <option value="dues">Dues (each pays the amount)</option>
               <option value="fund">Fund (split across members)</option>
             </select>
-            <input type="number" min={1} value={amount} onChange={(e) => setAmount(e.target.value)}
+            <input aria-label="Amount (₹)" type="number" min={1} value={amount} onChange={(e) => setAmount(e.target.value)}
               placeholder={kind === "fund" ? "Total ₹" : "₹ each"}
               className="min-h-10 w-24 rounded-xl border border-border bg-background px-3 text-sm" />
           </div>
-          <input value={upi} onChange={(e) => setUpi(e.target.value)} placeholder="Collector's UPI ID (e.g. you@upi)"
+          <input aria-label="Collector's UPI ID (e.g. you@upi)" value={upi} onChange={(e) => setUpi(e.target.value)} placeholder="Collector's UPI ID (e.g. you@upi)"
             className="min-h-10 rounded-xl border border-border bg-background px-3 text-sm" />
           <button
             disabled={busy || !title.trim() || !(Number(amount) > 0)}

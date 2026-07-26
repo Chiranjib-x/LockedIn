@@ -38,7 +38,7 @@ export default function QuestionsEditor({
         </div>
       ))}
       <div className="flex gap-2">
-        <input
+        <input aria-label="Why do you want to join?"
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           placeholder="e.g. Why do you want to join?"

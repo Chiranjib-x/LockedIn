@@ -166,7 +166,10 @@ would agree. "Improve X" is not an item. "X passes Y" is.
 - **Evidence:**
 
 ### A20 · Whole-app Y3 label pass (unlabeled inputs, repo-wide)
-- **State:** open
+- **State:** done 2026-07-26 — every remaining hit is a verified false positive.
+- **Evidence:** lockedin 49 → 7 hits, gaterunner 7 → 0, campusclubs 46 → 8, campustrade 46 → 8. ~60 `aria-label`s added, each derived from the input's own visible placeholder so the announced name matches what a sighted user reads (a mismatch is worse than nothing). Placeholder-only inputs are a real a11y failure twice over: a screen reader announces nothing useful, and the hint disappears for everyone the moment they start typing.
+- **The 7/8 that remain are correctly unlabeled, not skipped work:** 5 are `type="hidden"` (`campus/admin-client.tsx:25`, `communities/logo-field.tsx:12`, `showcase/forms.tsx:16,35`), 2 are the `hidden` file inputs behind ImageUpload's visible labelled button (`components/image-upload.tsx:144,153`), and `modules/search/search-input.tsx:27` **already has** `aria-label="Global search"` — the detector is line-based and can't see it two lines down. Recorded here so the next sweep doesn't re-raise them.
+- **Method note:** anything already inside a `<label>` was deliberately skipped — adding `aria-label` there OVERRIDES the visible label for screen-reader users.
 - **Why:** FINDINGS F4 has been extended by three separate beats now (B1 auth, B12 gaterunner, B6/B8 daily-life+timetable) without ever getting its own queue item — each beat found more unlabeled inputs and the fix note has said "do the whole Y3 class in one pass, not per-beat" since B1. Left per-beat, it never gets fixed.
 - **Do:** `node scripts/sweep.mjs <app> --id=Y3 --json` per app, add `aria-label` (smallest change) or wrap in `<label htmlFor>` for every hit. Known sites so far: auth pages (all 4 apps), `apps/gaterunner/modules/gate/client.tsx:17,82`, `app/cabs/page.tsx:59,65`, `modules/subscriptions/discovery.tsx:36`, `modules/communities/boxes.tsx:29,123,129`, `modules/showcase/forms.tsx:16,18,19`, `modules/timetable/attendance-marker.tsx:68` — plus whatever the full per-app sweep turns up outside beats already walked.
 - **Done when:** `node scripts/sweep.mjs <app> --id=Y3` returns 0 hits for every app, pasted per app.
@@ -238,3 +241,4 @@ Nothing here is a failure of the loop. These need you.
 2026-07-26 · A12 · done · (this commit) · lint measured at ~5.8s/app natively — the 130s figure was a network-FS artifact; no config change needed
 2026-07-26 · A9 · done · (this commit) · 0072: 8 additive indexes closing the reverse-lookup gap (user_id not a leading column on membership tables) + subscriptions/push/listings/communities predicates; all 8 verified usable via enable_seqscan=off EXPLAIN
 2026-07-26 · A10 · done · (this commit) · middleware route guards on campusclubs+campustrade (denial lists, verified no inbound links); removed FreeWindow (gate/cab content) + /saved link from clubs; /board carve-out proven for event check-in; 11 foreign redirect + 14 owned intact
+2026-07-26 · A20 · done · (this commit) · ~60 aria-labels from visible placeholders across 3 forks + gaterunner; 148 hits -> 23, all remaining verified false positives (hidden inputs / already-labelled)

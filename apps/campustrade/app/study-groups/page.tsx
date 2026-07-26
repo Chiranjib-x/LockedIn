@@ -38,7 +38,7 @@ export default async function StudyGroupsPage({
       <CreateGroupForm error={error} />
 
       <form className="flex gap-2" action="/study-groups">
-        <input
+        <input aria-label="Filter by course code — e.g. CSE3006"
           name="code"
           defaultValue={code ?? ""}
           placeholder="Filter by course code — e.g. CSE3006"

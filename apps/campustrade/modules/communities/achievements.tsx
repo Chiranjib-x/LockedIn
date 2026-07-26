@@ -35,12 +35,12 @@ export default function Achievements({
       {isLead && (
         <div className="flex flex-col gap-2 rounded-2xl border border-border bg-card p-3">
           <div className="flex gap-2">
-            <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Winner — Smart India Hackathon"
+            <input aria-label="Winner — Smart India Hackathon" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Winner — Smart India Hackathon"
               className="min-h-10 flex-1 rounded-xl border border-border bg-background px-3 text-sm" />
-            <input value={year} onChange={(e) => setYear(e.target.value)} placeholder="Year"
+            <input aria-label="Year" value={year} onChange={(e) => setYear(e.target.value)} placeholder="Year"
               className="min-h-10 w-20 rounded-xl border border-border bg-background px-2 text-sm" />
           </div>
-          <input value={detail} onChange={(e) => setDetail(e.target.value)} placeholder="One line of detail (optional)"
+          <input aria-label="One line of detail (optional)" value={detail} onChange={(e) => setDetail(e.target.value)} placeholder="One line of detail (optional)"
             className="min-h-10 rounded-xl border border-border bg-background px-3 text-sm" />
           <button
             disabled={busy || !title.trim()}

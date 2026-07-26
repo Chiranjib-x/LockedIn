@@ -37,7 +37,7 @@ export default function PositionEditor({ cid, uid, current }: { cid: string; uid
   return (
     <div className="flex w-full flex-col gap-2 rounded-xl border border-border bg-muted/40 p-2">
       <div className="flex gap-1.5">
-        <input
+        <input aria-label="Events Head"
           value={value}
           onChange={(e) => setValue(e.target.value)}
           placeholder="e.g. Events Head"

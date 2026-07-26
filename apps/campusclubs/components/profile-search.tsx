@@ -43,7 +43,7 @@ export default function ProfileSearch({
 
   return (
     <div className="flex flex-col gap-2">
-      <input
+      <input aria-label="Their exact @username"
         value={q}
         onChange={(e) => search(e.target.value)}
         placeholder="Their exact @username"

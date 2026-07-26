@@ -56,13 +56,13 @@ export default async function CabsPage({
       </div>
 
       <form className="flex gap-2">
-        <input
+        <input aria-label="Search by place"
           name="destination"
           defaultValue={destination}
           placeholder="Search by place…"
           className={inputClass}
         />
-        <input
+        <input aria-label="Date"
           name="date"
           type="date"
           defaultValue={date}

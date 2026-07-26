@@ -35,7 +35,7 @@ export default function FilterBar() {
 
   return (
     <div className="flex flex-col gap-3">
-      <input
+      <input aria-label="Search listings"
         value={q}
         onChange={(e) => setQ(e.target.value)}
         placeholder="Search listings…"

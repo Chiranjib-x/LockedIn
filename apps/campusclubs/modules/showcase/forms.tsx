@@ -15,10 +15,10 @@ export function ShowcaseForm() {
     <form action={createShowcaseItem} className="flex flex-col gap-3">
       <input type="hidden" name="logo_url" value={logo[0] ?? ""} />
       <ImageUpload bucket="showcase-images" value={logo} onChange={setLogo} max={1} />
-      <input name="name" required placeholder="Tool name" className={inputClass} />
-      <input name="url" required type="url" placeholder="https://…" className={inputClass} />
-      <input name="tagline" placeholder="One line — why it's useful" className={inputClass} />
-      <select name="category" className={inputClass} defaultValue="other">
+      <input aria-label="Tool name" name="name" required placeholder="Tool name" className={inputClass} />
+      <input aria-label="https://" name="url" required type="url" placeholder="https://…" className={inputClass} />
+      <input aria-label="One line — why it's useful" name="tagline" placeholder="One line — why it's useful" className={inputClass} />
+      <select aria-label="Category" name="category" className={inputClass} defaultValue="other">
         {TOOL_CATEGORIES.map((c) => (
           <option key={c} value={c}>{c}</option>
         ))}
@@ -34,15 +34,15 @@ export function MerchantForm() {
     <form action={createMerchant} className="flex flex-col gap-3">
       <input type="hidden" name="logo_url" value={logo[0] ?? ""} />
       <ImageUpload bucket="showcase-images" value={logo} onChange={setLogo} max={1} />
-      <input name="name" required placeholder="Merchant / shop name" className={inputClass} />
-      <select name="category" className={inputClass} defaultValue="other">
+      <input aria-label="Merchant / shop name" name="name" required placeholder="Merchant / shop name" className={inputClass} />
+      <select aria-label="Category" name="category" className={inputClass} defaultValue="other">
         {DEAL_CATEGORIES.map((c) => (
           <option key={c} value={c}>{c}</option>
         ))}
       </select>
-      <input name="offer_text" required placeholder="Offer — e.g. 10% off with student ID" className={inputClass} />
-      <textarea name="details" rows={2} placeholder="Details (optional)" className={inputClass} />
-      <input name="link_or_contact" placeholder="Link or contact (optional)" className={inputClass} />
+      <input aria-label="Offer — e.g. 10% off with student ID" name="offer_text" required placeholder="Offer — e.g. 10% off with student ID" className={inputClass} />
+      <textarea aria-label="Details (optional)" name="details" rows={2} placeholder="Details (optional)" className={inputClass} />
+      <input aria-label="Link or contact (optional)" name="link_or_contact" placeholder="Link or contact (optional)" className={inputClass} />
       <SubmitButton pendingLabel="Adding…">Add deal</SubmitButton>
     </form>
   );

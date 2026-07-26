@@ -35,7 +35,7 @@ export default function BoardFilter() {
 
   return (
     <div className="flex flex-col gap-3">
-      <input
+      <input aria-label="Search the board"
         value={q}
         onChange={(e) => setQ(e.target.value)}
         placeholder="Search the board…"

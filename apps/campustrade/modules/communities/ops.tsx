@@ -33,7 +33,7 @@ export function TaskBoard({ cid, isLead, tasks, members }: { cid: string; isLead
       <h2 className="text-lg font-semibold">✅ Task board</h2>
       {isLead && (
         <div className="flex flex-col gap-2 rounded-2xl border border-border bg-card p-3">
-          <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Design the poster"
+          <input aria-label="Design the poster" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Design the poster"
             className="min-h-10 rounded-xl border border-border bg-background px-3 text-sm" />
           <div className="flex gap-2">
             <select value={assignee} onChange={(e) => setAssignee(e.target.value)}
@@ -41,7 +41,7 @@ export function TaskBoard({ cid, isLead, tasks, members }: { cid: string; isLead
               <option value="">Unassigned</option>
               {members.map((m) => <option key={m.user_id} value={m.user_id}>{m.name}</option>)}
             </select>
-            <input type="date" value={due} onChange={(e) => setDue(e.target.value)}
+            <input aria-label="Due date" type="date" value={due} onChange={(e) => setDue(e.target.value)}
               className="min-h-10 rounded-xl border border-border bg-background px-2 text-sm" />
             <button disabled={busy || !title.trim()}
               onClick={async () => { setBusy(true); setErr(await addTask(cid, title, assignee, due)); setTitle(""); setAssignee(""); setDue(""); setBusy(false); refresh(); }}
@@ -94,9 +94,9 @@ export function Resources({ cid, isLead, resources }: { cid: string; isLead: boo
       {isLead && (
         <div className="flex flex-col gap-2 rounded-2xl border border-border bg-card p-3">
           <div className="flex gap-2">
-            <input value={label} onChange={(e) => setLabel(e.target.value)} placeholder="Label"
+            <input aria-label="Label" value={label} onChange={(e) => setLabel(e.target.value)} placeholder="Label"
               className="min-h-10 w-1/3 rounded-xl border border-border bg-background px-3 text-sm" />
-            <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="Paste a link"
+            <input aria-label="Paste a link" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="Paste a link"
               className="min-h-10 flex-1 rounded-xl border border-border bg-background px-3 text-sm" />
             <button disabled={busy || !label.trim() || !url.trim()}
               onClick={async () => { setBusy(true); setErr(await addResource(cid, label, url)); setLabel(""); setUrl(""); setBusy(false); refresh(); }}
@@ -131,9 +131,9 @@ export function Inventory({ cid, isLead, items, members }: { cid: string; isLead
       {isLead && (
         <div className="flex flex-col gap-2 rounded-2xl border border-border bg-card p-3">
           <div className="flex gap-2">
-            <input value={item} onChange={(e) => setItem(e.target.value)} placeholder="Item (e.g. DSLR camera)"
+            <input aria-label="Item (e.g. DSLR camera)" value={item} onChange={(e) => setItem(e.target.value)} placeholder="Item (e.g. DSLR camera)"
               className="min-h-10 flex-1 rounded-xl border border-border bg-background px-3 text-sm" />
-            <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="Note (optional)"
+            <input aria-label="Note (optional)" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Note (optional)"
               className="min-h-10 w-1/3 rounded-xl border border-border bg-background px-3 text-sm" />
             <button disabled={busy || !item.trim()}
               onClick={async () => { setBusy(true); setErr(await addInventory(cid, item, note)); setItem(""); setNote(""); setBusy(false); refresh(); }}

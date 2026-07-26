@@ -34,6 +34,7 @@ export function DiscoverToggle({
         <>
           <span className="font-medium">Open seats to the campus:</span>
           <input
+            aria-label="Seats"
             type="number" min={1} max={20} value={seats}
             onChange={(e) => setSeats(Number(e.target.value))}
             className={`${inputClass} w-20`}
@@ -72,7 +73,7 @@ export function RequestJoin({ subId, alreadyAsked }: { subId: string; alreadyAsk
   }
   return (
     <div className="animate-scale-in flex flex-col gap-2 rounded-2xl border border-border bg-card p-3">
-      <textarea
+      <textarea aria-label="A line about you (optional) — e.g. hostel, batch, always pays on time"
         value={note}
         onChange={(e) => setNote(e.target.value)}
         rows={2}

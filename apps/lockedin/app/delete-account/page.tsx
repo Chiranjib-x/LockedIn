@@ -46,7 +46,7 @@ export default async function DeleteAccountPage({
             Signed in as <span className="font-medium text-foreground">{user.email}</span>. Type{" "}
             <span className="font-mono font-semibold">DELETE</span> to confirm.
           </p>
-          <input name="confirm" required placeholder="Type DELETE" autoComplete="off" className={inputClass} />
+          <input aria-label="Type DELETE" name="confirm" required placeholder="Type DELETE" autoComplete="off" className={inputClass} />
           <SubmitButton pendingLabel="Deleting…" variant="destructive">
             Permanently delete my account
           </SubmitButton>
