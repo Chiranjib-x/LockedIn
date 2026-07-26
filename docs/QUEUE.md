@@ -257,7 +257,8 @@ down, re-ordered by launch dependency (not renumbered).
 4. **F7 follow-through** — mint founding invites for Girls' Closet + Boys' Den at
    `/admin/spaces` (both at 0 members). Bootstrap RPCs shipped in 0070/0071.
 5. **U7** — all 24 VIT building coordinates exact, not 7. VIT Compass is the launch
-   wedge; a fresher walking to a pin 200m off kills it in one try.
+   wedge; a fresher walking to a pin 200m off kills it in one try. Now drag-and-drop
+   at `/admin/campus` — drag each pin onto its building, it saves on drop.
 6. **U11 · Neutral domain** *(new)* — `map.chiranjib.online` pasted to 200 strangers
    reads as a personal side project. ~₹1000/yr, the cheapest credibility buy available.
 
@@ -273,7 +274,7 @@ desperate-looking thing in the funnel) · **U9** monitoring before W+4 campus-wi
 - **U4 · Supabase dashboard** — finish Google provider setup (the button is live and errors until then); confirm Site URL = `https://www.chiranjib.online`; re-enable Confirm email now that Resend removes the rate limit; allow-list the new per-app deep-link schemes from A4.
 - **U5 · Rotate two leaked credentials** — the Vercel token and the Firebase service-account key, both pasted into chat earlier. Still live as of the last check.
 - **U6 · Approve migration 0038** (`DROP profiles.contact_pref`). Written, not applied; the harness safety classifier denied it once. Safe now that prod runs the new build, but it is a destructive DDL and needs your word.
-- **U7 · Refine the 17 estimated VIT building coordinates** — 7 of 24 are exact GPS, 17 are estimates. Fix in-app at `/admin/campus`.
+- **U7 · Refine the estimated VIT building coordinates** — 7 of 24 are exact GPS, 17 are estimates. **Now a drag-and-drop job, not a typing job:** `/admin/campus` renders every building as a draggable pin on the real campus map (0073 + `map-editor.tsx`). Drag a pin onto the building and it saves on drop, flipping `coords_verified`. Amber pin = still an estimate, green = confirmed; the header counts what's left, and buildings with no coordinates get click-to-place. All 24 currently read unconfirmed (the column defaults false — there was no way to tell which 7 were the exact ones), so expect to confirm 24, not 17.
 - **U8 · Manual phone QA** — the unautomatable set: barcode camera scan, photo upload, two-account realtime chat, UPI QR, Continue-with-Google inside the installed APK.
 - **U9 · Monitoring (Gate #12)** — Sentry or equivalent needs an account and a DSN before the wiring can be done.
 - **U10 · Launch-day data cleanup** — delete the `gmail.com` seed college and test accounts; re-point Girls' Closet / Boys' Den founding members to real hostel reps.

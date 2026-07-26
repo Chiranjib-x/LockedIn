@@ -51,6 +51,24 @@ export async function saveBuilding(formData: FormData) {
   redirect("/admin/campus");
 }
 
+// Drag-to-position writer. Deliberately NOT saveBuilding(): that takes every
+// column, so moving a pin through it would be a read-modify-write that resets
+// photos (it passes p_photos null) and any field the client didn't load. The
+// RPC touches lat/lng only and flips coords_verified true.
+// Returns an error string instead of redirecting — a drag can't lose the map.
+export async function setBuildingCoords(id: string, lat: number, lng: number) {
+  const { supabase } = await requireModerator();
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return { error: "Invalid coordinates." };
+  const { error } = await supabase.rpc("set_campus_building_coords", {
+    p_id: id,
+    p_lat: lat,
+    p_lng: lng,
+  });
+  if (error) return { error: error.message };
+  revalidatePath("/admin/campus");
+  return { error: null };
+}
+
 export async function deleteBuilding(id: string) {
   const { supabase } = await requireModerator();
   await supabase.rpc("delete_campus_building", { p_id: id });
