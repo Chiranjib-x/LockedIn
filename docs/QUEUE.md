@@ -169,6 +169,27 @@ would agree. "Improve X" is not an item. "X passes Y" is.
 - **Done when:** each of the three sites either has a passing before/after example pasted (input `0` → stored `0`), or a dated won't-fix note in STATE `## Decisions` for the ones that are deliberate.
 - **Evidence:**
 
+### A30 · `/admin/showcase` empty state for Toolbox/Deals lists
+- **State:** open
+- **Why:** FINDINGS F40 — `app/admin/showcase/page.tsx` renders nothing but the create-form when a college has 0 showcase items / 0 merchants, unlike the sibling `/admin/campus` CMS which already has "No buildings yet — add the first one above."
+- **Do:** add the same short empty-state message under each of the two sections (`items?.length === 0` / `merchants?.length === 0`). Byte-identical file in campusclubs/campustrade — fix all three in one commit.
+- **Done when:** a moderator account with 0 showcase items and 0 merchants sees an explicit "nothing here yet" message under each section, pasted per app.
+- **Evidence:**
+
+### A31 · Pending/error state on moderation-queue and campus-CMS delete buttons
+- **State:** open
+- **Why:** FINDINGS F41 — `modules/moderation/mod-actions.tsx`'s `ReportActions` (Dismiss/Remove content/Ban user) and `modules/campus/admin-client.tsx`'s `BuildingRow` Delete button mutate with no busy flag and no error surfaced, same class as F11/A15 (gaterunner). The four underlying server actions (`dismissReport`/`removeContent`/`banUser`/`deleteBuilding`) also discard their Supabase/RPC error today.
+- **Do:** wire the same `useState` busy pattern `ReportSheet` already uses two files over; return the error string from each server action instead of discarding it, and show it inline on failure. `mod-actions.tsx` is byte-identical across lockedin/campusclubs/campustrade — fix all three; `admin-client.tsx` is lockedin-only.
+- **Done when:** clicking each button disables it until the action resolves, and a forced 0-row update (e.g. a report another moderator already actioned) shows a message instead of silently no-op'ing — demonstrated in a Playwright spec or pasted manual run.
+- **Evidence:**
+
+### A32 · Header unread-notification badge staleness on the /notifications visit itself
+- **State:** open
+- **Why:** FINDINGS F42 — `components/header.tsx`'s `NotificationBell` runs an independent `read = false` count with no ordering guarantee against `app/notifications/page.tsx`'s own mark-all-read update in the same navigation; live-verified showing a stale "2" badge on the very page that just marked those two notifications read. Self-heals on the next navigation — low priority.
+- **Do:** either have the page's mark-read update run in a step the layout can also await, or move the badge count into a client component that revalidates off the same server action rather than an independent RSC query. Byte-identical in campusclubs/campustrade — fix all three if picked up.
+- **Done when:** the badge count on the page that visits `/notifications` matches the post-mark-read DB state within that same render, demonstrated with a before/after count pasted.
+- **Evidence:**
+
 ---
 
 ## USER-GATED — `/loop` reports these, never attempts them
