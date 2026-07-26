@@ -8,14 +8,16 @@ type Msg = { id: string; sender_id: string; body: string; created_at: string };
 
 const OPENERS = ["Is this still available?", "Can you do ₹___?", "Where can we meet?"];
 
+// FINDINGS F1: compare IST calendar days, not the render tz. This component is
+// SSR'd on Vercel (UTC) before it hydrates on an IST device, so a bare
+// toDateString() labelled anything sent 00:00-05:30 IST as the previous day.
+const istKey = (d: Date) => d.toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
 function dayLabel(iso: string) {
-  const d = new Date(iso);
-  const today = new Date();
-  const y = new Date(today);
-  y.setDate(today.getDate() - 1);
-  if (d.toDateString() === today.toDateString()) return "Today";
-  if (d.toDateString() === y.toDateString()) return "Yesterday";
-  return d.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+  const key = istKey(new Date(iso));
+  const now = new Date();
+  if (key === istKey(now)) return "Today";
+  if (key === istKey(new Date(now.getTime() - 86400000))) return "Yesterday";
+  return new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short", timeZone: "Asia/Kolkata" });
 }
 
 export default function Thread({
@@ -113,7 +115,7 @@ export default function Thread({
                   )}
                   {m.body}
                   <span className={`ml-2 align-bottom text-[10px] ${mine ? "text-on-primary/70" : "text-muted-foreground"}`}>
-                    {new Date(m.created_at).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" })}
+                    {new Date(m.created_at).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit", timeZone: "Asia/Kolkata" })}
                   </span>
                 </div>
               </div>
