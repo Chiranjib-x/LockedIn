@@ -6,7 +6,6 @@ import { istNow, istTodayISO } from "@/modules/timetable/helpers";
 import { SkeletonSection } from "@/components/skeleton";
 import LeaderStrip from "@/modules/feed/leader-strip";
 import ClubsStrip from "@/modules/feed/clubs-strip";
-import FreeWindow from "@/modules/feed/free-window";
 import QuantaBanner from "@/modules/communities/quanta-banner";
 import { InstallPrompt } from "@/components/pwa";
 
@@ -144,11 +143,6 @@ export default async function HomePage() {
       </Suspense>
 
       <InstallPrompt />
-
-      {/* Next meeting's free-window finder for leads. Self-hides otherwise. */}
-      <Suspense fallback={<SkeletonSection />}>
-        <FreeWindow />
-      </Suspense>
 
       <QuantaBanner />
     </main>

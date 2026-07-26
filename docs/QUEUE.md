@@ -101,7 +101,11 @@ would agree. "Improve X" is not an item. "X passes Y" is.
 - **Evidence:**
 
 ### A10 · Suite coherence pass (Gate #14) on all five apps
-- **State:** open
+- **State:** done 2026-07-26 — closes FINDINGS F20.
+- **Approach:** fixed at the middleware layer, not page-by-page, so it cannot drift back as pages change. Each app gets a `NOT_OURS` denial list that redirects a foreign route to its own `/home` (a redirect, not a 404 — no dead ends). Deliberately a DENIAL list: every entry was verified to have zero inbound links from an owned surface first, so the guard can never strip a route the app actually needs.
+- **Also fixed (found during the audit, both real):** the CampusClubs home mounted `FreeWindow`, which is the "While you're free" strip listing **gate pickups and cab trips** — Trade/GateRunner content on the clubs home (I had mis-mounted it thinking it was the team free-slot finder). And its Profile still linked to `/saved` (marketplace saved-items). Both removed.
+- **Critical carve-out proven:** `/board` is NOT blocked in CampusClubs — event detail and barcode check-in live at `/board/[id]` and communities link to it. Verified `/board/<uuid>` still resolves rather than redirecting.
+- **Evidence:** CampusClubs — 7/7 foreign routes redirect (`/marketplace`, `/cabs`, `/chats`, `/gate`, `/toolbox`, `/spaces`, `/search` → `/home`), 6/6 owned intact (`/home`, `/communities`, `/events`, `/profile`, `/notifications`, `/admin/spaces`), `/board/<uuid>` → stays on `/board/<uuid>`. CampusTrade — 4/4 foreign redirect (`/communities`, `/events`, `/for-clubs`, `/gate`), 8/8 owned intact (`/home`, `/marketplace`, `/board`, `/chats`, `/cabs`, `/spaces`, `/timetable`, `/profile`). Gates: `node scripts/gate.mjs campusclubs` → PASS, `campustrade` → PASS. GateRunner and VIT Compass were built fresh rather than forked, so they ship no foreign routes — nothing to guard.
 - **Blocked by:** A2
 - **Why:** each child app was forked by subtraction. Subtraction leaves dead links to features the app no longer owns — already found and fixed once on campusclubs (68f4b1c), never checked on the others.
 - **Do:** per app, walk every reachable route and find links or buttons pointing at a feature that app doesn't own. Either hide them or convert them to a deep link / store link. Also check the wordmark: campusclubs had "LockedIn" strings left on reachable pages.
@@ -233,3 +237,4 @@ Nothing here is a failure of the loop. These need you.
 2026-07-26 · A13 · done · (this commit) · all five apps green on typecheck+lint; 17 errors/fork -> 0; 6 E2E passed after the refactor
 2026-07-26 · A12 · done · (this commit) · lint measured at ~5.8s/app natively — the 130s figure was a network-FS artifact; no config change needed
 2026-07-26 · A9 · done · (this commit) · 0072: 8 additive indexes closing the reverse-lookup gap (user_id not a leading column on membership tables) + subscriptions/push/listings/communities predicates; all 8 verified usable via enable_seqscan=off EXPLAIN
+2026-07-26 · A10 · done · (this commit) · middleware route guards on campusclubs+campustrade (denial lists, verified no inbound links); removed FreeWindow (gate/cab content) + /saved link from clubs; /board carve-out proven for event check-in; 11 foreign redirect + 14 owned intact

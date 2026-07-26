@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { inputClass } from "@/components/ui";
 import { SubmitButton } from "@/components/submit-button";
 import { getRating } from "@/modules/ratings/get-rating";
-import { ArrowRight, Bookmark } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { KarmaProgress } from "@/modules/karma/progress";
 import HunterCard from "@/modules/karma/hunter-card";
 import LogoutButton from "@/components/logout-button";
@@ -88,15 +88,6 @@ export default async function ProfilePage({
         rating={rating}
       />
       <KarmaProgress karma={profile.karma ?? 0} />
-      <Link
-        href="/saved"
-        className="press flex min-h-11 items-center justify-between rounded-2xl border border-border bg-card px-4 text-sm font-medium"
-      >
-        <span className="flex items-center gap-2">
-          <Bookmark className="h-4 w-4 text-primary" strokeWidth={2} /> Saved items & alerts
-        </span>
-        <ArrowRight className="h-4 w-4 text-primary" strokeWidth={2.2} />
-      </Link>
       {saved && (
         <p className="rounded-lg border border-accent/30 bg-accent/10 p-3 text-sm text-accent">Saved.</p>
       )}
