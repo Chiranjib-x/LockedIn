@@ -18,13 +18,15 @@ export type Building = {
 };
 
 // One place for the per-category identity: colour (marker + chip), emoji, label.
+// Colours come from the design-system tokens in globals.css, not hex literals —
+// markers are imperative DOM, but a CSS var resolves fine in an inline style.
 const CAT: Record<Category, { color: string; emoji: string; label: string }> = {
-  academic: { color: "#2251c7", emoji: "🎓", label: "Academic" },
-  hostel: { color: "#d97706", emoji: "🛏️", label: "Hostels" },
-  mess: { color: "#16a34a", emoji: "🍽️", label: "Food & mess" },
-  sports: { color: "#dc2626", emoji: "⚽", label: "Sports" },
-  admin: { color: "#7c3aed", emoji: "🏛️", label: "Admin" },
-  landmark: { color: "#db2777", emoji: "📍", label: "Landmarks" },
+  academic: { color: "var(--color-tint-blue-fg)", emoji: "🎓", label: "Academic" },
+  hostel: { color: "var(--color-tint-amber-fg)", emoji: "🛏️", label: "Hostels" },
+  mess: { color: "var(--color-tint-green-fg)", emoji: "🍽️", label: "Food & mess" },
+  sports: { color: "var(--color-tint-rose-fg)", emoji: "⚽", label: "Sports" },
+  admin: { color: "var(--color-tint-violet-fg)", emoji: "🏛️", label: "Admin" },
+  landmark: { color: "var(--color-tint-teal-fg)", emoji: "📍", label: "Landmarks" },
 };
 const ORDER: Category[] = ["academic", "hostel", "mess", "sports", "admin", "landmark"];
 
@@ -97,10 +99,16 @@ export default function CampusMap({ buildings }: { buildings: Building[] }) {
 
     for (const b of buildings) {
       if (filter && b.category !== filter) continue;
+      // 44x44 transparent hit area (thumb-sized) around an 18px visual dot —
+      // growing the dot itself would collide on a dense campus map.
       const el = document.createElement("button");
       el.type = "button";
-      el.setAttribute("aria-label", b.name);
-      el.style.cssText = `width:18px;height:18px;border-radius:9999px;border:2px solid #fff;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.35);background:${CAT[b.category].color}`;
+      el.setAttribute("aria-label", `${b.name}${b.aka ? ` (${b.aka})` : ""}`);
+      el.style.cssText =
+        "width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:none;border:none;padding:0;cursor:pointer";
+      const dot = document.createElement("span");
+      dot.style.cssText = `width:18px;height:18px;border-radius:9999px;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35);background:${CAT[b.category].color}`;
+      el.appendChild(dot);
       el.addEventListener("click", (e) => {
         e.stopPropagation();
         focusBuilding(b);
@@ -123,7 +131,10 @@ export default function CampusMap({ buildings }: { buildings: Building[] }) {
           <div className="leading-tight">
             <p className="font-heading text-sm font-bold">VIT Compass</p>
             <p className="text-[11px] text-muted-foreground">Tap a building to see what&rsquo;s inside</p>
-            <a href="https://www.chiranjib.online" className="text-[10px] font-medium text-primary hover:underline">
+            <a
+              href="https://www.chiranjib.online"
+              className="inline-flex min-h-11 items-center py-2 text-[10px] font-medium text-primary hover:underline"
+            >
               Part of LockedIn ↗
             </a>
           </div>
@@ -142,11 +153,25 @@ export default function CampusMap({ buildings }: { buildings: Building[] }) {
         </div>
       </div>
 
+      {/* Nothing mapped yet — say so instead of showing a bare map with no pins. */}
+      {buildings.length === 0 && (
+        <div className="pointer-events-none absolute inset-x-0 top-1/2 z-10 flex -translate-y-1/2 justify-center px-6">
+          <div className="glass pointer-events-auto max-w-xs rounded-3xl p-5 text-center">
+            <p className="text-3xl">🗺️</p>
+            <p className="mt-2 font-heading font-bold">No buildings mapped yet</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Once your campus adds its buildings, they show up here — tap any one for photos,
+              timings and how to reach it.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* First-week helper — hidden while a sheet is open to avoid overlap. */}
       {!selected && !showWeek && (
         <button
           onClick={() => setShowWeek(true)}
-          className="press glass absolute bottom-3 left-3 z-10 flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold"
+          className="press glass absolute bottom-3 left-3 z-10 flex min-h-11 items-center gap-1.5 rounded-full px-5 text-sm font-semibold"
         >
           🧭 First week
         </button>
@@ -275,7 +300,7 @@ function Chip({
   return (
     <button
       onClick={onClick}
-      className={`press shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold whitespace-nowrap backdrop-blur transition-colors ${
+      className={`press flex min-h-11 shrink-0 items-center rounded-full border px-4 text-xs font-semibold whitespace-nowrap backdrop-blur transition-colors ${
         active ? "border-transparent bg-primary text-on-primary" : "border-border bg-card/80 text-foreground"
       }`}
       style={active && color ? { background: color } : undefined}

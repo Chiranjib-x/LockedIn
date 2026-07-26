@@ -297,3 +297,11 @@ h4 {
     transition-duration: 0.001ms !important;
   }
 }
+
+/* QUEUE A16 — MapLibre ships 29px control buttons; on a phone the zoom and
+   locate controls are primary actions, so bring them to the 44px thumb target
+   the rest of the app uses. Library-owned markup, so it has to be done here. */
+.maplibregl-ctrl.maplibregl-ctrl-group > button {
+  width: 44px;
+  height: 44px;
+}
