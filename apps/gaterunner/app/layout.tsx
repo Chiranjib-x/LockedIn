@@ -8,9 +8,18 @@ import NativeAuthBridge from "@/components/native-auth-bridge";
 const bricolage = Bricolage_Grotesque({ variable: "--font-bricolage", subsets: ["latin"] });
 const hanken = Hanken_Grotesk({ variable: "--font-hanken", subsets: ["latin"] });
 
+const DESC = "Your parcel, picked up at the gate — by a student already walking there.";
+// This link gets pasted into student group chats; without metadataBase the
+// opengraph-image file convention can't resolve to an absolute URL and the link
+// previews as a bare URL. Env override so U11 (neutral domain) is a config change.
+const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://gate.chiranjib.online";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE),
   title: "Gate Runner",
-  description: "Your parcel, picked up at the gate — by a student already walking there.",
+  description: DESC,
+  openGraph: { title: "Gate Runner", description: DESC, url: SITE, siteName: "Gate Runner", type: "website" },
+  twitter: { card: "summary_large_image", title: "Gate Runner", description: DESC },
 };
 
 export const viewport = {

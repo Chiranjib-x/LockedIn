@@ -16,11 +16,20 @@ const hanken = Hanken_Grotesk({
   subsets: ["latin"],
 });
 
+const DESC = "Run your club, all in one place.";
+// This link gets pasted into student group chats; without metadataBase the
+// opengraph-image file convention can't resolve to an absolute URL and the link
+// previews as a bare URL. Env override so U11 (neutral domain) is a config change.
+const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://clubs.chiranjib.online";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE),
   title: "CampusClubs",
-  description: "Run your club, all in one place.",
+  description: DESC,
   appleWebApp: { capable: true, statusBarStyle: "default", title: "CampusClubs" },
   icons: { apple: "/icons/apple-touch-icon.png" },
+  openGraph: { title: "CampusClubs", description: DESC, url: SITE, siteName: "CampusClubs", type: "website" },
+  twitter: { card: "summary_large_image", title: "CampusClubs", description: DESC },
 };
 
 export const viewport = {

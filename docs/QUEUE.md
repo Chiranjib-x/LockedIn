@@ -209,8 +209,12 @@ would agree. "Improve X" is not an item. "X passes Y" is.
 - **Done when:** the badge count on the page that visits `/notifications` matches the post-mark-read DB state within that same render, demonstrated with a before/after count pasted.
 - **Evidence:**
 
-### A33 · vitcompass has no OpenGraph metadata — the launch wedge shares as a bare URL
-- **State:** open
+### A33 · No app has root OpenGraph metadata — every pasted link shares as a bare URL
+- **State:** done (local build verified; the live `curl` in Done-when needs a deploy)
+- **Scope widened on pickup:** filed for vitcompass, but the audit found **all five**
+  apps lacked root `openGraph` *and* a root `opengraph-image` — `git grep metadataBase`
+  returned zero hits repo-wide. Every one of the five links is pasteable into a group,
+  so all five were fixed rather than just the wedge.
 - **Where:** `apps/vitcompass/app/layout.tsx` (no `openGraph`, no `metadataBase`), `apps/vitcompass/app/` (no `opengraph-image.tsx`)
 - **Why:** `docs/LAUNCH.md` W-1 is the one broad move of the whole launch, and it is a
   link pasted into student groups. Grep across `apps/vitcompass` for
@@ -223,7 +227,14 @@ would agree. "Improve X" is not an item. "X passes Y" is.
   pattern) — match its import style, size/contentType exports, and token colours.
 - **Done when:** `curl -s https://map.chiranjib.online | grep -o 'og:[a-z:]*'` lists
   `og:title`, `og:description`, `og:image`, and the image URL returns `200 image/png`.
-- **Evidence:**
+- **Evidence:** all 5 apps `gate.mjs <app> --build` → `GATE PASS … 3 check(s)`. Route
+  registered: `"/opengraph-image/route": "/opengraph-image"`. Prerendered meta =
+  `{"status":200,…"content-type":"image/png"}`. Emitted PNG bytes verified per app
+  (magic-byte checked, `isPNG:true`): lockedin 76971 · gaterunner 74517 · campusclubs
+  86522 · campustrade 80771 · vitcompass 82903. Per-app `metadataBase` fallbacks
+  confirmed distinct (www/gate/clubs/trade/map), each overridable via
+  `NEXT_PUBLIC_SITE_URL` so U11's domain switch is config, not a code change.
+  **Live `curl` still UNVERIFIED — it requires the deploy; re-run it after U1 pushes.**
 
 ---
 
