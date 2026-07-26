@@ -44,8 +44,8 @@ beat it has not actually walked.
 | B9 | notifications | in-app, push routing, scheduled posts | — | — |
 | B10 | admin & moderation | moderation queue, campus CMS, showcase | — | — |
 | B11 | shell | header, bottom nav, search, home, landing, error/404/offline | partial (static only) | F2 dismissed (see `## Dismissed`); F20 filed |
-| B12 | gaterunner | the whole app (5 pages) | — | — |
-| B13 | vitcompass | the whole app (map) | — | — |
+| B12 | gaterunner | the whole app (5 pages) | 2026-07-26 | F10, F11, F12 (F4 extended); D8, D9 |
+| B13 | vitcompass | the whole app (map) | 2026-07-26 | F12, F13; D10 |
 
 ---
 
@@ -84,12 +84,12 @@ beat it has not actually walked.
 ### F4 · Auth inputs have no labels (placeholder-only)
 - **Severity:** P3 · **Axis:** a11y · **State:** confirmed
 - **Detector:** Y3 (148 hits repo-wide; auth surface = 3 in each fork)
-- **Where:** `app/login/page.tsx:31-32`, `app/signup/page.tsx:30-32` — all 4 apps
+- **Where:** `app/login/page.tsx:31-32`, `app/signup/page.tsx:30-32` — all 4 apps. **B12 extends this:** `apps/gaterunner/modules/gate/client.tsx:17` (`RunnerNote`'s coordination-note input) and `:82` (`ClaimButton`'s UPI input) are two more unlabeled inputs, gaterunner-only (these components don't exist in the other forks).
 - **What:** inputs carry `placeholder` + `name` but no `<label htmlFor>`/`aria-label`. Placeholder vanishes on focus and is not a reliable accessible name.
 - **Impact:** screen-reader users get "edit text, blank"; no label tap-target. Not a broken flow — filed, not fixed in-loop.
-- **Fork echo:** identical in lockedin/campusclubs/campustrade/gaterunner.
+- **Fork echo:** identical in lockedin/campusclubs/campustrade/gaterunner for the auth pages; the client.tsx pair is gaterunner-specific (no equivalent component in the other three).
 - **Fix:** `aria-label` on each input (smallest change), or wrap in `<label>`. Do the whole Y3 class in one pass, not per-beat.
-- **Evidence:**
+- **Evidence:** B12 static sweep — `node scripts/sweep.mjs gaterunner --id=Y3` → 7 hits total: the 5 already listed above plus `modules/gate/client.tsx:17` and `:82`.
 
 ### F5 · Cross-college DMs — `find_or_create_dm` never checked the other participant's college
 - **Severity:** P0 · **Axis:** tenancy · **State:** fixed
@@ -100,6 +100,42 @@ beat it has not actually walked.
 - **Fork echo:** DB-side, so one fix covers all five apps. Calling code (`openChat`) lives in lockedin + campustrade; campusclubs' UI Message buttons were already removed (see F20).
 - **Fix:** `create or replace` with an explicit `exists (select 1 from profiles where id = other and college_id = my_college)` guard.
 - **Evidence:** BEFORE (role-JWT probe, rolled back): VIT user → Demo College user → `CROSS-COLLEGE DM CREATED: b72ce70a-…` then `MESSAGE DELIVERED cross-college`. AFTER applying 0067: `cross-college blocked -> that person is not at your college`; same-college regression check `same-college DM ok: true (chiranjib.dash2024@vitstudent.ac.in -> aditya.asutosh2024@vitstudent.ac.in)`. Applied to live DB; committed `7829ec8`.
+
+### F10 · gaterunner: an authenticated user can still land on `/login` / `/signup` and sees the auth form
+- **Severity:** P2 · **Axis:** ux · **State:** confirmed
+- **Detector:** manual read + run pass (no static detector — this is a missing guard, not a pattern regex catches)
+- **Where:** `apps/gaterunner/app/login/page.tsx`, `apps/gaterunner/app/signup/page.tsx`
+- **What:** `app/page.tsx` (landing) explicitly does `if (user) redirect("/gate")`, but `LoginPage`/`SignupPage` never call `auth.getUser()` — they render the form unconditionally. An already-authenticated user who navigates to `/login` or `/signup` (bookmark, browser back, typed URL) sees the header correctly reading "Log out" while the main content is a login/signup form, instead of being bounced to `/gate` like the landing page does.
+- **Impact:** confusing, not broken — re-submitting the login form while authenticated just re-authenticates and redirects to `/gate` fine (verified); no data loss, no crash, no dead end (the header's "Log out" link always escapes). Inconsistent with the pattern the landing page already establishes.
+- **Fork echo:** not checked against lockedin/campusclubs/campustrade (out of this beat's scope, B1 already swept those auth pages and did not flag this) — worth a look next time those pages are touched.
+- **Fix:** add the same `if (user) redirect("/gate")` guard used on `app/page.tsx` to the top of `LoginPage`/`SignupPage`.
+- **Evidence:** isolated Playwright probe (fresh context, real login, then `page.goto("/login")`): `navigated to /login while authenticated, url: http://localhost:3007/login`, `header text: Gate Runner | Log out`, `login form still rendered on /login while authed: True`; same for `/signup`.
+
+### F11 · gaterunner: gate lifecycle action buttons mutate with no pending state and no error surfacing
+- **Severity:** P2 · **Axis:** ux · **State:** confirmed
+- **Detector:** manual read (U2's regex only matches `type="submit"`; these are plain `onClick` buttons, so the sweep missed them)
+- **Where:** `apps/gaterunner/modules/gate/client.tsx` — `RunnerActions` ("Dropped it off ✓", "Can't make it") and `RequesterActions` ("Received it ✓", "Cancel"); server actions `markDroppedOff`/`confirmDelivered`/`cancelPickup` in `apps/gaterunner/modules/gate/actions.ts` don't check/return the Supabase `.update(...)` error either.
+- **What:** unlike `ClaimButton` and `RunnerNote` in the same file (which track `busy`/`sent` state and surface errors), these four buttons call `await action(id); refresh();` with no busy flag and no error path. A slow network lets a double-tap fire the mutation twice (harmless here — the actions are idempotent `eq()`-filtered updates — but nothing visibly happens either, no spinner, no confirmation beyond the list re-rendering).
+- **Impact:** not a broken flow (RLS-backed filters make the writes idempotent, so no corruption), but fails the "every action gives pending/success/failure feedback" bar — if the update legitimately affects 0 rows (e.g., a race where the other party already changed the row), the button just silently does nothing with no message.
+- **Fix:** wire `useState` busy flags (same pattern as `ClaimButton`) and surface the `error` field these actions currently discard.
+- **Evidence:** read of `client.tsx` `RunnerActions`/`RequesterActions` (no `useState` busy tracking, unlike `ClaimButton`/`RunnerNote` in the same file) and `actions.ts` `markDroppedOff`/`confirmDelivered`/`cancelPickup` (`await supabase.from(...).update(...)` result never assigned/checked).
+
+### F12 · Sub-44px tap targets on gaterunner `/gate` and the vitcompass map
+- **Severity:** P3 · **Axis:** ux/a11y · **State:** confirmed
+- **Detector:** manual measurement (`getBoundingClientRect` sweep of `button, a` at 390×844 and 360×800) — not a static-source pattern
+- **Where:** `apps/gaterunner/modules/gate/client.tsx` (`RequesterActions` "Cancel" 63.5×30px, `HeadingToGate` "🏃 I'm heading to the gate" 200×34px), `apps/gaterunner/app/gate/page.tsx` ("＋ My delivery" link 123×36px); `apps/vitcompass/components/campus-map.tsx` (building markers 18×18px — the app's primary interaction — and category filter chips 30px tall).
+- **Impact:** below the standard 44×44px mobile tap-target guideline; the vitcompass markers are the most consequential since tapping a building is the whole point of the app, and at 18px several markers sit close together on a dense campus map (screenshot: TT/Fountain/D-Block cluster).
+- **Fix:** bump padding/min-height on the gaterunner pill buttons to `min-h-11` (matches the convention already used by `ClaimButton`/`RunnerNote` in the same file); for the map markers, grow the invisible hit-area (e.g. a larger transparent padding box) without growing the visual dot, since 44px dots would overlap on a dense map — needs a look at the rendered screenshot, not a blind bump.
+- **Evidence:** `eval_on_selector_all` measurement at 390×844: `Cancel {h:30,w:63.6}`, `🏃 I'm heading to the gate {h:34,w:200}`, `＋ My delivery {h:36,w:123.5}`; vitcompass markers: 24 buttons each `{h:18,w:18}` with correct per-building `aria-label` (so this is a size problem, not an a11y-name problem); chips `{h:30}`. Screenshots `vc_map_initial_390.png`, `gr_gate_authed_390.png`.
+
+### F13 · vitcompass: no empty state for a zero-building college; marker colours hardcoded outside the token system
+- **Severity:** P3 · **Axis:** ux/correctness · **State:** confirmed
+- **Detector:** U1 (list render, no empty state) + U4 (hardcoded colour), both confirmed real on read
+- **Where:** `apps/vitcompass/components/campus-map.tsx:21-27` (`CAT` colour map) and `:133` (`presentCats.map`)
+- **What:** `app/page.tsx` only ever queries VIT Vellore's college row, so this is low-probability today, but if `campus_buildings` ever has zero rows with usable lat/lng for that college (e.g. a moderator bulk-clears coordinates via the CMS), `presentCats` is empty, no chips besides "All" render, and the map just shows... an empty campus with no explanation. Separately, the six category colours (`academic:#2251c7`, `hostel:#d97706`, `mess:#16a34a`, `sports:#dc2626`, `admin:#7c3aed`, `landmark:#db2777`) are literal hex, not `@theme` tokens — `academic`'s `#2251c7` is in fact the documented brand cobalt token (STATE `## Decisions`: "brand cobalt for icons = #2251C7") duplicated as a raw literal instead of referenced.
+- **Impact:** neither is user-visible today (24 buildings are seeded, all with coordinates) — filed so it isn't lost, not because it's biting anyone now.
+- **Fix:** add a "no buildings mapped yet" message when `buildings.length === 0`; pull marker colours from CSS custom properties (the markers are imperative DOM via `document.createElement`, so this needs `getComputedStyle` or inline `var(--color-x)`, not a Tailwind class — worth a small design decision, not a blind token swap).
+- **Evidence:** `apps/vitcompass/components/campus-map.tsx:21-27` (literal hex map), `:133` (`presentCats.map` with no `length === 0` branch); `app/page.tsx:17-26` shows `buildings` can legitimately be `[]` if the college lookup or coordinate filter yields nothing.
 
 ## Dismissed
 
@@ -159,6 +195,22 @@ what stops the next sweep re-litigating settled ground.
 - **Config-lift note:** the two campusclubs-specific header targets and the nav tab set both stem from one fact — CampusClubs doesn't surface toolbox/deals/global-search in its primary nav. Collapsing that into a shared per-app nav-config would touch both files' control flow (not just a constant), so it isn't "cheap" — left as-is per instructions not to force-converge deliberately-different files.
 - **Fork echo:** N/A — nothing to converge; all four differences are either byte-identical pairs or intentional per-app behaviour.
 
+### D8 · B12 gaterunner static hits — C4 (themeInit) and U2 (logout button)
+- **Detector:** C4, U2
+- **Why dismissed:**
+  - **C4** (`apps/gaterunner/app/layout.tsx:24`, `themeInit` empty catch) — same reasoning as D4: `localStorage.getItem` throws in private-browsing/blocked-cookie modes, the empty catch leaves the class untoggled and falls back to `prefers-color-scheme`. Identical pattern to the other three apps.
+  - **U2** (`apps/gaterunner/components/gate-header.tsx:24`, "Log out" `<button type="submit">` with no pending state) — logout is idempotent (a second `signOut()` mid-flight is harmless) and the only outcome is a redirect to `/login`; there's no meaningful failure state to surface. Run-verified: clicking it always lands on `/login` with the header correctly showing "Log in".
+
+### D9 · B12 `pickup_requests` RLS — adversarially probed, no defects
+- **Swept:** role-JWT probes in rolled-back transactions against the live DB, cross-college (Demo College vs VIT Vellore) and cross-user within a college.
+- **Why clean:** same-college read scoping holds (a VIT user selecting `pickup_requests` filtered to Demo College's `college_id` gets 0 rows; an unfiltered select only ever returns the caller's own college). Direct `INSERT` spoofing `college_id` to another college, or impersonating another `requester_id`, both rejected by RLS (`new row violates row-level security policy`). Direct `UPDATE`/`DELETE` by a non-requester/non-runner affects 0 rows. `claim_pickup` RPC: self-claim by the requester returns `"Someone else claimed it first."` (blocked by the `requester_id <> auth.uid()` guard); a cross-college claim attempt is likewise rejected and the target row was confirmed still `status='open', runner_id=null` afterward. `unclaim_pickup` and `set_runner_note` both reject a non-runner (`set_runner_note` raises `"not your pickup"`).
+- **Evidence:** full probe transcript in the hunt session — 10 probes (P1–P10), all outcomes matched the RLS/RPC design (`0022_gate_runner_hardening.sql`, `0023_fix_unclaim.sql`, `0024_gate_run_announce.sql`, `0064_runner_note.sql`); all transactions rolled back, live data unchanged.
+
+### D10 · B13 `campus_buildings` RLS — adversarially probed, no defects
+- **Swept:** role-JWT probes in rolled-back transactions against the live DB (anon, authenticated non-moderator, moderator of the *other* college), per `0065_campus_buildings.sql`.
+- **Why clean:** public read confirmed for `anon` (both colleges' rows visible — intentional design, buildings aren't sensitive). Direct `INSERT`/`UPDATE`/`DELETE` by an authenticated non-moderator, and direct `INSERT` by `anon`, all rejected (`new row violates row-level security policy` / 0 rows affected) — there is no write policy on the table at all, only the two SECURITY DEFINER RPCs. `save_campus_building`/`delete_campus_building` called by a non-moderator raise `"Only a college moderator can edit the campus map."`; `anon` can't call them at all (no `EXECUTE` grant). Cross-college write: a Demo College moderator targeting a VIT building's `id` via `save_campus_building` gets `"Building not found in your college."` and the VIT building's name was confirmed unchanged afterward; `delete_campus_building` on a foreign-college id silently affects 0 rows and the row was confirmed still present.
+- **Evidence:** full probe transcript in the hunt session — 9 probes (B1–B9), all outcomes matched the RLS/RPC design; all transactions rolled back, live data unchanged.
+
 ## Hunt log
 
 `/hunt` appends one line per iteration. Newest last.
@@ -168,3 +220,5 @@ what stops the next sweep re-litigating settled ground.
 2026-07-26 · F2 fork drift · 0 confirmed of 4 raised · (docs-only, see commit) · read all 3 versions + exact diffs of bottom-nav/header/nav-link/push-client — all 4 are legitimate per-app differences (nav is deliberately clubs-only, push `p_app` default covers lockedin's omission per 0063); F2 dismissed, F20 filed for the orphaned-routes discovery (covered by existing QUEUE A10)
 2026-07-26 · B3 chat · 2 confirmed / 3 raised · 7829ec8+736a287 · F5 P0 cross-college DM closed (0067); F1 IST day labels fixed in 3 forks w/ tests; D1 verified, D6 dismissed
 2026-07-26 · B5 communities (partial) · 0 confirmed / 6 probed · (no fix commit) · all role/money/profile RPC guards hold vs outsider + non-mod member + cross-college; D7 records the is_moderator probe pitfall
+2026-07-26 · B12 gaterunner · 0 P0/P1, 3 P2/P3 confirmed of ~12 raised · (docs-only, see commit) · static+read+run(390/360)+adversarial-probe all four passes; pickup_requests RLS clean (D9); F10 auth-page redirect gap, F11 no pending/error state on lifecycle buttons, F4 extended w/ 2 more Y3 hits filed; C4/U2 dismissed (D8)
+2026-07-26 · B13 vitcompass · 0 P0/P1, 2 P3 confirmed of ~2 raised · (docs-only, see commit) · static+read+run(390/360, WebGL)+adversarial-probe all four passes; campus_buildings RLS clean incl. cross-college write/delete (D10); F13 empty-state+hardcoded-colour filed; F12 (shared w/ B12) covers sub-44px map markers/chips

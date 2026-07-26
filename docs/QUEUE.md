@@ -127,6 +127,34 @@ would agree. "Improve X" is not an item. "X passes Y" is.
 - **Done when:** `node scripts/gate.mjs <app>` passes lint (0 errors) for every app, pasted per app.
 - **Evidence:**
 
+### A14 · gaterunner: redirect an already-authenticated user away from /login and /signup
+- **State:** open
+- **Why:** FINDINGS F10 — `app/page.tsx` redirects a logged-in user to `/gate`; `app/login/page.tsx` and `app/signup/page.tsx` don't have the equivalent guard, so a bookmark/back-button visit shows the auth form under a "Log out" header.
+- **Do:** add `if (user) redirect("/gate")` (same pattern as the landing page) to the top of both pages. Check whether lockedin/campusclubs/campustrade's `/login`+`/signup` have the same gap while touching this (F10 only confirmed it in gaterunner).
+- **Done when:** a Playwright probe — real login, then `page.goto("/login")` and `page.goto("/signup")` — lands on `/gate` (or each app's home route) both times, pasted per app touched.
+- **Evidence:**
+
+### A15 · gaterunner: pending/error state on gate lifecycle action buttons
+- **State:** open
+- **Why:** FINDINGS F11 — `RunnerActions`/`RequesterActions` in `modules/gate/client.tsx` ("Dropped it off ✓", "Can't make it", "Received it ✓", "Cancel") mutate with no busy flag and no error surface, unlike `ClaimButton`/`RunnerNote` in the same file.
+- **Do:** add the same `useState` busy pattern already used by `ClaimButton`; have `markDroppedOff`/`confirmDelivered`/`cancelPickup` in `modules/gate/actions.ts` return the Supabase error (or a boolean) instead of discarding it, and show it inline on failure.
+- **Done when:** clicking each button disables it until the action resolves, and a forced failure (e.g. stale row) shows a message instead of silently no-op'ing — demonstrated in a Playwright spec or pasted manual run.
+- **Evidence:**
+
+### A16 · Tap-target pass: gaterunner pill buttons + vitcompass map markers/chips
+- **State:** open
+- **Why:** FINDINGS F12 — several controls measure under the 44×44px mobile tap-target guideline: gaterunner's "Cancel" (30px), "I'm heading to the gate" (34px), "＋ My delivery" link (36px); vitcompass's building markers (18×18px, the app's primary interaction) and category chips (30px).
+- **Do:** bump the gaterunner buttons to `min-h-11` (matches `ClaimButton`/`RunnerNote` convention already in the same file). For vitcompass markers, grow the invisible hit-area without growing the visual dot (dense-map overlap risk) — look at `vc_map_initial_390.png` before picking a size.
+- **Done when:** the `getBoundingClientRect` sub-44px sweep (`button, a` filtered `h<44 || w<44`) returns empty on `/gate` and vitcompass's `/` at both 390×844 and 360×800, pasted.
+- **Evidence:**
+
+### A17 · vitcompass: empty state for zero-building colleges + token-based marker colours
+- **State:** open
+- **Why:** FINDINGS F13 — `campus-map.tsx` has no `buildings.length === 0` branch (silently renders an empty map), and the six category marker colours are raw hex instead of referencing the `@theme` tokens (`academic`'s `#2251c7` duplicates the documented brand-cobalt token).
+- **Do:** add a "no buildings mapped yet" message gated on `buildings.length === 0`. For colours, since markers are imperative DOM (`document.createElement`, not JSX/Tailwind), read the values via `getComputedStyle(document.documentElement).getPropertyValue(...)` or inline `var(--color-x)` in the `cssText` — needs the actual token names from `app/globals.css` `@theme`, not a blind hex swap.
+- **Done when:** rendering with `buildings=[]` shows the message (test by stubbing the query), and `grep -c '#[0-9a-fA-F]\{6\}' apps/vitcompass/components/campus-map.tsx` is 0.
+- **Evidence:**
+
 ---
 
 ## USER-GATED — `/loop` reports these, never attempts them
