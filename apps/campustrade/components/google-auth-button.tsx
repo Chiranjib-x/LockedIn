@@ -11,8 +11,18 @@ const GOOGLE_ENABLED = true;
 // College-domain gate is enforced server-side by the handle_new_user trigger
 // (migration 0036) regardless of provider, so no extra tenancy check needed here.
 // Includes its own "or" divider so hiding the button leaves nothing dangling.
+// Every failure path here used to reset the button and say nothing: the user saw
+// "Redirecting…" flick back to "Continue with Google" with no reason, and the
+// real error never reached anyone who could act on it. Show it instead.
+function friendly(msg: string) {
+  if (/provider is not enabled|Unsupported provider/i.test(msg))
+    return "Google sign-in isn’t switched on yet — use your email and password for now.";
+  return msg;
+}
+
 export default function GoogleAuthButton() {
   const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
   if (!GOOGLE_ENABLED) return null;
   return (
     <>
@@ -26,6 +36,7 @@ export default function GoogleAuthButton() {
         disabled={busy}
         onClick={async () => {
           setBusy(true);
+          setErr(null);
           const supabase = createClient();
           const { Capacitor } = await import("@capacitor/core");
           if (Capacitor.isNativePlatform()) {
@@ -40,12 +51,15 @@ export default function GoogleAuthButton() {
                 options: { redirectTo: "com.lockedin.campustrade://auth/callback", skipBrowserRedirect: true },
               });
               if (error || !data?.url) {
+                setErr(friendly(error?.message ?? "Could not start Google sign-in."));
                 setBusy(false);
                 return;
               }
               const { Browser } = await import("@capacitor/browser");
               await Browser.open({ url: data.url });
             } catch {
+              // Older APKs shipped without the Browser plugin.
+              setErr("Could not open Google sign-in. Update the app, or use your email and password.");
               setBusy(false);
             }
           } else {
@@ -53,7 +67,10 @@ export default function GoogleAuthButton() {
               provider: "google",
               options: { redirectTo: `${window.location.origin}/auth/callback` },
             });
-            if (error) setBusy(false);
+            if (error) {
+              setErr(friendly(error.message));
+              setBusy(false);
+            }
           }
         }}
         className="press flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-border bg-card text-sm font-semibold text-foreground hover:bg-muted disabled:opacity-50"
@@ -66,6 +83,11 @@ export default function GoogleAuthButton() {
       </svg>
         {busy ? "Redirecting…" : "Continue with Google"}
       </button>
+      {err && (
+        <p role="alert" className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
+          {err}
+        </p>
+      )}
     </>
   );
 }

@@ -39,6 +39,21 @@ export default function CampusMapEditor({ buildings: initial }: { buildings: Edi
   const [armed, setArmed] = useState<string | null>(null);
   const [status, setStatus] = useState<Status>({ kind: "idle", msg: "" });
 
+  // Local state owns the pins so a drag can update optimistically, but the server
+  // list changes underneath us when a building is added or deleted elsewhere on
+  // this page (BuildingRow's delete calls router.refresh(), which re-renders this
+  // component with new props while the state below stays stale — a deleted
+  // building's marker used to linger on the map). Re-sync when the SET of ids
+  // changes, not on every prop change: a drag also refreshes the route, and
+  // resetting then would fight the person dragging. Adjust-during-render rather
+  // than an effect — remounting via key would tear the map down and lose the view.
+  const ids = initial.map((b) => b.id).join(",");
+  const [seenIds, setSeenIds] = useState(ids);
+  if (ids !== seenIds) {
+    setSeenIds(ids);
+    setBuildings(initial);
+  }
+
   // The map click handler is registered once, so it must not close over stale
   // state — it reads the armed building through a ref instead. Synced in an
   // effect, never during render (refs are not render-time values).
