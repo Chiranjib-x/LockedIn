@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { Card } from "@/components/ui";
@@ -46,6 +47,21 @@ export default async function ModerationPage() {
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 px-4 py-6">
       <h1 className="text-2xl font-bold">Moderation</h1>
       <p className="text-sm text-muted-foreground">{enriched.length} open report{enriched.length === 1 ? "" : "s"}</p>
+
+      {/* Admin hub: /admin/campus and /admin/spaces are moderator-only and were
+          otherwise unreachable — the header can't take a third icon without
+          re-breaking the 360px overflow fixed earlier. */}
+      <nav className="flex flex-wrap gap-2">
+        <Link href="/admin/campus" className="press rounded-full border border-border bg-card px-4 py-1.5 text-sm font-medium hover:bg-muted">
+          🗺️ Campus map
+        </Link>
+        <Link href="/admin/spaces" className="press rounded-full border border-border bg-card px-4 py-1.5 text-sm font-medium hover:bg-muted">
+          🔒 Spaces
+        </Link>
+        <Link href="/admin/showcase" className="press rounded-full border border-border bg-card px-4 py-1.5 text-sm font-medium hover:bg-muted">
+          🧰 Toolbox &amp; Deals
+        </Link>
+      </nav>
 
       {!enriched.length ? (
         <Card className="flex flex-col items-center gap-2 py-10 text-center">
