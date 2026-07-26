@@ -37,7 +37,7 @@ beat it has not actually walked.
 | B2 | marketplace | listings, new, mine, requests, offers, saved | — | — |
 | B3 | chat | threads, realtime, unread, contact flows | 2026-07-26 | F1 fixed, F5 fixed (P0), D1 verified, D6 dismissed |
 | B4 | board & events | posts, events, RSVP, check-in, feedback | — | — |
-| B5 | communities | clubs, teams, applications, roles, ops, money, polls | — | — |
+| B5 | communities | clubs, teams, applications, roles, ops, money, polls | partial 2026-07-26 (static+read+probe; run pass pending) | none (D7 dismissed) |
 | B6 | daily life | cabs, group-buy, subscriptions, toolbox, deals, boxes | — | — |
 | B7 | spaces & matching | spaces, vouching, matches, prefs, crews | — | — |
 | B8 | timetable | timetable, attendance, free-slot finder | — | — |
@@ -106,6 +106,11 @@ beat it has not actually walked.
 Findings the sweep raised and a human or agent ruled out. Keep these — they are
 what stops the next sweep re-litigating settled ground.
 
+### D7 · B5 communities authorization — probed, no defects
+- **Swept:** static (baseline sweep) + read (`is_app_moderator` / `is_community_moderator` / `is_community_member` in 0017 + 0055; guards on `set_community_role`, `create_collection`, `decide_application`, `update_community_profile`, `request_community_deletion`, `adjust_box_item`) + adversarial probe. **Run pass still pending** — this beat is recorded partial, not swept.
+- **Why clean:** every money/role/profile RPC opens with `if not (is_app_moderator() or is_community_moderator(cid)) then raise exception 'not allowed'`. Probed as an outsider (same college, non-member): `create_collection`, self-promote via `set_community_role`, `update_community_profile`, `request_community_deletion` all → `BLOCKED: not allowed`; `team_meetings` and `collection_dues` both read 0 rows. Probed as a genuine non-moderator member (`aditya.jaiswal2024@vitstudent.ac.in` in "Chiru's Club"): same three → `BLOCKED: not allowed`. Cross-college: a Demo College user could not read a VIT community (`no (ok)`) and `insert into community_members` → `new row violates row-level security policy`.
+- **⚠ Probe methodology note (cost me a false P0):** an early probe reported a "plain member" successfully calling `create_collection` + self-promoting. The account was `lockedin.phase1.test@gmail.com`, which carries `profiles.is_moderator = true` app-wide, so `is_app_moderator()` correctly returned true. **Always exclude `is_moderator = true` when selecting a probe subject for a member-level check** — the founder test account is a member of several communities and will silently pass every guard.
+
 ### D6 · C1 on `app/notifications/page.tsx:48`
 - **Detector:** C1 (date rendered without IST timezone)
 - **Why dismissed:** false positive. That `dayLabel` shifts *both* sides with `toIST(new Date(ts))` / `istNow()` before comparing, so Today/Yesterday already resolve on IST calendar days. The flagged fallback `toLocaleDateString("en-IN", { day, month })` is deliberately un-timezoned because `d` is already shifted — adding `timeZone: "Asia/Kolkata"` would double-shift it by +5:30. The file's own comment says so. C1 cannot see that the Date was pre-shifted; treat this line as a known-good exception.
@@ -162,3 +167,4 @@ what stops the next sweep re-litigating settled ground.
 2026-07-26 · B1 auth · 0 confirmed P0/P1 of 3 raised · (no fix commit) · auth logic clean across 4 apps; F4 a11y filed, D4/D5 dismissed; "any email" was the gmail seed row (0066), not auth
 2026-07-26 · F2 fork drift · 0 confirmed of 4 raised · (docs-only, see commit) · read all 3 versions + exact diffs of bottom-nav/header/nav-link/push-client — all 4 are legitimate per-app differences (nav is deliberately clubs-only, push `p_app` default covers lockedin's omission per 0063); F2 dismissed, F20 filed for the orphaned-routes discovery (covered by existing QUEUE A10)
 2026-07-26 · B3 chat · 2 confirmed / 3 raised · 7829ec8+736a287 · F5 P0 cross-college DM closed (0067); F1 IST day labels fixed in 3 forks w/ tests; D1 verified, D6 dismissed
+2026-07-26 · B5 communities (partial) · 0 confirmed / 6 probed · (no fix commit) · all role/money/profile RPC guards hold vs outsider + non-mod member + cross-college; D7 records the is_moderator probe pitfall
