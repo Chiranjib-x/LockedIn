@@ -35,7 +35,7 @@ beat it has not actually walked.
 |---|---|---|---|---|
 | B1 | auth | login, signup, logout, OAuth return, delete-account, middleware | 2026-07-26 | none (F4 filed, D4/D5 dismissed) |
 | B2 | marketplace | listings, new, mine, requests, offers, saved | — | — |
-| B3 | chat | threads, realtime, unread, contact flows | partial (static only) | F1 |
+| B3 | chat | threads, realtime, unread, contact flows | 2026-07-26 | F1 fixed, F5 fixed (P0), D1 verified, D6 dismissed |
 | B4 | board & events | posts, events, RSVP, check-in, feedback | — | — |
 | B5 | communities | clubs, teams, applications, roles, ops, money, polls | — | — |
 | B6 | daily life | cabs, group-buy, subscriptions, toolbox, deals, boxes | — | — |
@@ -59,7 +59,8 @@ beat it has not actually walked.
 - **Impact:** a message sent 00:00–05:30 IST is stamped with the previous day, and the "Today" / "Yesterday" separators are wrong for that window. This is the Launch Gate #3 bug class, which this project has already shipped twice.
 - **Fork echo:** present in lockedin, campusclubs, campustrade (identical code).
 - **Fix:** route through `packages/lib/ist.ts` — compare IST day keys rather than `toDateString()`, and pass `timeZone: "Asia/Kolkata"` to the formatter. The A3 unit tests already cover `ist.ts` under both `TZ=UTC` and `TZ=Asia/Kolkata`; extend them to `dayLabel`.
-- **Evidence:**
+- **State update (2026-07-26):** **fixed** in `736a287`. Scope corrected during confirmation: the `app/notifications/page.tsx:48` half is a FALSE POSITIVE — that `dayLabel` already shifts both sides with `toIST`/`istNow`, and its un-timezoned fallback formatter is deliberate (the date is pre-shifted; adding `timeZone` would double-shift). See D6. Only `modules/chat/thread.tsx` was really broken.
+- **Evidence:** `cd packages/lib && TZ=UTC node --test` → `pass 3 / fail 0`; `TZ=Asia/Kolkata node --test` → `pass 3 / fail 0` (identical). Fails-before proven: the old logic run under `TZ=UTC` returns `Yesterday` for `2026-07-15T20:00Z` (= 01:30 IST on the 16th) where the new test asserts `Today`. Fork echo: patched in lockedin + campusclubs + campustrade in the same commit; `node scripts/gate.mjs <app> --no-lint` → GATE PASS on all three.
 
 ### F20 · CampusClubs still ships the mother's marketplace/chat routes, unlinked but live
 - **Severity:** P2 · **Axis:** correctness/product · **State:** open
@@ -90,10 +91,24 @@ beat it has not actually walked.
 - **Fix:** `aria-label` on each input (smallest change), or wrap in `<label>`. Do the whole Y3 class in one pass, not per-beat.
 - **Evidence:**
 
+### F5 · Cross-college DMs — `find_or_create_dm` never checked the other participant's college
+- **Severity:** P0 · **Axis:** tenancy · **State:** fixed
+- **Detector:** manual read of `supabase/migrations/0015_chat.sql` during B3 (no static detector catches this — C8 only sees missing columns, not a definer RPC failing open)
+- **Where:** `find_or_create_dm(other uuid, ctype text, ctx uuid)` — 0015, replaced by `supabase/migrations/0067_dm_college_scope.sql`
+- **What:** the function stamped the new conversation with `college_id = <caller's college>` but never verified that `other` belonged to it. Every other tenancy path in the app is enforced at the DB; this one was not.
+- **Impact:** a caller holding a foreign user's uuid could open a conversation across colleges **and deliver a message into it** — directly contradicting the app's stated promise ("everything you post stays inside your campus — enforced at the database"). Reachability was limited: `profiles` reads are RLS-scoped and `find_by_username` (0037) is college-scoped, so foreign uuids are not easily harvested — but the RPC *is* the trust boundary for chat and it failed open.
+- **Fork echo:** DB-side, so one fix covers all five apps. Calling code (`openChat`) lives in lockedin + campustrade; campusclubs' UI Message buttons were already removed (see F20).
+- **Fix:** `create or replace` with an explicit `exists (select 1 from profiles where id = other and college_id = my_college)` guard.
+- **Evidence:** BEFORE (role-JWT probe, rolled back): VIT user → Demo College user → `CROSS-COLLEGE DM CREATED: b72ce70a-…` then `MESSAGE DELIVERED cross-college`. AFTER applying 0067: `cross-college blocked -> that person is not at your college`; same-college regression check `same-college DM ok: true (chiranjib.dash2024@vitstudent.ac.in -> aditya.asutosh2024@vitstudent.ac.in)`. Applied to live DB; committed `7829ec8`.
+
 ## Dismissed
 
 Findings the sweep raised and a human or agent ruled out. Keep these — they are
 what stops the next sweep re-litigating settled ground.
+
+### D6 · C1 on `app/notifications/page.tsx:48`
+- **Detector:** C1 (date rendered without IST timezone)
+- **Why dismissed:** false positive. That `dayLabel` shifts *both* sides with `toIST(new Date(ts))` / `istNow()` before comparing, so Today/Yesterday already resolve on IST calendar days. The flagged fallback `toLocaleDateString("en-IN", { day, month })` is deliberately un-timezoned because `d` is already shifted — adding `timeZone: "Asia/Kolkata"` would double-shift it by +5:30. The file's own comment says so. C1 cannot see that the Date was pre-shifted; treat this line as a known-good exception.
 
 ### D1 · C8 on `colleges`, `messages`, `conversation_participants`, `blocks`
 - **Detector:** C8 (table without `college_id`)
@@ -146,3 +161,4 @@ what stops the next sweep re-litigating settled ground.
 <!-- HUNT-LOG -->
 2026-07-26 · B1 auth · 0 confirmed P0/P1 of 3 raised · (no fix commit) · auth logic clean across 4 apps; F4 a11y filed, D4/D5 dismissed; "any email" was the gmail seed row (0066), not auth
 2026-07-26 · F2 fork drift · 0 confirmed of 4 raised · (docs-only, see commit) · read all 3 versions + exact diffs of bottom-nav/header/nav-link/push-client — all 4 are legitimate per-app differences (nav is deliberately clubs-only, push `p_app` default covers lockedin's omission per 0063); F2 dismissed, F20 filed for the orphaned-routes discovery (covered by existing QUEUE A10)
+2026-07-26 · B3 chat · 2 confirmed / 3 raised · 7829ec8+736a287 · F5 P0 cross-college DM closed (0067); F1 IST day labels fixed in 3 forks w/ tests; D1 verified, D6 dismissed
