@@ -37,7 +37,7 @@ export default function GoogleAuthButton() {
             try {
               const { data, error } = await supabase.auth.signInWithOAuth({
                 provider: "google",
-                options: { redirectTo: "com.lockedin.campus://auth/callback", skipBrowserRedirect: true },
+                options: { redirectTo: "com.lockedin.campustrade://auth/callback", skipBrowserRedirect: true },
               });
               if (error || !data?.url) {
                 setBusy(false);

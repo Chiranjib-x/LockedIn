@@ -3,6 +3,7 @@ import { login } from "@/app/auth/actions";
 import { inputClass } from "@suite/ui";
 import { SubmitButton } from "@suite/ui";
 import AuthHero from "@/modules/auth/hero";
+import GoogleAuthButton from "@/components/google-auth-button";
 
 export default async function LoginPage({
   searchParams,
@@ -31,6 +32,7 @@ export default async function LoginPage({
           <input name="password" type="password" required autoComplete="current-password" placeholder="Password" className={inputClass} />
           <SubmitButton pendingLabel="Logging in…">Log in</SubmitButton>
         </form>
+        <GoogleAuthButton />
         <p className="text-sm text-muted-foreground">
           New here?{" "}
           <Link href="/signup" className="font-medium text-primary underline">
