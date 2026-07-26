@@ -54,6 +54,10 @@ export function Polls({ cid, isLead, meId, polls }: { cid: string; isLead: boole
       {polls.map((poll) => {
         const total = poll.votes.length;
         const myChoice = poll.votes.find((v) => v.user_id === meId)?.choice ?? null;
+        // Deliberate: "has this poll closed?" is a clock read. Evaluated per
+        // render; a poll that closes while the page sits open flips on the next
+        // render/navigation — cheaper than holding a timer open per poll.
+        // eslint-disable-next-line react-hooks/purity
         const closed = poll.closes_at != null && new Date(poll.closes_at).getTime() < Date.now();
         return (
           <div key={poll.id} className="flex flex-col gap-2 rounded-2xl border border-border bg-card p-3">

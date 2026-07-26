@@ -40,6 +40,7 @@ export default function Thread({
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const tempSeq = useRef(0);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -68,7 +69,10 @@ export default function Thread({
     setSending(true);
     setText("");
     // optimistic
-    const temp: Msg = { id: "temp-" + Date.now(), sender_id: meId, body: trimmed, created_at: new Date().toISOString() };
+    // Monotonic counter, not Date.now(): the id only has to be unique within
+    // this thread's optimistic list, and a counter is pure (react-hooks/purity).
+    tempSeq.current += 1;
+    const temp: Msg = { id: `temp-${tempSeq.current}`, sender_id: meId, body: trimmed, created_at: new Date().toISOString() };
     setMessages((prev) => [...prev, temp]);
     const { data, error } = await supabase
       .from("messages")

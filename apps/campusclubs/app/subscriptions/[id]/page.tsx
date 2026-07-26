@@ -47,6 +47,9 @@ export default async function SubscriptionPage({ params }: { params: Promise<{ i
     name: (m.profile as { name: string })?.name ?? "Student",
   }));
   const unpaid = list.filter((m) => !m.paid_status);
+  // Server Component: renders once per request on the server, so a request-time
+  // clock read is correct here (the rule targets client render memoisation).
+  // eslint-disable-next-line react-hooks/purity
   const days = Math.ceil((new Date(sub.renewal_date).getTime() - Date.now()) / 86400000);
   const defaultShare = Math.ceil(Number(sub.total_cost) / sub.seats);
 

@@ -46,6 +46,10 @@ export default async function PostDetailPage({
   // RSVPs + feedback (0055) — events only. Feedback rows: RLS gives the
   // author everyone's, others their own.
   const isEvent = post.type === "event";
+  // Server Component: renders once per request on the server, so a request-time
+  // clock read is correct and idiomatic. The rule targets client render, where
+  // impurity breaks memoisation.
+  // eslint-disable-next-line react-hooks/purity
   const eventPast = isEvent && post.event_date != null && new Date(post.event_date).getTime() < Date.now();
   const [{ data: rsvps }, { data: feedback }] = isEvent
     ? await Promise.all([
