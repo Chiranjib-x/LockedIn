@@ -86,7 +86,6 @@ export default function Thread({
     }
   }
 
-  let lastDay = "";
 
   return (
     <div className="flex flex-1 flex-col">
@@ -94,10 +93,9 @@ export default function Thread({
         {messages.length === 0 && (
           <p className="mt-8 text-center text-sm text-muted-foreground">Say hi 👋</p>
         )}
-        {messages.map((m) => {
+        {messages.map((m, i) => {
           const day = dayLabel(m.created_at);
-          const sep = day !== lastDay;
-          lastDay = day;
+          const sep = day !== (i > 0 ? dayLabel(messages[i - 1].created_at) : "");
           const mine = m.sender_id === meId;
           return (
             <div key={m.id}>

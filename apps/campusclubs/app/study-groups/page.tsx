@@ -31,7 +31,7 @@ export default async function StudyGroupsPage({
 
       {created && (
         <p className="rounded-2xl border border-accent/30 bg-accent/10 p-3 text-sm text-accent">
-          Group's live — it has its own chat. Get your classmates in. 📚
+          Group&rsquo;s live — it has its own chat. Get your classmates in. 📚
         </p>
       )}
 

@@ -15,9 +15,15 @@ export default function Confetti({ id }: { id: string }) {
     if (sessionStorage.getItem(key)) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     sessionStorage.setItem(key, "1");
-    setGo(true);
+    // Start on the next frame rather than synchronously in the effect body —
+    // a burst that begins one frame later is indistinguishable, and setState
+    // belongs in a callback (react-hooks/set-state-in-effect).
+    const start = requestAnimationFrame(() => setGo(true));
     const t = setTimeout(() => setGo(false), 2600);
-    return () => clearTimeout(t);
+    return () => {
+      cancelAnimationFrame(start);
+      clearTimeout(t);
+    };
   }, [id]);
 
   if (!go) return null;

@@ -62,7 +62,9 @@ export default async function NotificationsPage() {
     await supabase.from("notifications").update({ read: true }).eq("user_id", user.id).eq("read", false);
   }
 
-  let lastDay = "";
+  // Day separators are derived, not accumulated: mutating a variable while
+  // mapping is a render side effect (react-hooks "cannot reassign after render").
+  const dayLabels = (items ?? []).map((n) => dayLabel(n.created_at));
 
   return (
     <main className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-4 px-4 py-6">
@@ -79,9 +81,8 @@ export default async function NotificationsPage() {
         <div className="flex flex-col gap-2">
           {items.map((n, i) => {
             const kind = KINDS[n.type] ?? { Icon: Bell, cls: "bg-tint-blue text-tint-blue-fg" };
-            const day = dayLabel(n.created_at);
-            const sep = day !== lastDay;
-            lastDay = day;
+            const day = dayLabels[i];
+            const sep = day !== dayLabels[i - 1];
             const inner = (
               <Card
                 className={`animate-fade-up flex items-start gap-3 ${n.read ? "opacity-70" : "border-primary/30"}`}

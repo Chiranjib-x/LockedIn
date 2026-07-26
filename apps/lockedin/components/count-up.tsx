@@ -12,15 +12,17 @@ export default function CountUp({ value, className = "" }: { value: number; clas
     if (ran.current || value <= 0) return;
     ran.current = true;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const t0 = performance.now();
     const dur = 900;
     let raf: number;
+    let t0 = 0;
+    // The first frame establishes t0 and emits ~0, so no synchronous setState
+    // is needed in the effect body (react-hooks/set-state-in-effect).
     const tick = (t: number) => {
+      if (t0 === 0) t0 = t;
       const p = Math.min(1, (t - t0) / dur);
       setShown(Math.round(value * (1 - Math.pow(1 - p, 3))));
       if (p < 1) raf = requestAnimationFrame(tick);
     };
-    setShown(0);
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
   }, [value]);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { createClient } from "@/lib/supabase/client";
 import {
   ensureNativePushSubscription,
@@ -18,21 +18,23 @@ const CONTEXT_COPY: Record<string, string> = {
 
 // Contextual permission ask (never on load): a dismissible card mounted on
 // the pages where push has obvious value. One decision, remembered forever.
+// Whether this device should be asked at all — browser state, so it is read via
+// useSyncExternalStore rather than an effect. The server snapshot is `false`,
+// which avoids a hydration mismatch (this card DOES render on the server) and
+// keeps setState out of an effect body. Nothing external emits changes.
+const noopSubscribe = () => () => {};
+function eligibleSnapshot() {
+  if (localStorage.getItem(DONE_KEY) !== null) return false;
+  if (isNativeApp()) return true; // native FCM path — web Notification API absent here
+  return pushSupported() && Notification.permission !== "denied";
+}
+
 export default function PushOptIn({ context }: { context: keyof typeof CONTEXT_COPY }) {
-  const [show, setShow] = useState(false);
+  const eligible = useSyncExternalStore(noopSubscribe, eligibleSnapshot, () => false);
+  const [dismissed, setDismissed] = useState(false);
   const [busy, setBusy] = useState(false);
 
-  useEffect(() => {
-    if (localStorage.getItem(DONE_KEY) !== null) return;
-    if (isNativeApp()) {
-      setShow(true); // native FCM path — web Notification API absent here
-      return;
-    }
-    if (!pushSupported() || Notification.permission === "denied") return;
-    setShow(true);
-  }, []);
-
-  if (!show) return null;
+  if (!eligible || dismissed) return null;
 
   return (
     <div className="animate-fade-up flex items-center gap-3 rounded-2xl border border-primary/30 bg-card p-3">
@@ -46,7 +48,7 @@ export default function PushOptIn({ context }: { context: keyof typeof CONTEXT_C
           if (isNativeApp()) await ensureNativePushSubscription(supabase);
           else await ensurePushSubscription(supabase);
           localStorage.setItem(DONE_KEY, "1");
-          setShow(false);
+          setDismissed(true);
         }}
         className="press min-h-11 shrink-0 rounded-full bg-primary px-4 text-sm font-semibold text-on-primary hover:bg-primary-strong disabled:opacity-50"
       >
@@ -56,7 +58,7 @@ export default function PushOptIn({ context }: { context: keyof typeof CONTEXT_C
         aria-label="Not now"
         onClick={() => {
           localStorage.setItem(DONE_KEY, "1");
-          setShow(false);
+          setDismissed(true);
         }}
         className="press min-h-11 shrink-0 px-1 text-muted-foreground"
       >

@@ -30,7 +30,6 @@ export function RegisterSW() {
 
 export function InstallPrompt() {
   const [deferred, setDeferred] = useState<BeforeInstallPromptEvent | null>(null);
-  const [eligible, setEligible] = useState(false);
 
   useEffect(() => {
     if (localStorage.getItem(DISMISSED_KEY) !== null) return;
@@ -41,8 +40,10 @@ export function InstallPrompt() {
       localStorage.setItem(SESSIONS_KEY, String(sessions));
       sessionStorage.setItem(SESSIONS_KEY, "1");
     }
+    // Below the session threshold we simply never listen, so `deferred` stays
+    // null and nothing renders — no separate `eligible` state needed (and no
+    // synchronous setState in an effect body).
     if (sessions < 2) return;
-    setEligible(true);
 
     const onPrompt = (e: Event) => {
       e.preventDefault();
@@ -52,7 +53,7 @@ export function InstallPrompt() {
     return () => window.removeEventListener("beforeinstallprompt", onPrompt);
   }, []);
 
-  if (!eligible || deferred === null) return null;
+  if (deferred === null) return null;
 
   return (
     <div className="animate-fade-up flex items-center gap-3 rounded-2xl border border-primary/30 bg-card p-4">

@@ -1,22 +1,27 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { Link2, Check, Share2 } from "lucide-react";
+
+const noopSubscribe = () => () => {};
 
 // A clean, visible shareable link with copy + native-share. Used on /for-clubs
 // so the link can be sent to club owners looking professional.
 export default function ShareLink({ path, title }: { path: string; title: string }) {
-  const [url, setUrl] = useState("");
-  const [pretty, setPretty] = useState("");
   const [copied, setCopied] = useState(false);
-  const [canShare, setCanShare] = useState(false);
-
-  useEffect(() => {
-    const full = window.location.origin + path;
-    setUrl(full);
-    setPretty(full.replace(/^https?:\/\//, ""));
-    setCanShare(typeof navigator.share === "function");
-  }, [path]);
+  // Browser-state reads, not effects — SSR snapshot is empty so the block
+  // simply doesn't render server-side (its previous behaviour too).
+  const url = useSyncExternalStore(
+    noopSubscribe,
+    () => window.location.origin + path,
+    () => ""
+  );
+  const pretty = url.replace(/^https?:\/\//, "");
+  const canShare = useSyncExternalStore(
+    noopSubscribe,
+    () => typeof navigator.share === "function",
+    () => false
+  );
 
   if (!url) return null;
 

@@ -42,7 +42,7 @@ export function CreateGroupForm({ error }: { error?: string }) {
         <input name="meet_info" placeholder="e.g. Library 3rd floor, Tue/Thu 7pm" className={inputClass} />
       </label>
       <label className="flex flex-col gap-1 text-sm font-medium">
-        What's the plan?
+        What&rsquo;s the plan?
         <textarea name="description" rows={2} placeholder="PYQs, notes swap, doubt-clearing…" className={inputClass} />
       </label>
       <SubmitButton pendingLabel="Creating…">Create group</SubmitButton>

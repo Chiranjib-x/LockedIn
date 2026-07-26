@@ -13,10 +13,9 @@ export default function ChatTab({ meId, initialUnread }: { meId: string; initial
   const [count, setCount] = useState(initialUnread);
   const pathname = usePathname();
   const active = pathname.startsWith("/chats");
-
-  useEffect(() => {
-    if (active) setCount(0);
-  }, [active]);
+  // Being on /chats zeroes the badge — derived from the route, not synced into
+  // state by an effect (react-hooks/set-state-in-effect).
+  const shown = active ? 0 : count;
 
   useEffect(() => {
     const supabase = createClient();
@@ -45,9 +44,9 @@ export default function ChatTab({ meId, initialUnread }: { meId: string; initial
     >
       <MessageCircle className="h-5 w-5" strokeWidth={active ? 2.4 : 2} />
       Chats
-      {count > 0 && (
+      {shown > 0 && (
         <span className="absolute top-0 right-4 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 font-heading text-[10px] font-bold text-on-destructive">
-          {count > 9 ? "9+" : count}
+          {shown > 9 ? "9+" : shown}
         </span>
       )}
     </Link>

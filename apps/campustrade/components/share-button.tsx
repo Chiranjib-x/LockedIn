@@ -1,20 +1,28 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 
 // Phase 22 share entry point: Web Share API where available (mobile), else a
 // WhatsApp deep-link + copy-link pair. `path` is the PUBLIC preview path
 // (/p/listing/[id] or /p/post/[id]) — never the auth-gated detail page, since
 // that's what recipients and crawlers can actually open.
-export default function ShareButton({ path, title }: { path: string; title: string }) {
-  const [canNativeShare, setCanNativeShare] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const [url, setUrl] = useState("");
+const noopSubscribe = () => () => {};
 
-  useEffect(() => {
-    setUrl(window.location.origin + path);
-    setCanNativeShare(typeof navigator.share === "function");
-  }, [path]);
+export default function ShareButton({ path, title }: { path: string; title: string }) {
+  // Both values are browser state read once — useSyncExternalStore keeps them
+  // out of an effect and gives SSR an empty snapshot, so the button simply
+  // doesn't render on the server (its previous behaviour too).
+  const url = useSyncExternalStore(
+    noopSubscribe,
+    () => window.location.origin + path,
+    () => ""
+  );
+  const canNativeShare = useSyncExternalStore(
+    noopSubscribe,
+    () => typeof navigator.share === "function",
+    () => false
+  );
+  const [copied, setCopied] = useState(false);
 
   if (url === "") return null;
 

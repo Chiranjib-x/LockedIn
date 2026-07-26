@@ -22,8 +22,12 @@ const FORMATS = [
 
 export default function BarcodeScanner({ onScan }: { onScan: (code: string) => void }) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  // Keep the latest callback without re-subscribing the camera loop. Written in
+  // an effect, not during render (react-hooks "cannot access refs during render").
   const onScanRef = useRef(onScan);
-  onScanRef.current = onScan;
+  useEffect(() => {
+    onScanRef.current = onScan;
+  }, [onScan]);
   const lastRef = useRef<{ code: string; at: number }>({ code: "", at: 0 });
   const [status, setStatus] = useState<"starting" | "scanning" | "error">("starting");
   const [camError, setCamError] = useState<string | null>(null);
