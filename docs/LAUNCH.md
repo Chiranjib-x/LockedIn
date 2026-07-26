@@ -7,10 +7,16 @@ below is largely DEPLOY.md's checklist, re-sequenced by launch priority.
 
 **Fill this in before using the plan:**
 
-    FRESHER ARRIVAL (= W0): __________     (VIT Vellore, Fall 2026)
+    GRAVITAS DAY 1 (= G0): __________      (VIT Vellore, ~Sept 2026)
 
-Every date below is relative to W0. Quanta 2026 (13–18 July) has passed — that
-wedge is gone this cycle; fresher arrival is the next forcing function.
+Every date below is relative to G0. **Two forcing functions are already spent:**
+freshers arrived June 2026 and Quanta ran 13–18 July. Gravitas is the next one,
+~1–2 months out as of 2026-07-26 — enough runway to seed properly first.
+
+Losing the fresher wave costs you the only population with *no incumbent habit*.
+Everyone on campus now has their WhatsApp groups and their way of doing things.
+So density-first is more important, not less: the beachhead is Stage 1 here, not
+a late step.
 
 ---
 
@@ -36,9 +42,15 @@ They are not five equal products to launch together.
 
 | App | Role | Why |
 |---|---|---|
-| 🧭 **VIT Compass** | **The wedge** | Public-read, no login, useful at n=1, solves a burning time-boxed pain. The only app that *cannot look empty*. Shareable by others **without endorsing you** — it's a map, not a favour. |
-| 🎓 **CampusClubs** | **The distributor** | Clubs have their own audiences and their own reason to broadcast. A club posting "join us on CampusClubs" is **the club** marketing, not you. One signup (a secretary) brings 200 people. |
-| 🔥 **LockedIn** / 🛍️ **CampusTrade** / 🏃 **GateRunner** | **The destination** | Need density to be any good. Launch **last**, into people who already have an account. |
+| 🎓 **CampusClubs** | **The lead + the distributor** | Gravitas is a club event, so clubs are both the customer and the channel. During a fest they *need* to reach people — the one moment they'll adopt a tool that does. A club posting "our Gravitas event is on CampusClubs" is **the club** marketing, not you; one secretary brings 200 people. Event check-in (barcode ID scan), volunteer recruiting, and the analytics dashboard are things WhatsApp **cannot do at all**. |
+| 🧭 **VIT Compass** | **The zero-friction hook** | Public-read, no login, useful at n=1 — the only app that *cannot look empty*, and shareable by others **without endorsing you**. Repositioned: orientation is over, so its Gravitas job is **"where is this event happening"**, and its CAT-week job is **exam-hall finding** (assigned seating lands you in blocks you've never entered). |
+| 🔥 **LockedIn** / 🛍️ **CampusTrade** / 🏃 **GateRunner** | **The destination** | Need density. Launch **last**, into people who already have an account from Gravitas. |
+
+**The new wedge is "what WhatsApp does badly", not "what students don't know yet."**
+The fresher wave is gone, so you can't sell to people who are new — you sell to people
+doing something painfully. The incumbent being *bad* is the stronger wedge anyway:
+buy/sell groups where messages scroll away and nothing is searchable; *"anyone going to
+Katpadi Friday?"* lost in 40 messages; no way to run an event's attendance.
 
 ---
 
@@ -72,35 +84,41 @@ in the funnel. Play Store (U2) matters from W+2, for push and home-screen presen
 
 ## The stages
 
-### W-3 · Seed supply, zero audience
-~10 friends put **real** things in: 25–30 CampusTrade listings, 10–15 real clubs,
-both spaces founded, a few real gate runs. Frame as *"help me test this"* — never
-*"launch"*. Empty shelves are what kill two-sided campus apps. Nobody outside this
-group sees the app.
+### G-6w (now) · Clear the blockers, seed supply, zero audience
+Stage 0 above, plus: ~10 friends put **real** things in — 25–30 CampusTrade listings,
+10–15 real clubs, both spaces founded, a few real gate runs. Frame as *"help me test
+this"*, never *"launch"*. Empty shelves are what kill two-sided campus apps. Nobody
+outside this group sees the app. **U8** phone QA happens naturally here.
 
-### W-1 · Compass only, artifact-framed
-The one broad move. Post the **thing**, not the app:
-*"Made a map of every building at VIT — with the names people actually use. No login,
-just a link."* That is a contribution; "please download my app" is a request. Same
-link, opposite reception. Seniors share it to juniors on their own, because it makes
-**them** look useful.
-
-### W0 · Fresher week — be where the question already is
-Do not announce. In fresher groups the same questions run hourly: *where is GDN, where's
-the mess, where do I collect my ID*. Answer with the link. One helpful reply beats ten
-posts and costs zero dignity. Compass's built-in first-week checklist covers their month.
-
-### W+1 · Clubs, one-to-one
+### G-4w · Clubs, one-to-one — the whole ballgame
 Not a group post. DM or meet ~15 club secretaries with `/for-clubs` (already written for
-this, opens without login). Pitch = analytics + announcements + lead capture, **not**
-"support my project". Every club that signs up broadcasts for you, in their voice.
+this, opens without login). **Timing is the pitch:** this is exactly when clubs start
+planning their Gravitas events, so lead with what they need *now* — event pages,
+volunteer recruiting, announcements to every member, and **check-in by scanning ID
+barcodes** (nothing else on campus does this). Not "support my project".
 
-### W+2–3 · One beachhead, deep
+Every club that signs up broadcasts for you, in their voice. This stage is the entire
+distribution strategy — if it fails, nothing downstream works.
+
+### G-2w · Clubs announce to their own members
+You post nothing. Clubs push their Gravitas event pages to their members; those members
+create accounts to RSVP. This is the reach you never had to ask for. Compass carries the
+*"where is this event"* link alongside it.
+
+### G0 · Gravitas week — peak usage, be useful not visible
+Event pages, RSVPs, check-in scanning, live venue lookup. Your job this week is uptime
+and moderation, not promotion. Answer questions with links; announce nothing.
+
+### G+2w · Convert the fest traffic into the destination
+Everyone who RSVP'd now has an account. *This* is when LockedIn and CampusTrade get
+introduced — to people who already trust the name, not to strangers.
+
+### G+2w onward (in parallel) · One beachhead, deep
 Pick **one hostel block or one batch**. CampusTrade and GateRunner only work at
-block-level density anyway. 300 students in one block daily beats 3,000 campus-wide
-once. Full LockedIn gets introduced here, to people who already have accounts.
+block-level density. 300 students in one block daily beats 3,000 campus-wide once.
+With no fresher wave to hand you density, you have to manufacture it here.
 
-### W+4 · Campus-wide — only if the gates below held
+### Campus-wide — only if the gates below held
 
 ---
 
@@ -109,13 +127,16 @@ once. Full LockedIn gets introduced here, to people who already have accounts.
 Failing a gate means **stop and fix**. The point of stopping early is that you have
 not yet burned the campus.
 
-- [ ] **After W-1** — 150+ Compass opens, ≥40% from non-friends.
-      *Fails → the wedge isn't landing. Fix the map before anything else.*
+- [ ] **Before G-2w** — ≥8 clubs live, each with ≥1 real Gravitas post or event.
+      **The gate that decides everything.** Clubs are the entire distribution
+      strategy now. *Fails → you have no channel; do not proceed to any broad move.*
 - [ ] **D7 return rate ≥30%** of signups open again a week later.
       **The single most important number.** *Below this, more reach makes it worse. Do not proceed.*
-- [ ] **Before W+2** — ≥8 clubs live with ≥1 real post each.
-      *Fails → clubs aren't your channel yet. Don't launch the main app.*
-- [ ] **Before W+4** — beachhead block shows something new daily.
+- [ ] **G0 week** — ≥1 club actually runs check-in through the app.
+      *Fails → the differentiated feature is unproven; don't build the pitch on it.*
+- [ ] **Before G+2w** — Gravitas signups exist and D7 held.
+      *Fails → don't introduce LockedIn/CampusTrade yet; the audience isn't real.*
+- [ ] **Before campus-wide** — beachhead block shows something new daily.
       *Fails → campus-wide lands on an empty app. Hold.*
 - [ ] **Before any real scale** — one more moderator recruited + a stated response time.
       Real users mean real reports; a bad first incident on a small campus doesn't wash off.
@@ -145,8 +166,12 @@ this."* A story, not a pitch. Use it **once**, in one place, never again.
 
 ## Decisions locked
 
-- **Compass leads, not LockedIn** — the super-app is the worst first impression: 25
-  routes, all empty. Compass is the only n=1-useful surface.
+- **CampusClubs leads, not LockedIn** *(revised 2026-07-26 — was Compass, when the plan
+  still assumed a fresher wave)* — the super-app is the worst first impression: 25
+  routes, all empty. With orientation over, Compass is a hook but not a launch; clubs
+  are the only institutional distributor on campus, and Gravitas is when they need one.
+- **Distribution rides on ~15 club secretaries, not on posts.** That is the whole plan.
+  If clubs don't adopt, stop — do not substitute reach for the missing channel.
 - **Web link, not APK, through W+3** — the unknown-sources warning costs more than a
   home-screen icon gains.
 - **No launch post exists.** There is no day where LockedIn is announced. It accumulates.
