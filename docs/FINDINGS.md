@@ -33,7 +33,7 @@ beat it has not actually walked.
 
 | # | Beat | Surfaces | Last swept | Findings |
 |---|---|---|---|---|
-| B1 | auth | login, signup, logout, OAuth return, delete-account, middleware | — | — |
+| B1 | auth | login, signup, logout, OAuth return, delete-account, middleware | 2026-07-26 | none (F4 filed, D4/D5 dismissed) |
 | B2 | marketplace | listings, new, mine, requests, offers, saved | — | — |
 | B3 | chat | threads, realtime, unread, contact flows | partial (static only) | F1 |
 | B4 | board & events | posts, events, RSVP, check-in, feedback | — | — |
@@ -80,6 +80,16 @@ beat it has not actually walked.
 
 ---
 
+### F4 · Auth inputs have no labels (placeholder-only)
+- **Severity:** P3 · **Axis:** a11y · **State:** confirmed
+- **Detector:** Y3 (148 hits repo-wide; auth surface = 3 in each fork)
+- **Where:** `app/login/page.tsx:31-32`, `app/signup/page.tsx:30-32` — all 4 apps
+- **What:** inputs carry `placeholder` + `name` but no `<label htmlFor>`/`aria-label`. Placeholder vanishes on focus and is not a reliable accessible name.
+- **Impact:** screen-reader users get "edit text, blank"; no label tap-target. Not a broken flow — filed, not fixed in-loop.
+- **Fork echo:** identical in lockedin/campusclubs/campustrade/gaterunner.
+- **Fix:** `aria-label` on each input (smallest change), or wrap in `<label>`. Do the whole Y3 class in one pass, not per-beat.
+- **Evidence:**
+
 ## Dismissed
 
 Findings the sweep raised and a human or agent ruled out. Keep these — they are
@@ -108,8 +118,19 @@ what stops the next sweep re-litigating settled ground.
 
 ---
 
+### D4 · C4 on `themeInit` catch — all 4 apps
+- **Detector:** C4 (silently swallowed error)
+- **Why dismissed:** deliberate. `localStorage.getItem` throws in private-browsing/blocked-cookie modes; the empty catch leaves the class untoggled so the page falls back to the `prefers-color-scheme` default. Nothing to surface to a user — the documented legitimate case in C4's own `fix:` note.
+
+### D5 · B1 auth logic — read + run + fork echo, no defects
+- **Swept:** `app/auth/actions.ts` (signup/login/logout/deleteAccount), `middleware.ts` (OAuth `/?code=` safety net), `lib/supabase/middleware.ts`, `app/auth/callback|confirm/route.ts`, `lib/auth.ts` `requireUser`, `delete_my_account()` (0050).
+- **Why clean:** signup pre-checks the domain *and* defers to the `handle_new_user` trigger as the real trust boundary; `delete_my_account()` is definer + hard-scoped to `auth.uid()`, granted to `authenticated` only, revoked from `public, anon`; callback/confirm both fail closed to `/login?error=`. Run pass at 390px: wrong password → "Invalid login credentials", unregistered domain → "Use your college email — that domain isn't registered", empty submit blocked, logged-out `/delete-account` shows the login CTA. No raw DB errors leaked, no console errors, no overflow.
+- **Fork echo:** `auth/actions.ts` + `middleware.ts` byte-identical in lockedin/campusclubs/campustrade; gaterunner differs only by `@suite/auth/server` import and `/gate` vs `/home` landing — both correct.
+- **Note:** the "any email can log in" report was NOT an auth defect — it was the `gmail.com` dev-seed college row (fixed by migration 0066, awaiting user apply).
+
 ## Hunt log
 
 `/hunt` appends one line per iteration. Newest last.
 
 <!-- HUNT-LOG -->
+2026-07-26 · B1 auth · 0 confirmed P0/P1 of 3 raised · (no fix commit) · auth logic clean across 4 apps; F4 a11y filed, D4/D5 dismissed; "any email" was the gmail seed row (0066), not auth
