@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRefresh } from "@/lib/use-refresh";
+import { useRefresh } from "@suite/lib/use-refresh";
 import { setMemberPosition } from "./actions";
 
 const PRESETS = ["President", "Vice President", "Management Head", "Events Head", "Tech Head", "Design Head", "PR Head", "Treasurer"];

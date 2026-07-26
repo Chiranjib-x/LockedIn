@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Pencil } from "lucide-react";
 import ImageUpload from "@/components/image-upload";
-import { useRefresh } from "@/lib/use-refresh";
+import { useRefresh } from "@suite/lib/use-refresh";
 import { editCommunityProfile } from "./actions";
 
 // Lead-only "Edit profile" — name, emoji, logo, description. Collapsed behind a

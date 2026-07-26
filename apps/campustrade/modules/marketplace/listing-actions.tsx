@@ -5,7 +5,7 @@ import { useState } from "react";
 import { setSold, deleteListing, lendTo, markReturned } from "./actions";
 import { markSoldTo } from "@/modules/ratings/actions";
 import ProfileSearch from "@/components/profile-search";
-import { useRefresh } from "@/lib/use-refresh";
+import { useRefresh } from "@suite/lib/use-refresh";
 
 // My-Listings row actions. Sell listings: "Mark sold" -> buyer picker ->
 // transaction (mutual rating). Rent listings (Phase 32): lend-to picker with

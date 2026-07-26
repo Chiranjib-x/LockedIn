@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRefresh } from "@/lib/use-refresh";
+import { useRefresh } from "@suite/lib/use-refresh";
 import { joinCommunity, leaveCommunity, approveCommunity, rejectCommunity, expressInterest, withdrawInterest, setRecruiting, setMemberRole, removeMember } from "./actions";
 
 // Lead-only member management: promote/demote co-leads, remove members.

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { inputClass } from "@/components/ui";
 import UpiPay from "@/components/upi-pay";
-import { useRefresh } from "@/lib/use-refresh";
+import { useRefresh } from "@suite/lib/use-refresh";
 import { joinOrder, leaveOrder, setOrderStatus, markPaid, confirmPaid, updateLogistics } from "./actions";
 
 export function JoinForm({ orderId, unitPrice }: { orderId: string; unitPrice: number | null }) {

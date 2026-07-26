@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Package, Plus, Minus } from "lucide-react";
-import { useRefresh } from "@/lib/use-refresh";
+import { useRefresh } from "@suite/lib/use-refresh";
 import { addBox, deleteBox, addBoxItem, adjustBoxItem, deleteBoxItem } from "./actions";
 
 type Item = { id: string; name: string; quantity: number };

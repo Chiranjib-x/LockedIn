@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRefresh } from "@/lib/use-refresh";
+import { useRefresh } from "@suite/lib/use-refresh";
 import { createMeeting, deleteMeeting, markMeetingAttendance, getFreeWindows } from "./actions";
 import { DAY_SHORT } from "@/modules/timetable/helpers";
 

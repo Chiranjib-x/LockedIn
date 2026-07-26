@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { UserPlus } from "lucide-react";
 import ProfileSearch from "@/components/profile-search";
-import { useRefresh } from "@/lib/use-refresh";
+import { useRefresh } from "@suite/lib/use-refresh";
 import { addCrewMember } from "./actions";
 
 // Add a crew member by exact @username (same privacy model as the rest of the

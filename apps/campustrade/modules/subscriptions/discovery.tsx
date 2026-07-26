@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { inputClass } from "@/components/ui";
-import { useRefresh } from "@/lib/use-refresh";
+import { useRefresh } from "@suite/lib/use-refresh";
 import { setDiscoverable, requestJoin, decideJoin } from "./actions";
 
 export function DiscoverToggle({

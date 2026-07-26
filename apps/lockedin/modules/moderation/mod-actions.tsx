@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRefresh } from "@/lib/use-refresh";
+import { useRefresh } from "@suite/lib/use-refresh";
 import { dismissReport, removeContent, banUser } from "./actions";
 
 // FINDINGS F41: these buttons fired and discarded the result, so a failed

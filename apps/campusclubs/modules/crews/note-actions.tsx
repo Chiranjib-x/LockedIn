@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Check, RotateCcw, Trash2 } from "lucide-react";
-import { useRefresh } from "@/lib/use-refresh";
+import { useRefresh } from "@suite/lib/use-refresh";
 import { setNoteStatus, deleteNote } from "./actions";
 
 // Resolve / reopen a crew note (any member), plus delete for the author.

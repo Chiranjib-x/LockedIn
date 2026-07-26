@@ -2,7 +2,7 @@
 
 import { connect, messageMatch } from "./actions";
 import { useState } from "react";
-import { useRefresh } from "@/lib/use-refresh";
+import { useRefresh } from "@suite/lib/use-refresh";
 
 export default function ConnectButton({
   targetId,

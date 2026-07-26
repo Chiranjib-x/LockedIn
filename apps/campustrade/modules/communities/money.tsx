@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import UpiPay from "@/components/upi-pay";
-import { useRefresh } from "@/lib/use-refresh";
+import { useRefresh } from "@suite/lib/use-refresh";
 import { createCollection, setDuePaid, deleteCollection } from "./actions";
 
 type Member = { user_id: string; name: string };

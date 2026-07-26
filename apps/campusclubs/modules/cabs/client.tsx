@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import UpiPay from "@/components/upi-pay";
-import { useRefresh } from "@/lib/use-refresh";
+import { useRefresh } from "@suite/lib/use-refresh";
 import { joinTrip, leaveTrip, cancelTrip, completeTrip, markTripPaid, confirmTripPaid } from "./actions";
 
 export function JoinLeaveButton({ tripId, joined, full }: { tripId: string; joined: boolean; full: boolean }) {

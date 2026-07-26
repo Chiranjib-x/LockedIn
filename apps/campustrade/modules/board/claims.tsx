@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { inputClass } from "@/components/ui";
-import { useRefresh } from "@/lib/use-refresh";
+import { useRefresh } from "@suite/lib/use-refresh";
 import { submitClaim, decideClaim } from "./actions";
 
 // Phase 30 claim flow. Answers are private (RLS: claimant + post author only).

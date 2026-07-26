@@ -1,6 +1,6 @@
 "use client";
 
-import { useRefresh } from "@/lib/use-refresh";
+import { useRefresh } from "@suite/lib/use-refresh";
 import { resolvePost } from "./actions";
 
 export default function ResolveButton({ id, resolved }: { id: string; resolved: boolean }) {

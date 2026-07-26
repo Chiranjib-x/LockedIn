@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRefresh } from "@/lib/use-refresh";
+import { useRefresh } from "@suite/lib/use-refresh";
 import { addQuestion, removeQuestion } from "./actions";
 
 // Lead-only editor for the application form. Zero questions = instant join;

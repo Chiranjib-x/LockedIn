@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Trophy } from "lucide-react";
-import { useRefresh } from "@/lib/use-refresh";
+import { useRefresh } from "@suite/lib/use-refresh";
 import { addAchievement, deleteAchievement } from "./actions";
 
 type Achievement = { id: string; title: string; detail: string | null; year: string | null };

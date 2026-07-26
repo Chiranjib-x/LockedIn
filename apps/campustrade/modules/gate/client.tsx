@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { inputClass } from "@/components/ui";
 import UpiPay from "@/components/upi-pay";
-import { useRefresh } from "@/lib/use-refresh";
+import { useRefresh } from "@suite/lib/use-refresh";
 import { claimPickup, unclaimPickup, confirmDelivered, cancelPickup, markDroppedOff, announceGateRun } from "./actions";
 
 export function HeadingToGate({ gate }: { gate: string }) {

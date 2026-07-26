@@ -3,7 +3,7 @@
 import { useState } from "react";
 import ProfileSearch from "@/components/profile-search";
 import UpiPay from "@/components/upi-pay";
-import { useRefresh } from "@/lib/use-refresh";
+import { useRefresh } from "@suite/lib/use-refresh";
 import { addMember, removeMember, setShare, setPaid, splitEvenly } from "./actions";
 
 export function AddPoolMember({

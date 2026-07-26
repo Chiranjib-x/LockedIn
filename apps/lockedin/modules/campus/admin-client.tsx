@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { inputClass } from "@/components/ui";
 import { SubmitButton } from "@/components/submit-button";
-import { useRefresh } from "@/lib/use-refresh";
+import { useRefresh } from "@suite/lib/use-refresh";
 import { saveBuilding, deleteBuilding } from "./actions";
 
 const CATEGORIES = ["academic", "hostel", "mess", "sports", "admin", "landmark"] as const;

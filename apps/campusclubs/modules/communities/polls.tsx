@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRefresh } from "@/lib/use-refresh";
+import { useRefresh } from "@suite/lib/use-refresh";
 import { createPoll, votePoll, deletePoll, schedulePost, cancelScheduled } from "./actions";
 
 type Vote = { user_id: string; choice: number };
