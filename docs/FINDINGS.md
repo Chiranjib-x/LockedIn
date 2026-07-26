@@ -43,7 +43,7 @@ beat it has not actually walked.
 | B8 | timetable | timetable, attendance, free-slot finder | — | — |
 | B9 | notifications | in-app, push routing, scheduled posts | — | — |
 | B10 | admin & moderation | moderation queue, campus CMS, showcase | — | — |
-| B11 | shell | header, bottom nav, search, home, landing, error/404/offline | partial (static only) | F2 |
+| B11 | shell | header, bottom nav, search, home, landing, error/404/offline | partial (static only) | F2 dismissed (see `## Dismissed`); F20 filed |
 | B12 | gaterunner | the whole app (5 pages) | — | — |
 | B13 | vitcompass | the whole app (map) | — | — |
 
@@ -61,14 +61,14 @@ beat it has not actually walked.
 - **Fix:** route through `packages/lib/ist.ts` — compare IST day keys rather than `toDateString()`, and pass `timeZone: "Asia/Kolkata"` to the formatter. The A3 unit tests already cover `ist.ts` under both `TZ=UTC` and `TZ=Asia/Kolkata`; extend them to `dayLabel`.
 - **Evidence:**
 
-### F2 · Fork drift in four shared shell files
-- **Severity:** P2 · **Axis:** correctness · **State:** open
-- **Detector:** `sweep.mjs --fork`
-- **Where:** `components/bottom-nav.tsx`, `components/header.tsx`, `components/nav-link.tsx`, `lib/push/client.ts`
-- **What:** these differ across the forks after brand names and theme keys are normalised out, so the differences are behavioural, not cosmetic. `lockedin` and `campustrade` agree on three of the four; `campusclubs` is the outlier. `lib/push/client.ts` differs in all three.
-- **Impact:** unknown until read — this is exactly where "fixed in one fork, not the others" hides. `push/client.ts` differing three ways is the concerning one, given push routing (0063/0066) is shared.
-- **Fix:** read each trio, decide which behaviour is correct, converge. Where the difference is legitimately per-app, extract the varying bit to config so the file itself stops drifting.
-- **Evidence:**
+### F20 · CampusClubs still ships the mother's marketplace/chat routes, unlinked but live
+- **Severity:** P2 · **Axis:** correctness/product · **State:** open
+- **Detector:** manual read, surfaced while confirming F2's `header.tsx` dismissal (see `## Dismissed`)
+- **Where:** `apps/campusclubs/app/{marketplace,board,group-buy,cabs,subscriptions,search,toolbox,deals,admin/showcase}/**`, plus `modules/{matcher,requests}/**`
+- **What:** `docs/MULTI-APP-PLAN.md:122-128` (Phase 3) claims CampusClubs was "Stripped to clubs-only" and that a coherence pass removed chat "Message buttons... chat is Trade's." In the actual tree, none of that happened below the nav/header layer: `/marketplace`, `/board`, `/group-buy`, `/cabs`, `/subscriptions`, `/search`, `/toolbox`, `/deals`, `/admin/showcase` are all still present, fully wired, and unguarded (no `notFound()`/redirect — confirmed on `app/marketplace/page.tsx` + `middleware.ts`). At least `marketplace/[id]`, `group-buy/[id]`, `cabs/[id]`, `subscriptions/[id]`, `search`, `modules/board/actions.ts`, and `modules/requests/request-card.tsx` still render a working "Message" button calling `openChat`, contradicting the documented removal. None of these routes are linked from `bottom-nav.tsx`, `header.tsx`, or (repo-grepped) anywhere else in the app — reachable only via a direct URL, bookmark, or search-engine hit.
+- **Impact:** a CampusClubs user who lands on one of these URLs gets a fully working marketplace + 1:1 chat inside what is supposed to be a clubs-only app — a product-identity inconsistency, not a tenancy hole (RLS scoping is unaffected either way).
+- **Fix:** already covered by `docs/QUEUE.md` A10 ("Suite coherence pass... walk every reachable route and find links or buttons pointing at a feature that app doesn't own"). Not fixed here — outside F2's scope.
+- **Evidence:** `grep -rln "/admin/showcase"` inside `apps/campusclubs` → only the route's own `actions.ts`, zero other UI references; `grep -rln "openChat\|Message"` across `apps/campusclubs/app` and `modules` → hits pasted above, none behind nav.
 
 ### F3 · `li-theme` localStorage key kept by both forks
 - **Severity:** P3 · **Axis:** correctness · **State:** confirmed
@@ -128,9 +128,21 @@ what stops the next sweep re-litigating settled ground.
 - **Fork echo:** `auth/actions.ts` + `middleware.ts` byte-identical in lockedin/campusclubs/campustrade; gaterunner differs only by `@suite/auth/server` import and `/gate` vs `/home` landing — both correct.
 - **Note:** the "any email can log in" report was NOT an auth defect — it was the `gmail.com` dev-seed college row (fixed by migration 0066, awaiting user apply).
 
+### F2 · Fork drift in four shared shell files — all four ruled legitimate
+- **Detector:** `sweep.mjs --fork`
+- **Where:** `components/bottom-nav.tsx`, `components/header.tsx`, `components/nav-link.tsx`, `lib/push/client.ts` (lockedin/campusclubs/campustrade)
+- **Why dismissed:** read all three versions of each file plus exact `diff`s (not just the sweep's normalised hashes). No fix-in-one-fork-only pattern found in any of the four:
+  - **`bottom-nav.tsx`** — `diff` between lockedin and campustrade is empty (byte-identical). campusclubs is genuinely clubs-only (Home·Clubs·[+ start club]·Events·Profile, no Chat tab) per `docs/MULTI-APP-PLAN.md:122-128` ("Stripped to clubs-only... chat is Trade's"), a documented, deliberate Phase 3 design choice, not an accidental omission.
+  - **`nav-link.tsx`** — lockedin/campustrade identical (`diff` empty). campusclubs only *adds* `clubs`/`events` icon keys, required by its own `bottom-nav.tsx` usage — a pure superset, no behavioural change to the shared keys.
+  - **`header.tsx`** — lockedin vs campustrade differ only in the wordmark string (already normalised out by the sweep's brand-name rule). campusclubs additionally omits the `Wrench` "Toolbox and Deals admin" link and points its search icon at `/communities` ("Find clubs") instead of `/search`. Verified both omitted targets (`/admin/showcase`, `/search`) still exist as live, unguarded routes in campusclubs, but are linked from **no other UI surface either** (`grep -rln "/admin/showcase"` and `grep -rln '"/search"'` across `apps/campusclubs` return zero hits outside the routes' own files) — consistent with the documented clubs-only nav, not a dropped link. (The underlying orphaned-routes situation is real but belongs to a different finding: filed as **F20**, and already covered by QUEUE A10.)
+  - **`lib/push/client.ts`** — exact `diff` across all three shows the *only* difference is the `p_app` RPC argument: campusclubs passes `p_app: "clubs"`, campustrade passes `p_app: "trade"`, lockedin passes neither. Read `supabase/migrations/0063_push_routing.sql:13-14,28`: `save_push_subscription`'s `p_app` parameter is `default 'lockedin'`, and the insert does `coalesce(nullif(trim(p_app), ''), 'lockedin')` — so lockedin omitting the arg is functionally identical to explicitly passing `p_app: "lockedin"`. This is exactly the "3-arg shape... default fills — zero version skew" behaviour the migration's own comment documents. Not a bug, and the per-app value is exactly the thing the parent brief said *should* differ.
+- **Config-lift note:** the two campusclubs-specific header targets and the nav tab set both stem from one fact — CampusClubs doesn't surface toolbox/deals/global-search in its primary nav. Collapsing that into a shared per-app nav-config would touch both files' control flow (not just a constant), so it isn't "cheap" — left as-is per instructions not to force-converge deliberately-different files.
+- **Fork echo:** N/A — nothing to converge; all four differences are either byte-identical pairs or intentional per-app behaviour.
+
 ## Hunt log
 
 `/hunt` appends one line per iteration. Newest last.
 
 <!-- HUNT-LOG -->
 2026-07-26 · B1 auth · 0 confirmed P0/P1 of 3 raised · (no fix commit) · auth logic clean across 4 apps; F4 a11y filed, D4/D5 dismissed; "any email" was the gmail seed row (0066), not auth
+2026-07-26 · F2 fork drift · 0 confirmed of 4 raised · (docs-only, see commit) · read all 3 versions + exact diffs of bottom-nav/header/nav-link/push-client — all 4 are legitimate per-app differences (nav is deliberately clubs-only, push `p_app` default covers lockedin's omission per 0063); F2 dismissed, F20 filed for the orphaned-routes discovery (covered by existing QUEUE A10)
