@@ -98,8 +98,50 @@ export function ClaimButton({ id, reward }: { id: string; reward: number }) {
   );
 }
 
-export function RunnerActions({ id, droppedOff }: { id: string; droppedOff: boolean }) {
+// Shared busy/error wrapper for the pickup lifecycle buttons: disables while the
+// action is in flight (no double-submit on a slow campus connection) and shows a
+// failure inline instead of the button silently doing nothing.
+function ActionButton({
+  run,
+  className,
+  confirmText,
+  children,
+}: {
+  run: () => Promise<string | null | undefined>;
+  className: string;
+  confirmText?: string;
+  children: React.ReactNode;
+}) {
   const refresh = useRefresh();
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  return (
+    <>
+      <button
+        disabled={busy}
+        onClick={async () => {
+          if (confirmText && !confirm(confirmText)) return;
+          setBusy(true);
+          setErr(null);
+          const e = await run();
+          setBusy(false);
+          if (e) setErr(e);
+          else refresh();
+        }}
+        className={`${className} disabled:opacity-50`}
+      >
+        {busy ? "…" : children}
+      </button>
+      {err && (
+        <p className="w-full text-xs text-destructive" role="alert">
+          {err}
+        </p>
+      )}
+    </>
+  );
+}
+
+export function RunnerActions({ id, droppedOff }: { id: string; droppedOff: boolean }) {
   if (droppedOff) {
     return (
       <p className="text-xs text-muted-foreground">
@@ -109,18 +151,19 @@ export function RunnerActions({ id, droppedOff }: { id: string; droppedOff: bool
   }
   return (
     <span className="flex flex-wrap gap-2">
-      <button
-        onClick={async () => { await markDroppedOff(id); refresh(); }}
-        className="press rounded-full bg-primary px-4 py-1.5 text-sm font-semibold text-on-primary hover:bg-primary-strong"
+      <ActionButton
+        run={() => markDroppedOff(id)}
+        className="press min-h-11 rounded-full bg-primary px-4 text-sm font-semibold text-on-primary hover:bg-primary-strong"
       >
         Dropped it off ✓
-      </button>
-      <button
-        onClick={async () => { if (confirm("Give this pickup back to the pool?")) { await unclaimPickup(id); refresh(); } }}
-        className="press rounded-full border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted"
+      </ActionButton>
+      <ActionButton
+        run={() => unclaimPickup(id)}
+        confirmText="Give this pickup back to the pool?"
+        className="press min-h-11 rounded-full border border-border px-4 text-xs font-medium text-muted-foreground hover:bg-muted"
       >
         Can’t make it
-      </button>
+      </ActionButton>
     </span>
   );
 }
@@ -145,12 +188,13 @@ export function RequesterActions({
 
   if (status === "open") {
     return (
-      <button
-        onClick={async () => { if (confirm("Cancel this request?")) { await cancelPickup(id); refresh(); } }}
-        className="press rounded-full border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted"
+      <ActionButton
+        run={() => cancelPickup(id)}
+        confirmText="Cancel this request?"
+        className="press min-h-11 rounded-full border border-border px-4 text-xs font-medium text-muted-foreground hover:bg-muted"
       >
         Cancel
-      </button>
+      </ActionButton>
     );
   }
   if (status === "claimed") {
@@ -161,12 +205,12 @@ export function RequesterActions({
             {runnerName ?? "The runner"} says it’s been dropped off — all good?
           </p>
         )}
-        <button
-          onClick={async () => { await confirmDelivered(id); refresh(); }}
-          className="press self-start rounded-full bg-accent px-4 py-2 text-sm font-semibold text-on-accent"
+        <ActionButton
+          run={() => confirmDelivered(id)}
+          className="press min-h-11 self-start rounded-full bg-accent px-5 text-sm font-semibold text-on-accent"
         >
           Received it ✓
-        </button>
+        </ActionButton>
       </span>
     );
   }

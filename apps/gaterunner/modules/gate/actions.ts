@@ -76,39 +76,43 @@ export async function announceGateRun(gate: string) {
 
 export async function markDroppedOff(id: string) {
   const { supabase, user } = await ctx();
-  await supabase
+  const { error } = await supabase
     .from("pickup_requests")
     .update({ delivered_claimed_at: new Date().toISOString() })
     .eq("id", id)
     .eq("runner_id", user.id)
     .eq("status", "claimed");
   revalidatePath("/gate");
+  return error ? "Couldn't mark it dropped off — refresh and try again." : null;
 }
 
 export async function unclaimPickup(id: string) {
   const { supabase } = await ctx();
   // Direct UPDATE can't null runner_id under the RLS policy (0023) — the
   // security definer function owns this transition.
-  await supabase.rpc("unclaim_pickup", { rid: id });
+  const { error } = await supabase.rpc("unclaim_pickup", { rid: id });
   revalidatePath("/gate");
+  return error ? "Couldn't hand it back — refresh and try again." : null;
 }
 
 export async function confirmDelivered(id: string) {
   const { supabase, user } = await ctx();
-  await supabase
+  const { error } = await supabase
     .from("pickup_requests")
     .update({ status: "delivered" })
     .eq("id", id)
     .eq("requester_id", user.id);
   revalidatePath("/gate");
+  return error ? "Couldn't confirm — refresh and try again." : null;
 }
 
 export async function cancelPickup(id: string) {
   const { supabase, user } = await ctx();
-  await supabase
+  const { error } = await supabase
     .from("pickup_requests")
     .update({ status: "cancelled" })
     .eq("id", id)
     .eq("requester_id", user.id);
   revalidatePath("/gate");
+  return error ? "Couldn't cancel — refresh and try again." : null;
 }
