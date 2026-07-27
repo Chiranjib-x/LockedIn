@@ -209,6 +209,27 @@ export default async function HomePage() {
           </Link>
         ))}
 
+        {/* POLISH J8-1: the landing page sells Girls' Closet and Boys' Den by
+            name, but a non-member never saw them mentioned again anywhere in the
+            app — no /spaces index exists and /home only lists spaces you are
+            already in. Students who signed up *because* of that pitch just
+            concluded it did not exist. This says nothing the public landing page
+            does not already say, so it leaks no membership. */}
+        {(mySpaces ?? []).length === 0 && (
+          <div className="animate-fade-up glass flex items-center gap-4 rounded-3xl p-4" style={{ animationDelay: "180ms" }}>
+            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-tint-rose text-2xl">
+              🔒
+            </span>
+            <div className="min-w-0 flex-1">
+              <h2 className="font-heading font-bold">Girls&rsquo; Closet &amp; Boys&rsquo; Den</h2>
+              <p className="text-sm text-muted-foreground">
+                Members-only spaces, invisible to everyone else. A member vouches you
+                in — ask someone who&rsquo;s already inside.
+              </p>
+            </div>
+          </div>
+        )}
+
         <Link href="/cabs" className="animate-fade-up press" style={{ animationDelay: "200ms" }}>
           <div className="glass press-glow flex items-center gap-4 rounded-3xl p-4">
             <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-tint-rose text-tint-rose-fg">

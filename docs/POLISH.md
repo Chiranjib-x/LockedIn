@@ -37,7 +37,7 @@ Ordered by how many students hit them. A journey is walked only when it has been
 | **J5** | Clubs & events | /communities, /for-clubs, events, RSVP, check-in, analytics | P3, P1 | 2026-07-27 | J5-1 fixed · J5-2, J5-3 filed |
 | **J6** | Talk to people | /chats, usernames, contact boundaries, reporting | P5, P2 | 2026-07-27 | **J6-1 filed (S1)** |
 | **J7** | Split & share | /group-buy, /subscriptions, /cabs, /crews | P2, P5 | 2026-07-27 | J7-1 fixed |
-| **J8** | Spaces | Girls' Closet / Boys' Den, invites, vouching | P5, P1 | 2026-07-27 | **isolation verified clean** · J8-1 filed · J8-D1 dismissed |
+| **J8** | Spaces | Girls' Closet / Boys' Den, invites, vouching | P5, P1 | 2026-07-28 | **isolation verified clean** · **J8-1 fixed** · J8-D1 dismissed |
 | **J9** | Come back | /notifications, push, "what changed since last time" | **P6**, P7 | 2026-07-28 | **J9-1, J9-2 fixed** |
 | **J10** | Trust & safety | moderation, reports, bans, /delete-account, /privacy | P5 | 2026-07-28 | **verified clean** · J10-D1 dismissed |
 
@@ -109,7 +109,7 @@ failure. Do not let J9 sit unwalked because J3 is more fun.
   `context` prop, different imports, its own `gr-` key prefix, and its helpers
   take an app argument.
 
-### J8-1 · The landing page sells two spaces a new student cannot find · **S2/E2** · P1 · **filed — blocked on F7**
+### J8-1 · The landing page sells two spaces a new student cannot find · **S2/E2** · P1 · **fixed 2026-07-28, once F7 unblocked it**
 - `app/page.tsx` markets **Girls' Closet** and **Boys' Den** hard: their own titles
   ("A boys-only space no one else can see. Rent out the console between sems…")
   plus a pillar entry. It is one of the six things the landing page sells.
@@ -118,7 +118,8 @@ failure. Do not let J9 sit unwalked because J3 is more fun.
   that they are invite-only or how vouching works. A student who signed up
   *because* of that pitch has no path and no explanation — they just conclude it
   does not exist.
-- **Why it is filed, not fixed:** the honest copy depends on **F7**. "Ask a
+- **Unblocked and shipped:** F7 landed (VIT Girls' Closet 0 → 1 member), which made the sentence true, so the explainer went in the same day. A non-member's `/home` now renders a 🔒 card: *"Girls' Closet & Boys' Den — Members-only spaces, invisible to everyone else. A member vouches you in — ask someone who's already inside."* It says nothing the public landing page does not already say, so it leaks no membership; it renders **only** when you belong to zero spaces. Echoed to **campustrade**, which has the same `mySpaces` block on its home; **campusclubs does not surface spaces on home at all**, so it was correctly left alone. Verified on a fresh zero-data account: explainer present, `gate.mjs --build` PASS on lockedin + campustrade, suite 8 passed.
+- **Original reasoning, kept:** the honest copy depended on **F7**. "Ask a
   member to vouch you in" is true once a space has a founding member — and VIT's
   **Girls' Closet currently has 0 members**, so shipping that sentence today
   points VIT students at a door nobody can open. Writing guidance that is false
