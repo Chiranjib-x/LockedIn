@@ -34,7 +34,7 @@ Ordered by how many students hit them. A journey is walked only when it has been
 | **J2** | Find your way | VIT Compass, /timetable, free windows, /search | P1, P7 | 2026-07-27 | J2-1 fixed · J2-2 filed |
 | **J3** | Buy & sell | /marketplace, listings, offers, requests, /saved | P2, P5 | 2026-07-27 | J3-1 fixed · J3-D1/D2 dismissed |
 | **J4** | Gate run | /gate, post, opt-in, claim, deliver, reward | P4, P2 | 2026-07-27 | J4-1 fixed |
-| **J5** | Clubs & events | /communities, /for-clubs, events, RSVP, check-in, analytics | P3, P1 | — | — |
+| **J5** | Clubs & events | /communities, /for-clubs, events, RSVP, check-in, analytics | P3, P1 | 2026-07-27 | J5-1 fixed · J5-2, J5-3 filed |
 | **J6** | Talk to people | /chats, usernames, contact boundaries, reporting | P5, P2 | — | — |
 | **J7** | Split & share | /group-buy, /subscriptions, /cabs, /crews | P2, P5 | — | — |
 | **J8** | Spaces | Girls' Closet / Boys' Den, invites, vouching | P5, P1 | — | — |
@@ -71,6 +71,55 @@ failure. Do not let J9 sit unwalked because J3 is more fun.
   known account + wrong password still returns `400 invalid_credentials` →
   "Invalid login credentials", i.e. good messages are not swallowed.
   `gate.mjs --build` PASS ×4.
+
+### J5-1 · Only ONE person could run check-in for a club event · **S2/E2** · P3 · **fixed**
+- **Found by the logic audit**, on the exact path `docs/LAUNCH.md` bets the launch
+  on. `record_checkin()` authorised `post_author = auth.uid()` OR a same-college
+  app moderator — **nobody else, including the club's own leads.**
+- **Why it matters:** at a real fest the person on the door is a volunteer or a
+  co-lead, not whoever happened to tap "post event". Today they cannot scan a
+  single attendee, so the club passes one phone around all evening or the author
+  stands at the door for the duration. Delegation is the whole point of a club
+  tool, and barcode check-in is the feature LAUNCH.md calls the differentiator
+  ("nothing else on campus does this").
+- **Fix (`0077`):** a **lead** of the event's own community can now check in *and*
+  read the roster. Applied to all three guards that had the same blind spot —
+  `record_checkin()`, `event_roster()`, and the `event_checkins` read policy.
+  Deliberately `role = 'moderator'` (the lead role) and **not** every member: a
+  rank-and-file member must never mark attendance. Events with no `community_id`
+  are unchanged.
+- **Caught mid-fix — the twin-definition trap:** I first rebuilt the function from
+  `0042`, but `0043` had already widened its return type (adding `attendee_id`
+  and `email`). Postgres refused with *"cannot change return type of existing
+  function"*. Rebased on `0043`, the live definition. Recorded because grepping
+  for a function name in this repo can and does return a stale definition.
+- **Evidence** (probes as real role JWTs, each in a rolled-back transaction):
+  author → scan ALLOWED / roster ALLOWED; **club co-lead → scan ALLOWED / roster
+  ALLOWED** (the fix); **plain member → scan DENIED / roster DENIED** (not
+  over-permissive). `gate.mjs lockedin --build` PASS; full suite **8 passed**;
+  0 probe rows left.
+
+### J5-2 · The club pitch page still advertises an event that already happened · **S3/E1** · P3 · **filed**
+- `/for-clubs` opens with *"Quanta bans WhatsApp groups, QR codes, and collecting
+  phone numbers."* **Quanta ran 13–18 July and is over.** This is the page you
+  hand to a club secretary during outreach, so stale-dated copy on it costs
+  credibility with exactly the persona LAUNCH.md depends on.
+- **Not rewritten, deliberately:** the replacement has to say something true
+  about the *current* rules (Gravitas, or campus policy generally), and that is a
+  fact about VIT I do not have. Guessing it would put a false claim on the
+  outreach page — worse than a stale one.
+- **Recommendation:** either name Gravitas if the same rules apply, or drop the
+  event name entirely so the sentence stops rotting every semester.
+
+### J5-3 · Dead Quanta banner still imported by four surfaces · **S4/E1** · — · **filed**
+- `modules/communities/quanta-banner.tsx` hard-codes `QUANTA_END = 2026-07-19`
+  and its own comment says *"delete after 2026-07-18"*. It now returns `null`
+  unconditionally, but is still imported and rendered by
+  `lockedin/app/communities`, `campusclubs/app/{communities,home}` and
+  `campustrade/app/communities`.
+- Harmless at runtime, which is why it will sit there forever. It belongs to the
+  finishing pass's **dead weight** step — delete with the three-grep proof from
+  `CODE.md` C14, across all forks.
 
 ### J4-1 · A claimed-but-abandoned pickup was invisible to everyone · **S2/E2** · P4, P2 · **fixed**
 - **Found by the logic audit.** `escalate_stale_pickups()` (0022) has two
@@ -225,6 +274,7 @@ waiting for streaming to settle — you will invent an S1 that does not exist.**
 One line per journey. Newest last.
 
 <!-- POLISH-LOG -->
+2026-07-27 · J5 clubs & events · 1 fixed (S2) / 2 filed · UI is healthy — /events has a real empty state, /communities leads with the recruiting shelf, /for-clubs is a strong outreach page, no overflow at 390. The finding was again in the RULES and it sat directly on the launch path: only the event's original author could run barcode check-in, so a club could not put a volunteer or co-lead on the door. Fixed across all three guards. Also learned the hard way that grepping a function name here can return a STALE definition — 0043 had already replaced 0042's record_checkin with a wider return type.
 2026-07-27 · J4 gate run · 1 fixed (S2) · UI half is healthy: the runner opt-in shipped earlier today renders, toggles false→true and PERSISTS across navigation ("You're a gate runner"), proving the 0074 column grants were right; no overflow at 390 or 360; the empty state has personality ("someone's biryani always needs a hero"). The finding was again in the RULES, not the pixels — a runner who claims and then ghosts left the parcel stranded AND removed the job from the pool, with no reminder to anyone, because both existing escalation branches filter on a delivered_claimed_at that is still NULL in exactly that case.
 2026-07-27 · J3 buy & sell · 1 fixed (S2) / 2 dismissed · the UI walk found nothing wrong — empty states on /saved, /marketplace/mine and requests are all good, trust signals on a listing are strong (name + verified name + karma tier + ★3.7 rating + "Chat with seller" as the only contact path), no email/phone/WhatsApp-number leak in the page source, no overflow at 390 or 360. The finding came from the LOGIC audit instead: nothing resolved a pending offer when the listing sold, so the buyer sat in a dead end forever. Fixed in the DB so all three marketplace forks inherit it. Note for later: ZERO offers have ever been made in production — same shape as GateRunner's supply problem, worth a look once the marketplace has traffic.
 2026-07-27 · J2 find your way · 1 fixed (S1) / 1 filed · the headline: global search answered "Nothing on campus for SJT" while holding 48 verified buildings — places are now searchable by name AND nickname and deep-link into Compass. Clean on everything else: /timetable's zero-class state is good ("No classes today — enjoy it, or add your week below") with exactly one obvious next action and ZERO sub-44px targets at either width; search's no-results copy is good ("Try a different word — or post it yourself"); no horizontal overflow at 390 or 360 on any screen walked. Search's filter chips are 34px tall — already covered by QUEUE A35, not re-filed.
