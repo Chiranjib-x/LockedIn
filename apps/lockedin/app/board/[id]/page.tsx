@@ -12,6 +12,10 @@ import ReportSheet from "@/modules/moderation/report-sheet";
 import ShareButton from "@/components/share-button";
 import SaveButton from "@/components/save-button";
 
+// VIT Compass lives on its own subdomain; env-overridable so U11's neutral
+// domain is a config change, not a code change.
+const COMPASS_URL = process.env.NEXT_PUBLIC_COMPASS_URL ?? "https://map.chiranjib.online";
+
 export default async function PostDetailPage({
   params,
 }: {
@@ -22,7 +26,7 @@ export default async function PostDetailPage({
 
   const { data: post } = await supabase
     .from("posts")
-    .select("*, author:profiles!posts_author_id_fkey(id, name, hostel_block), community:communities(id, name, emoji)")
+    .select("*, author:profiles!posts_author_id_fkey(id, name, hostel_block), community:communities(id, name, emoji), building:campus_buildings(id, name, aka)")
     .eq("id", id)
     .single();
 
@@ -114,6 +118,21 @@ export default async function PostDetailPage({
           <p className="flex items-center gap-1">
             <MapPin className="h-3.5 w-3.5 shrink-0" strokeWidth={2} /> {post.location}
           </p>
+        )}
+        {/* QUEUE A34: the organiser picked this building, so we can point at the
+            exact pin instead of hoping "SJT Auditorium" means something to a
+            first-year. Compass honours /?b=<id> — it flies there and opens the
+            sheet. `location` above still carries room-level detail. */}
+        {(post.building as { id: string; name: string; aka: string | null } | null) && (
+          <a
+            href={`${COMPASS_URL}/?b=${(post.building as { id: string }).id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="press flex items-center gap-1 font-medium text-primary hover:underline"
+          >
+            <MapPin className="h-3.5 w-3.5 shrink-0" strokeWidth={2} />
+            Find {(post.building as { name: string }).name} on the campus map →
+          </a>
         )}
         {post.type === "event" && post.event_date && (
           <p className="flex items-center gap-1">

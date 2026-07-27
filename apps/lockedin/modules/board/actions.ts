@@ -46,6 +46,9 @@ export async function createPost(formData: FormData) {
     location: String(formData.get("location") ?? "").trim() || null,
     event_date: type === "event" ? istParse(eventDateRaw).toISOString() : null,
     capacity: type === "event" ? Number(formData.get("capacity")) || null : null,
+    // QUEUE A34: the organiser PICKS the building — never inferred from the
+    // free-text venue. `location` stays for room-level detail and off-campus.
+    building_id: type === "event" ? String(formData.get("building_id") ?? "").trim() || null : null,
     images: JSON.parse(String(formData.get("images") ?? "[]")),
     community_id: communityId, // RLS: moderators only when set
     claim_question:

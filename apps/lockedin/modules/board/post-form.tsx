@@ -26,11 +26,14 @@ export default function PostForm({
   communityId,
   communityName,
   kind = "board",
+  buildings = [],
 }: {
   error?: string;
   communityId?: string;
   communityName?: string;
   kind?: "board" | "event" | "community";
+  /** Campus buildings for the venue picker — events only (QUEUE A34). */
+  buildings?: { id: string; name: string; aka: string | null }[];
 }) {
   const shown = TYPE_SETS[kind] ?? TYPE_SETS.board;
   const [type, setType] = useState<string>(shown[0]);
@@ -102,6 +105,23 @@ export default function PostForm({
             Capacity <span className="font-normal text-muted-foreground">(optional — extra RSVPs go on a waitlist)</span>
             <input name="capacity" type="number" min={1} placeholder="e.g. 60" className={inputClass} />
           </label>
+          {buildings.length > 0 && (
+            <label className="flex flex-col gap-1 text-sm font-medium">
+              Building{" "}
+              <span className="font-normal text-muted-foreground">
+                (optional — puts your event on the campus map)
+              </span>
+              <select name="building_id" defaultValue="" className={inputClass}>
+                <option value="">Not on campus / not listed</option>
+                {buildings.map((b) => (
+                  <option key={b.id} value={b.id}>
+                    {b.name}
+                    {b.aka ? ` (${b.aka})` : ""}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
         </>
       )}
 
