@@ -53,6 +53,16 @@ export default async function SubscriptionPage({ params }: { params: Promise<{ i
   const days = Math.ceil((new Date(sub.renewal_date).getTime() - Date.now()) / 86400000);
   const defaultShare = Math.ceil(Number(sub.total_cost) / sub.seats);
 
+  // Removing a member deletes their row and nothing else — the remaining shares
+  // are NOT recalculated. So the owner quietly absorbs the leaver's share every
+  // cycle, with nothing on screen saying so. Surface the gap instead of
+  // re-splitting silently: someone may already have paid this cycle, and
+  // changing what they owe behind their back is worse than showing the shortfall.
+  const memberSum = list.reduce((s, m) => s + m.share_amount, 0);
+  const ownerShare = Number(sub.total_cost) - memberSum;
+  const evenShare = Math.ceil(Number(sub.total_cost) / (list.length + 1));
+  const ownerOverpays = list.length > 0 && ownerShare > evenShare;
+
   return (
     <main className="animate-fade-up mx-auto flex w-full max-w-lg flex-1 flex-col gap-4 px-4 py-6">
       <Link href="/subscriptions" className="text-sm text-muted-foreground hover:text-foreground">← Pools</Link>
@@ -71,6 +81,24 @@ export default async function SubscriptionPage({ params }: { params: Promise<{ i
         {days > 0 && <> — in {days} day{days === 1 ? "" : "s"}</>}
         {unpaid.length > 0 && <> · {unpaid.length} member{unpaid.length === 1 ? "" : "s"} still owe{unpaid.length === 1 ? "s" : ""}</>}
       </div>
+
+      {isOwner && list.length > 0 && (
+        <div
+          className={`rounded-2xl border p-3 text-sm ${
+            ownerOverpays ? "border-tint-amber-fg/40 bg-tint-amber" : "border-border bg-card"
+          }`}
+        >
+          <p className={ownerOverpays ? "font-medium text-tint-amber-fg" : "text-muted-foreground"}>
+            Members cover {rupees(memberSum)} · you cover {rupees(Math.max(0, ownerShare))}
+          </p>
+          {ownerOverpays && (
+            <p className="mt-1 text-tint-amber-fg">
+              That&rsquo;s more than an even seat ({rupees(evenShare)}) — usually because someone
+              left and the shares never changed. Tap &ldquo;Split evenly&rdquo; below to rebalance.
+            </p>
+          )}
+        </div>
+      )}
 
       {isOwner ? (
         <>

@@ -36,7 +36,7 @@ Ordered by how many students hit them. A journey is walked only when it has been
 | **J4** | Gate run | /gate, post, opt-in, claim, deliver, reward | P4, P2 | 2026-07-27 | J4-1 fixed |
 | **J5** | Clubs & events | /communities, /for-clubs, events, RSVP, check-in, analytics | P3, P1 | 2026-07-27 | J5-1 fixed · J5-2, J5-3 filed |
 | **J6** | Talk to people | /chats, usernames, contact boundaries, reporting | P5, P2 | 2026-07-27 | **J6-1 filed (S1)** |
-| **J7** | Split & share | /group-buy, /subscriptions, /cabs, /crews | P2, P5 | — | — |
+| **J7** | Split & share | /group-buy, /subscriptions, /cabs, /crews | P2, P5 | 2026-07-27 | J7-1 fixed |
 | **J8** | Spaces | Girls' Closet / Boys' Den, invites, vouching | P5, P1 | — | — |
 | **J9** | Come back | /notifications, push, "what changed since last time" | **P6**, P7 | — | — |
 | **J10** | Trust & safety | moderation, reports, bans, /delete-account, /privacy | P5 | — | — |
@@ -71,6 +71,34 @@ failure. Do not let J9 sit unwalked because J3 is more fun.
   known account + wrong password still returns `400 invalid_credentials` →
   "Invalid login credentials", i.e. good messages are not swallowed.
   `gate.mjs --build` PASS ×4.
+
+### J7-1 · Removing a pool member silently made the owner pay their share · **S2/E2** · P2 · **fixed**
+- **Found by the logic audit.** `removeMember()` deletes the `subscription_members`
+  row **and nothing else** — the remaining shares are never recalculated.
+- **The money:** Netflix ₹400 split across owner + 3 members = ₹100 each. One
+  member leaves. The other two still owe ₹100, so members cover ₹200 of a ₹400
+  bill and **the owner quietly absorbs ₹200 every single cycle**, with nothing on
+  screen saying so. The owner's share is implied (`total − Σ member shares`), so
+  it silently grows and no number on the page ever looks wrong.
+- **Fix — surface the gap, do NOT re-split automatically.** Someone may already
+  have paid this cycle, and changing what they owe behind their back is worse
+  than showing the shortfall. The pool page now always shows
+  `Members cover ₹X · you cover ₹Y` to the owner, and when the owner's share
+  exceeds an even seat it adds: *"That's more than an even seat (₹134) — usually
+  because someone left and the shares never changed. Tap 'Split evenly' below to
+  rebalance."* The existing **Split evenly** control sits right underneath, so the
+  fix is one tap and the owner stays in control of the money.
+- **Evidence, both directions:** under-covered pool (₹400, 2 members @₹100) →
+  `Members cover ₹200 · you cover ₹200` **plus** the warning naming ₹134 as the
+  even seat. Balanced pool (₹400, 2 members @₹134) → `Members cover ₹268 · you
+  cover ₹132`, **warning absent** — so no false positives; the transparency line
+  always shows, only the warning is conditional. Fork-echoed by `cp` after
+  proving lockedin's pre-edit file was byte-identical to both forks;
+  `gate.mjs --build` PASS on all three.
+- **Confirmed working while cleaning up:** a raw SQL `update subscription_members
+  set share_amount` was refused with **"only the pool owner can change shares"** —
+  the 0051 owner-guard trigger holds even against a direct DB connection, because
+  `auth.uid()` is null outside a session.
 
 ### J6-1 · The "you need their @username" rule is enforced in the UI only · **S1/E3** · P5 · **filed — needs your decision, deliberately NOT half-fixed**
 - **Your constraint, verbatim in STATE:** *"I dont want people to start using this
@@ -319,6 +347,7 @@ waiting for streaming to settle — you will invent an S1 that does not exist.**
 One line per journey. Newest last.
 
 <!-- POLISH-LOG -->
+2026-07-27 · J7 split & share · 1 fixed (S2, money) · removing a subscription member never recalculated shares, so the owner silently ate the leaver's cost every cycle — fixed by surfacing the shortfall rather than re-splitting money people may already have paid. Both directions proven (warns when short, stays quiet when balanced). PROCESS CHANGE after the probe account was spotted in the live app mid-pass: the walk account is now named zz.polish.probe@ / 'ZZ PROBE — delete me' so it can never be mistaken for a student, and seed→walk→delete happens in one run instead of spanning steps.
 2026-07-27 · J6 talk to people · 0 fixed / 1 filed (S1) · a journey where the UI is right and the API is not. /chats has a good empty state with a next action; the People tab correctly refuses NAME search and says to ask for the @username. But a plain student can read all 19 same-college profiles straight from PostgREST and filter them by partial name, then hand any uuid to find_or_create_dm — which never checks that you knew the username. The rule is client-side. Filed rather than half-fixed: ctype/ctx are caller-supplied so a quick guard is theatre, and the real fix is per-context verification across 6 call sites x 3 forks. NOT reachable by tapping around; needs devtools.
 2026-07-27 · J5 clubs & events · 1 fixed (S2) / 2 filed · UI is healthy — /events has a real empty state, /communities leads with the recruiting shelf, /for-clubs is a strong outreach page, no overflow at 390. The finding was again in the RULES and it sat directly on the launch path: only the event's original author could run barcode check-in, so a club could not put a volunteer or co-lead on the door. Fixed across all three guards. Also learned the hard way that grepping a function name here can return a STALE definition — 0043 had already replaced 0042's record_checkin with a wider return type.
 2026-07-27 · J4 gate run · 1 fixed (S2) · UI half is healthy: the runner opt-in shipped earlier today renders, toggles false→true and PERSISTS across navigation ("You're a gate runner"), proving the 0074 column grants were right; no overflow at 390 or 360; the empty state has personality ("someone's biryani always needs a hero"). The finding was again in the RULES, not the pixels — a runner who claims and then ghosts left the parcel stranded AND removed the job from the pool, with no reminder to anyone, because both existing escalation branches filter on a delivered_claimed_at that is still NULL in exactly that case.
