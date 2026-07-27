@@ -4,7 +4,37 @@ import { useState } from "react";
 import { inputClass } from "@suite/ui";
 import { UpiPay } from "@suite/ui";
 import { useRefresh } from "@suite/lib/use-refresh";
-import { claimPickup, unclaimPickup, confirmDelivered, cancelPickup, markDroppedOff, announceGateRun, setGateAlerts } from "./actions";
+import { claimPickup, unclaimPickup, confirmDelivered, cancelPickup, markDroppedOff, announceGateRun, setGateAlerts, setRunnerNote } from "./actions";
+
+// Runner's one-line coordination note ("blue shirt, gate 2, 5 min").
+export function RunnerNote({ id, current }: { id: string; current: string | null }) {
+  const refresh = useRefresh();
+  const [note, setNote] = useState(current ?? "");
+  const [busy, setBusy] = useState(false);
+  const [sent, setSent] = useState(false);
+  return (
+    <div className="flex w-full gap-2">
+      <input aria-label="Note for them — e.g. blue shirt, gate 2"
+        value={note}
+        onChange={(e) => { setNote(e.target.value); setSent(false); }}
+        placeholder="Note for them — e.g. blue shirt, gate 2"
+        className="min-h-10 flex-1 rounded-full border border-border bg-card px-4 text-sm"
+      />
+      <button
+        disabled={busy || note.trim() === "" || sent}
+        onClick={async () => {
+          setBusy(true);
+          const e = await setRunnerNote(id, note);
+          setBusy(false);
+          if (!e) { setSent(true); refresh(); }
+        }}
+        className="press min-h-10 shrink-0 rounded-full border border-primary/40 px-4 text-sm font-semibold text-primary disabled:opacity-50"
+      >
+        {sent ? "Sent ✓" : busy ? "…" : "Send"}
+      </button>
+    </div>
+  );
+}
 
 // The supply side. Before 0074, posting a pickup notified nobody — a runner had
 // to already have the app open at the exact moment they were walking to the

@@ -65,6 +65,17 @@ export async function announceGateRun(gate: string) {
   return `Pinged ${n} ${n === 1 ? "person" : "people"} waiting on parcels 🎉`;
 }
 
+// One coordination note from the runner ("blue shirt, gate 2") — 0064 RPC
+// guards runner-only + claimed, and pushes a gate notification to the requester.
+// The RPC has existed since 0064; only GateRunner ever called it, so LockedIn
+// users had no way to send it. Fork drift, not a missing feature.
+export async function setRunnerNote(id: string, note: string) {
+  const { supabase } = await ctx();
+  const { error } = await supabase.rpc("set_runner_note", { rid: id, note });
+  revalidatePath("/gate");
+  return error ? "Couldn't send the note." : null;
+}
+
 // Standing opt-in to be pinged when someone posts a pickup (0074). This is the
 // supply side of the app: before it existed, a request notified nobody and
 // every unclaimed one just expired.

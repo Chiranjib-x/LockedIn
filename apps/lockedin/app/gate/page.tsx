@@ -2,8 +2,29 @@ import Link from "next/link";
 import { Footprints } from "lucide-react";
 import { requireUser } from "@/lib/auth";
 import { Card } from "@suite/ui";
-import { ClaimButton, RunnerActions, RequesterActions, HeadingToGate, RunnerOptIn } from "@/modules/gate/client";
+import { ClaimButton, RunnerActions, RequesterActions, HeadingToGate, RunnerOptIn, RunnerNote } from "@/modules/gate/client";
 import { EmptyState } from "@suite/ui";
+import PushOptIn from "@/components/push-opt-in";
+
+// Visual status timeline: Posted → Claimed → Dropped off → Received.
+const STEPS = ["Posted", "Claimed", "Dropped off", "Received"];
+function StatusSteps({ status, droppedOff }: { status: string; droppedOff: boolean }) {
+  const at = status === "open" ? 0 : status === "claimed" ? (droppedOff ? 2 : 1) : 3;
+  return (
+    <div className="flex items-center gap-1">
+      {STEPS.map((s, i) => (
+        <div key={s} className="flex flex-1 flex-col items-center gap-1">
+          <div className="flex w-full items-center">
+            <span className={`h-0.5 flex-1 ${i === 0 ? "bg-transparent" : i <= at ? "bg-accent" : "bg-border"}`} />
+            <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${i < at ? "bg-accent" : i === at ? "bg-accent ring-4 ring-accent/20" : "bg-border"}`} />
+            <span className={`h-0.5 flex-1 ${i === STEPS.length - 1 ? "bg-transparent" : i < at ? "bg-accent" : "bg-border"}`} />
+          </div>
+          <span className={`text-[10px] leading-none ${i <= at ? "font-semibold text-foreground" : "text-muted-foreground"}`}>{s}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 function eta(ts: string) {
   const ms = new Date(ts).getTime() - Date.now();
@@ -32,6 +53,7 @@ type Row = {
   expected_at: string;
   reward: number;
   status: string;
+  runner_note: string | null;
   delivered_claimed_at: string | null;
   requester: { name: string; hostel_block: string | null };
   runner: { name: string } | null;
@@ -71,6 +93,8 @@ export default async function GatePage() {
         </Link>
       </div>
 
+      <PushOptIn context="gate" />
+
       <RunnerOptIn enabled={me?.gate_alerts ?? false} />
 
       {mine.length > 0 && (
@@ -94,6 +118,17 @@ export default async function GatePage() {
                   {r.gate} → {r.drop_location}
                   {r.reward > 0 && <> · ₹{Number(r.reward).toFixed(0)} reward</>}
                 </p>
+                {r.status !== "cancelled" && (
+                  <StatusSteps status={r.status} droppedOff={r.delivered_claimed_at !== null} />
+                )}
+                {iAmRequester && r.runner_note && (
+                  <p className="rounded-xl bg-primary/5 px-3 py-2 text-sm">
+                    📝 <span className="font-medium">{r.runner?.name ?? "Runner"}:</span> {r.runner_note}
+                  </p>
+                )}
+                {!iAmRequester && r.status === "claimed" && (
+                  <RunnerNote id={r.id} current={r.runner_note} />
+                )}
                 <div className="flex flex-wrap gap-2">
                   {iAmRequester ? (
                     <RequesterActions

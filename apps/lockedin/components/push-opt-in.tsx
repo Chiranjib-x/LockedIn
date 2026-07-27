@@ -11,9 +11,12 @@ import {
 
 const DONE_KEY = "li-push-optin-done";
 
+// NOTE: this is Record<string, string>, so an unknown key TYPECHECKS and then
+// renders an empty line. Add the key here whenever you add a <PushOptIn context>.
 const CONTEXT_COPY: Record<string, string> = {
   chats: "Get pinged the moment someone replies — even with the app closed.",
   timetable: "Get a heads-up 30 minutes before a class you can’t afford to bunk.",
+  gate: "Get pinged when someone needs a parcel run — and when yours is on its way.",
 };
 
 // Contextual permission ask (never on load): a dismissible card mounted on
