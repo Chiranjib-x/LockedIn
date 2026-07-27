@@ -33,7 +33,7 @@ Ordered by how many students hit them. A journey is walked only when it has been
 | **J1** | **First run** — signup → first screen → "now what?" | signup, /home, onboarding, empty states | P1, P6, P7 | 2026-07-27 | J1-1 fixed · J1-2 filed · J1-D1 dismissed |
 | **J2** | Find your way | VIT Compass, /timetable, free windows, /search | P1, P7 | 2026-07-27 | J2-1 fixed · J2-2 filed |
 | **J3** | Buy & sell | /marketplace, listings, offers, requests, /saved | P2, P5 | 2026-07-27 | J3-1 fixed · J3-D1/D2 dismissed |
-| **J4** | Gate run | /gate, post, opt-in, claim, deliver, reward | P4, P2 | — | — |
+| **J4** | Gate run | /gate, post, opt-in, claim, deliver, reward | P4, P2 | 2026-07-27 | J4-1 fixed |
 | **J5** | Clubs & events | /communities, /for-clubs, events, RSVP, check-in, analytics | P3, P1 | — | — |
 | **J6** | Talk to people | /chats, usernames, contact boundaries, reporting | P5, P2 | — | — |
 | **J7** | Split & share | /group-buy, /subscriptions, /cabs, /crews | P2, P5 | — | — |
@@ -71,6 +71,34 @@ failure. Do not let J9 sit unwalked because J3 is more fun.
   known account + wrong password still returns `400 invalid_credentials` →
   "Invalid login credentials", i.e. good messages are not swallowed.
   `gate.mjs --build` PASS ×4.
+
+### J4-1 · A claimed-but-abandoned pickup was invisible to everyone · **S2/E2** · P4, P2 · **fixed**
+- **Found by the logic audit.** `escalate_stale_pickups()` (0022) has two
+  branches and **both** open with `delivered_claimed_at < now() - interval '...'`.
+  When a runner claims a pickup and never taps "Dropped it off",
+  `delivered_claimed_at` is **NULL**, so both comparisons evaluate NULL -> false
+  and **neither branch ever fires.**
+- **What that means for a student:** the request sits `status='claimed'` forever.
+  Nobody is reminded, no moderator is told, and because it is no longer `open`
+  **no other runner can see it.** The requester's parcel is stranded at the gate
+  and the job has silently left the pool — which is the worst possible failure
+  for an app whose actual problem is that too few people run.
+- **Fix:** `0076` adds a third branch — claimed, past `expected_at + 3h`, and
+  never dropped off — which nudges the **runner** ("Did you grab it? Tap Dropped
+  it off, or hand it back") and tells the **requester** they can cancel and
+  repost. One-shot via a new `stale_claim_nudged_at` column.
+- **Deliberately NOT auto-releasing the claim back to `open`:** the runner may
+  physically hold the parcel and simply not have tapped. Auto-releasing would
+  invite a second runner to collect something already collected. Nudge the
+  humans; the requester already has cancel.
+- **Evidence** (probes in a rolled-back transaction, three fixtures): stale 5h
+  claim → **runner nudged + requester alerted**; fresh 1h claim → **not** nudged
+  (no premature spam); dropped-off-5h-ago → the original 4h reminder **still
+  fires**, so the existing branches are intact. One cron run produced exactly 3
+  notifications; a second run produced **0**. `gate.mjs --build` PASS on lockedin
+  and gaterunner; full suite **8 passed**; DB clean after.
+- **Zero app-code changes** — the fix is in the hourly `gate-runner-escalation`
+  cron job, so both gate surfaces inherit it.
 
 ### J3-1 · A pending offer on a sold listing was a dead end · **S2/E2** · P2 · **fixed**
 - **Found by the logic audit, not the UI walk** — the screens all look fine. The
@@ -197,6 +225,7 @@ waiting for streaming to settle — you will invent an S1 that does not exist.**
 One line per journey. Newest last.
 
 <!-- POLISH-LOG -->
+2026-07-27 · J4 gate run · 1 fixed (S2) · UI half is healthy: the runner opt-in shipped earlier today renders, toggles false→true and PERSISTS across navigation ("You're a gate runner"), proving the 0074 column grants were right; no overflow at 390 or 360; the empty state has personality ("someone's biryani always needs a hero"). The finding was again in the RULES, not the pixels — a runner who claims and then ghosts left the parcel stranded AND removed the job from the pool, with no reminder to anyone, because both existing escalation branches filter on a delivered_claimed_at that is still NULL in exactly that case.
 2026-07-27 · J3 buy & sell · 1 fixed (S2) / 2 dismissed · the UI walk found nothing wrong — empty states on /saved, /marketplace/mine and requests are all good, trust signals on a listing are strong (name + verified name + karma tier + ★3.7 rating + "Chat with seller" as the only contact path), no email/phone/WhatsApp-number leak in the page source, no overflow at 390 or 360. The finding came from the LOGIC audit instead: nothing resolved a pending offer when the listing sold, so the buyer sat in a dead end forever. Fixed in the DB so all three marketplace forks inherit it. Note for later: ZERO offers have ever been made in production — same shape as GateRunner's supply problem, worth a look once the marketplace has traffic.
 2026-07-27 · J2 find your way · 1 fixed (S1) / 1 filed · the headline: global search answered "Nothing on campus for SJT" while holding 48 verified buildings — places are now searchable by name AND nickname and deep-link into Compass. Clean on everything else: /timetable's zero-class state is good ("No classes today — enjoy it, or add your week below") with exactly one obvious next action and ZERO sub-44px targets at either width; search's no-results copy is good ("Try a different word — or post it yourself"); no horizontal overflow at 390 or 360 on any screen walked. Search's filter chips are 34px tall — already covered by QUEUE A35, not re-filed.
 2026-07-27 · J1 first run · 1 fixed / 1 filed / 1 dismissed · walked at 390×844 and 360×800 as a genuinely fresh zero-data VIT account (seeded at DB level because confirm-email is now ON, then deleted). No horizontal overflow at either width on any screen. Empty states on /timetable and /notifications are good ("No classes today — enjoy it, or add your week below"). Signup states the college-domain rule up front, before you can fail it. Sub-44px tap targets remain in the mother app's header + text links (logo 19px wide, avatar chip 36px, "Requests" 57×20, "Delete my account" 342×16) — QUEUE A16 did this pass for gaterunner+vitcompass only; filed as A35 rather than fixed here, since it is J-wide and not J1-specific.
