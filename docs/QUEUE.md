@@ -123,6 +123,13 @@ would agree. "Improve X" is not an item. "X passes Y" is.
 - **Decision:** **won't-do** the filed option (a), fuzzy-matching free-text venues onto buildings. `posts.location` is free text ("SJT Auditorium", "Room 214, K Block"); resolving it by name similarity guesses, and a confidently-wrong pin is worse than no pin — same reasoning as `coords_verified` defaulting false. Not option (b) either: closing it outright was wrong once LAUNCH.md made Gravitas the launch vehicle and Compass's job became "where is this event happening". Replacement is deterministic: the organiser **picks** the building, and the event links to Compass focused on it.
 - **Evidence:** shipped the self-contained half — VIT Compass now honours `/?b=<building id>`: it flies to that pin and opens its sheet, with the sheet's initial state derived in a lazy `useState` initialiser (deterministic from props, so no hydration mismatch, and no banned setState-in-effect; the effect does the camera move only). Probed against a live server: `curl "/?b=ce6d9292…"` → "Technology Tower" appears 3× in the SSR'd HTML (flight data + the open sheet) vs **1×** without the param. `node scripts/gate.mjs vitcompass --build` → `GATE PASS — 1 app(s), 3 check(s)`. Remaining half filed as **A34**.
 
+### A35 · Tap-target pass on the mother app + its two forks (A16 only did gaterunner/vitcompass)
+- **State:** open
+- **Why:** measured during `/polish` J1 on a real device-sized viewport: `lockedin` still has sub-44px controls that A16 fixed elsewhere — header logo link **19×44**, avatar chip **36×44**, `/marketplace` "Requests" **57×20** and "My listings" **66×20**, `/profile` "Delete my account" **342×16**, signup's "Log in" **37×18** and "Terms" **33×16**. Persona P7 (one-handed on a phone) hits these on every screen because most are in the header.
+- **Do:** same treatment as A16 — grow the hit area, not necessarily the visual (a transparent 44×44 wrapper worked for vitcompass's 18px markers). Text links inside a sentence are the judgement call: `min-h-11` on a link that sits inline in a paragraph will break the line box, so prefer padding on the tappable span. `md5sum` the file in each fork first — these three have diverged before.
+- **Done when:** the `getBoundingClientRect` sub-44 sweep over `button, a` returns empty on `/home`, `/marketplace`, `/board`, `/profile`, `/signup` at 390×844 **and** 360×800, pasted per app.
+- **Evidence:**
+
 ### A34 · Event → building picker, so events can point at a place on the map
 - **State:** open
 - **Blocked by:** nothing (A11's decision settles the approach)

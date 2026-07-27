@@ -3,6 +3,17 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
+// Auth errors are shown to the student verbatim, so an unusable message becomes
+// an unusable screen. A GoTrue 5xx surfaces as `message: "{}"` — observed live:
+// a login against a broken auth row redirected to `/login?error=%7B%7D`, i.e.
+// the page told the user "{}". Anything empty or object-shaped gets replaced
+// with something they can act on.
+function authMessage(error: { message?: string } | null, fallback: string) {
+  const m = (error?.message ?? "").trim();
+  if (!m || m === "{}" || m === "[object Object]") return fallback;
+  return m;
+}
+
 export async function signup(formData: FormData) {
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
@@ -33,7 +44,10 @@ export async function signup(formData: FormData) {
     options: { data: { name } },
   });
   if (error) {
-    redirect("/signup?error=" + encodeURIComponent(error.message));
+    redirect(
+      "/signup?error=" +
+        encodeURIComponent(authMessage(error, "Couldn't create your account — try again in a moment."))
+    );
   }
 
   // Email confirmation OFF → signUp returns a session; the user is already
@@ -55,7 +69,10 @@ export async function login(formData: FormData) {
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) {
-    redirect("/login?error=" + encodeURIComponent(error.message));
+    redirect(
+      "/login?error=" +
+        encodeURIComponent(authMessage(error, "Couldn't log you in — try again in a moment."))
+    );
   }
 
   redirect("/home");
