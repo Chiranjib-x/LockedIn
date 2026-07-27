@@ -37,7 +37,7 @@ Ordered by how many students hit them. A journey is walked only when it has been
 | **J5** | Clubs & events | /communities, /for-clubs, events, RSVP, check-in, analytics | P3, P1 | 2026-07-27 | J5-1 fixed · J5-2, J5-3 filed |
 | **J6** | Talk to people | /chats, usernames, contact boundaries, reporting | P5, P2 | 2026-07-27 | **J6-1 filed (S1)** |
 | **J7** | Split & share | /group-buy, /subscriptions, /cabs, /crews | P2, P5 | 2026-07-27 | J7-1 fixed |
-| **J8** | Spaces | Girls' Closet / Boys' Den, invites, vouching | P5, P1 | — | — |
+| **J8** | Spaces | Girls' Closet / Boys' Den, invites, vouching | P5, P1 | 2026-07-27 | **isolation verified clean** · J8-1 filed · J8-D1 dismissed |
 | **J9** | Come back | /notifications, push, "what changed since last time" | **P6**, P7 | — | — |
 | **J10** | Trust & safety | moderation, reports, bans, /delete-account, /privacy | P5 | — | — |
 
@@ -71,6 +71,25 @@ failure. Do not let J9 sit unwalked because J3 is more fun.
   known account + wrong password still returns `400 invalid_credentials` →
   "Invalid login credentials", i.e. good messages are not swallowed.
   `gate.mjs --build` PASS ×4.
+
+### J8-1 · The landing page sells two spaces a new student cannot find · **S2/E2** · P1 · **filed — blocked on F7**
+- `app/page.tsx` markets **Girls' Closet** and **Boys' Den** hard: their own titles
+  ("A boys-only space no one else can see. Rent out the console between sems…")
+  plus a pillar entry. It is one of the six things the landing page sells.
+- Inside the app, a non-member never sees them again. `/home` renders only the
+  spaces you already belong to, there is no `/spaces` index, and nothing explains
+  that they are invite-only or how vouching works. A student who signed up
+  *because* of that pitch has no path and no explanation — they just conclude it
+  does not exist.
+- **Why it is filed, not fixed:** the honest copy depends on **F7**. "Ask a
+  member to vouch you in" is true once a space has a founding member — and VIT's
+  **Girls' Closet currently has 0 members**, so shipping that sentence today
+  points VIT students at a door nobody can open. Writing guidance that is false
+  for the flagship space is worse than the current silence.
+- **Recommendation, in this order:** (1) mint the founding invites (**F7**,
+  `/admin/spaces`), then (2) add a short non-member card on `/home` — "Girls'
+  Closet & Boys' Den are invite-only. A member vouches you in." Confirms nothing
+  the landing page does not already say publicly, so there is no leak.
 
 ### J7-1 · Removing a pool member silently made the owner pay their share · **S2/E2** · P2 · **fixed**
 - **Found by the logic audit.** `removeMember()` deletes the `subscription_members`
@@ -313,6 +332,13 @@ not a dismissal.
 
 <!-- POLISH-DISMISSED -->
 
+### J8-D1 · "`/spaces` is a dead end for non-members" — **dismissed, self-inflicted**
+Typing `/spaces` shows "Nothing here — this page doesn't exist, or you don't have
+access to it". That is because **there is no `/spaces` index route** (only
+`[id]`, `join`, `loading`) and `grep 'href="/spaces"'` returns **nothing** — no
+link in the app points there. I reached it by guessing a URL, not by following
+the product. The real discoverability gap is J8-1; this 404 is not it.
+
 ### J3-D1 · "A WhatsApp button on the listing page violates the no-WhatsApp constraint" — **dismissed**
 The listing detail does render a **WhatsApp** button, and STATE carries the
 verbatim rule *"i dont want anyone to share their whatsapp number like so easily"*.
@@ -347,6 +373,7 @@ waiting for streaming to settle — you will invent an S1 that does not exist.**
 One line per journey. Newest last.
 
 <!-- POLISH-LOG -->
+2026-07-27 · J8 spaces · 0 fixed / 1 filed / 1 dismissed · THE ISOLATION IS AIRTIGHT and that is the headline: probed as a non-member with a real role JWT, an outsider sees space row 0, roster 0, listings 0, requests 0 — all four boundaries hold. Cross-space invite scoping also holds: a Boys' Den member minting an invite to Girls' Closet is refused with "not a member of this space", while their own space is allowed. Design note worth keeping: spaces carry NO gender column and space_members no role — membership is purely social via vouching, with no INSERT policy so every write goes through a definer RPC. That is the right call; gender is not reliably storable. Only gap is discoverability (J8-1), and it is blocked on F7.
 2026-07-27 · J7 split & share · 1 fixed (S2, money) · removing a subscription member never recalculated shares, so the owner silently ate the leaver's cost every cycle — fixed by surfacing the shortfall rather than re-splitting money people may already have paid. Both directions proven (warns when short, stays quiet when balanced). PROCESS CHANGE after the probe account was spotted in the live app mid-pass: the walk account is now named zz.polish.probe@ / 'ZZ PROBE — delete me' so it can never be mistaken for a student, and seed→walk→delete happens in one run instead of spanning steps.
 2026-07-27 · J6 talk to people · 0 fixed / 1 filed (S1) · a journey where the UI is right and the API is not. /chats has a good empty state with a next action; the People tab correctly refuses NAME search and says to ask for the @username. But a plain student can read all 19 same-college profiles straight from PostgREST and filter them by partial name, then hand any uuid to find_or_create_dm — which never checks that you knew the username. The rule is client-side. Filed rather than half-fixed: ctype/ctx are caller-supplied so a quick guard is theatre, and the real fix is per-context verification across 6 call sites x 3 forks. NOT reachable by tapping around; needs devtools.
 2026-07-27 · J5 clubs & events · 1 fixed (S2) / 2 filed · UI is healthy — /events has a real empty state, /communities leads with the recruiting shelf, /for-clubs is a strong outreach page, no overflow at 390. The finding was again in the RULES and it sat directly on the launch path: only the event's original author could run barcode check-in, so a club could not put a volunteer or co-lead on the door. Fixed across all three guards. Also learned the hard way that grepping a function name here can return a STALE definition — 0043 had already replaced 0042's record_checkin with a wider return type.
