@@ -35,7 +35,7 @@ Ordered by how many students hit them. A journey is walked only when it has been
 | **J3** | Buy & sell | /marketplace, listings, offers, requests, /saved | P2, P5 | 2026-07-27 | J3-1 fixed · J3-D1/D2 dismissed |
 | **J4** | Gate run | /gate, post, opt-in, claim, deliver, reward | P4, P2 | 2026-07-27 | J4-1 fixed |
 | **J5** | Clubs & events | /communities, /for-clubs, events, RSVP, check-in, analytics | P3, P1 | 2026-07-27 | J5-1 fixed · J5-2, J5-3 filed |
-| **J6** | Talk to people | /chats, usernames, contact boundaries, reporting | P5, P2 | — | — |
+| **J6** | Talk to people | /chats, usernames, contact boundaries, reporting | P5, P2 | 2026-07-27 | **J6-1 filed (S1)** |
 | **J7** | Split & share | /group-buy, /subscriptions, /cabs, /crews | P2, P5 | — | — |
 | **J8** | Spaces | Girls' Closet / Boys' Den, invites, vouching | P5, P1 | — | — |
 | **J9** | Come back | /notifications, push, "what changed since last time" | **P6**, P7 | — | — |
@@ -71,6 +71,51 @@ failure. Do not let J9 sit unwalked because J3 is more fun.
   known account + wrong password still returns `400 invalid_credentials` →
   "Invalid login credentials", i.e. good messages are not swallowed.
   `gate.mjs --build` PASS ×4.
+
+### J6-1 · The "you need their @username" rule is enforced in the UI only · **S1/E3** · P5 · **filed — needs your decision, deliberately NOT half-fixed**
+- **Your constraint, verbatim in STATE:** *"I dont want people to start using this
+  app to text anyone they want by searching their name on it"* and *"to contact
+  them, one should know their unique username"*.
+- **The UI honours it.** `/search?tab=people` says "People are found by their
+  exact @username — ask them for it", and searching a real student's NAME
+  ("Chiru") returns `Nothing on campus`. `find_by_username` (0037) is exact-match
+  only. Walked and confirmed.
+- **The API does not.** Probed as a plain student with a real role JWT:
+  `select count(*) from profiles` → **19 rows** (every same-college profile), and
+  `where name ilike '%a%'` → **16 rows**. The policy is
+  `profiles: same-college read → college_id = get_my_college_id()`, so partial
+  NAME search works fine directly against PostgREST with the public anon key plus
+  the student's own token.
+- **Chained with `find_or_create_dm`, that is the whole rule defeated.** That
+  function guards self-DM, cross-college (0067) and blocks — but it never checks
+  that the caller knew the username or has any relationship. So: enumerate names →
+  take the uuid → open a DM. Exactly the cold-DM-by-name-search the constraint
+  exists to prevent.
+- **Severity:** filed S1 despite not being a UX blocker, because it is a stated
+  *safety* boundary and the app advertises it as enforced. Mitigating context,
+  stated honestly: it is **not reachable by tapping around** — it needs devtools
+  or curl. This is a weaker-than-promised boundary, not an open door.
+- **Why I did not fix it in this pass:** the obvious guard (require a context, or
+  a shared community, or the exact username) is defeated by the fact that
+  `ctype`/`ctx` are caller-supplied and forgeable, so a partial guard is security
+  theatre. Doing it properly means per-context verification (is the caller really
+  the buyer on that listing / a member of that trip / …) across **6 call sites ×
+  3 forks**, plus threading the username through the search path. That exceeds
+  this journey's diff cap, and a wrong guard on messaging silently blocks real
+  conversations — worse than the current state.
+- **Recommended design, when you pick it up:**
+  1. Add `p_username text default null` to `find_or_create_dm`.
+  2. Allow the DM when ANY holds: a conversation already exists · caller and
+     target share a community or space · the caller is genuinely party to the
+     named context (verified per type, not trusted from the argument) ·
+     `lower(p_username)` equals the target's username.
+  3. Otherwise raise "you need their @username to start a chat".
+  4. Pass the username through from `/search`'s People result, which is the one
+     legitimate no-relationship path.
+- **Not recommended:** locking down the `profiles` SELECT policy. Names are read
+  on listings, rosters, chats and karma badges everywhere; restricting rows there
+  would break display across the app for no extra safety once the DM path is
+  guarded.
 
 ### J5-1 · Only ONE person could run check-in for a club event · **S2/E2** · P3 · **fixed**
 - **Found by the logic audit**, on the exact path `docs/LAUNCH.md` bets the launch
@@ -274,6 +319,7 @@ waiting for streaming to settle — you will invent an S1 that does not exist.**
 One line per journey. Newest last.
 
 <!-- POLISH-LOG -->
+2026-07-27 · J6 talk to people · 0 fixed / 1 filed (S1) · a journey where the UI is right and the API is not. /chats has a good empty state with a next action; the People tab correctly refuses NAME search and says to ask for the @username. But a plain student can read all 19 same-college profiles straight from PostgREST and filter them by partial name, then hand any uuid to find_or_create_dm — which never checks that you knew the username. The rule is client-side. Filed rather than half-fixed: ctype/ctx are caller-supplied so a quick guard is theatre, and the real fix is per-context verification across 6 call sites x 3 forks. NOT reachable by tapping around; needs devtools.
 2026-07-27 · J5 clubs & events · 1 fixed (S2) / 2 filed · UI is healthy — /events has a real empty state, /communities leads with the recruiting shelf, /for-clubs is a strong outreach page, no overflow at 390. The finding was again in the RULES and it sat directly on the launch path: only the event's original author could run barcode check-in, so a club could not put a volunteer or co-lead on the door. Fixed across all three guards. Also learned the hard way that grepping a function name here can return a STALE definition — 0043 had already replaced 0042's record_checkin with a wider return type.
 2026-07-27 · J4 gate run · 1 fixed (S2) · UI half is healthy: the runner opt-in shipped earlier today renders, toggles false→true and PERSISTS across navigation ("You're a gate runner"), proving the 0074 column grants were right; no overflow at 390 or 360; the empty state has personality ("someone's biryani always needs a hero"). The finding was again in the RULES, not the pixels — a runner who claims and then ghosts left the parcel stranded AND removed the job from the pool, with no reminder to anyone, because both existing escalation branches filter on a delivered_claimed_at that is still NULL in exactly that case.
 2026-07-27 · J3 buy & sell · 1 fixed (S2) / 2 dismissed · the UI walk found nothing wrong — empty states on /saved, /marketplace/mine and requests are all good, trust signals on a listing are strong (name + verified name + karma tier + ★3.7 rating + "Chat with seller" as the only contact path), no email/phone/WhatsApp-number leak in the page source, no overflow at 390 or 360. The finding came from the LOGIC audit instead: nothing resolved a pending offer when the listing sold, so the buyer sat in a dead end forever. Fixed in the DB so all three marketplace forks inherit it. Note for later: ZERO offers have ever been made in production — same shape as GateRunner's supply problem, worth a look once the marketplace has traffic.
