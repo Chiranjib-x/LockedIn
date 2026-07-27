@@ -60,6 +60,11 @@ is the set of things an agent must report rather than attempt.
 - `/hunt` — the discovery loop. Sweeps a feature beat at a time, confirms each
   suspect by reading code, fixes P0/P1, files P2/P3 to QUEUE. Ledger and coverage
   table live in `docs/FINDINGS.md`. `/loop` executes known work; `/hunt` finds it.
+- `/polish` — the product loop. Walks one user JOURNEY per pass through seven
+  student personas, audits each feature's rules for logical holes, then fixes what
+  it found as a senior engineer (severity × effort order). Ledger + journey table
+  in `docs/POLISH.md`. `/hunt` finds bugs from the code inward and only files
+  polish; `/polish` finds friction from the user inward and is allowed to fix it.
 - `node scripts/gate.mjs <app> [--build] [--no-lint]` — the verification gate.
   Exit 0 is the only thing that licenses a commit. Add `--build` before closing
   a phase. A `TIMEOUT` verdict means unknown, not passed.
