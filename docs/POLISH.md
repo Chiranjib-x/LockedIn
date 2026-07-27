@@ -31,7 +31,7 @@ Ordered by how many students hit them. A journey is walked only when it has been
 | # | Journey | Surfaces | Personas | Last walked | Findings |
 |---|---|---|---|---|---|
 | **J1** | **First run** — signup → first screen → "now what?" | signup, /home, onboarding, empty states | P1, P6, P7 | 2026-07-27 | J1-1 fixed · J1-2 filed · J1-D1 dismissed |
-| **J2** | Find your way | VIT Compass, /timetable, free windows, /search | P1, P7 | — | — |
+| **J2** | Find your way | VIT Compass, /timetable, free windows, /search | P1, P7 | 2026-07-27 | J2-1 fixed · J2-2 filed |
 | **J3** | Buy & sell | /marketplace, listings, offers, requests, /saved | P2, P5 | — | — |
 | **J4** | Gate run | /gate, post, opt-in, claim, deliver, reward | P4, P2 | — | — |
 | **J5** | Clubs & events | /communities, /for-clubs, events, RSVP, check-in, analytics | P3, P1 | — | — |
@@ -71,6 +71,46 @@ failure. Do not let J9 sit unwalked because J3 is more fun.
   known account + wrong password still returns `400 invalid_credentials` →
   "Invalid login credentials", i.e. good messages are not swallowed.
   `gate.mjs --build` PASS ×4.
+
+### J2-1 · Global search couldn't find a single campus building · **S1/E2** · P1 · **fixed**
+- **Hit while:** the fresher's most common question. Typed `SJT` into the search
+  bar that says **"Search campus…"** and got back:
+  `🤷 Nothing on campus for "SJT"` — while the DB held **48 human-verified
+  buildings including Silver Jubilee Tower**. The app knew the answer and denied it.
+- **Why S1:** it does not merely omit a result, it *asserts* the thing isn't on
+  campus. For P1 that is the single highest-frequency query in week one, and a
+  wrong "nothing here" teaches them the search box is useless.
+- **Cause:** `/search` queried listings, posts, group_orders, communities and
+  people. `campus_buildings` was never in the list, even though its RLS is
+  public-read (0065) so the mother app can read it freely.
+- **Fix:** a `Places` tab + a "Places on campus" section, matching **name OR aka**
+  (students say "SJT" and "TT", never the full name), rendered ABOVE the other
+  sections — someone searching a building wants the building, not a listing that
+  mentions it. Each result deep-links to `map.chiranjib.online/?b=<id>`, which
+  opens Compass with that pin already selected. With no query the tab is a
+  browsable campus directory, which is what a fresher wants before they know what
+  to search for. Reuses the established `replace(/[,()]/g," ")` sanitiser so the
+  previously-fixed PostgREST `or()` bug is not reintroduced.
+- **Also caught in the same pass, self-inflicted:** first render produced
+  **"Near Near Gate 3"**, because moderators type "Near Gate 3" into a field the
+  UI already prefixes with "Near". Now only prefixes when the value doesn't
+  already start with it.
+- **Evidence:** `q=SJT` → `Places on campus / Silver Jubilee Tower · SJT / Near
+  Gate 3` + `SJT Canteen · SJT Food Court`; `q=gate` → Gate 1A, Gate 2A/2;
+  Places tab with no query renders the directory. Tracked regression test added
+  (`e2e/search-places.spec.ts`) which seeds its own building through the admin
+  CMS and deletes it, so it survives the U10 cleanup. Full suite **8 passed**;
+  `gate.mjs lockedin --build` PASS. Mother app only — the two forks are
+  club/marketplace products and a campus directory is not their job.
+
+### J2-2 · Nickname search misses punctuated names · **S3/E1** · P1 · **filed**
+- `MGR` returns nothing, because the building is stored as `Dr. M.G.R Block` and
+  `ilike '%MGR%'` cannot span the dots. A fresher types the nickname without
+  punctuation every time.
+- **Fix when picked up:** strip non-alphanumerics from both sides before
+  comparing — e.g. an expression index on `regexp_replace(lower(name),'[^a-z0-9]','','g')`,
+  or a generated `search_key` column. Cheap, but it is a schema change (E1 code /
+  E3 if indexed), so not done inside a UI pass.
 
 ### J1-2 · Five 0-member chapters sit on a new student's home feed · **S3/E2** · P1, P6 · **filed — needs a product decision**
 - **Hit while:** first `/home` load as a zero-data fresher. The clubs shelf renders
@@ -114,4 +154,5 @@ waiting for streaming to settle — you will invent an S1 that does not exist.**
 One line per journey. Newest last.
 
 <!-- POLISH-LOG -->
+2026-07-27 · J2 find your way · 1 fixed (S1) / 1 filed · the headline: global search answered "Nothing on campus for SJT" while holding 48 verified buildings — places are now searchable by name AND nickname and deep-link into Compass. Clean on everything else: /timetable's zero-class state is good ("No classes today — enjoy it, or add your week below") with exactly one obvious next action and ZERO sub-44px targets at either width; search's no-results copy is good ("Try a different word — or post it yourself"); no horizontal overflow at 390 or 360 on any screen walked. Search's filter chips are 34px tall — already covered by QUEUE A35, not re-filed.
 2026-07-27 · J1 first run · 1 fixed / 1 filed / 1 dismissed · walked at 390×844 and 360×800 as a genuinely fresh zero-data VIT account (seeded at DB level because confirm-email is now ON, then deleted). No horizontal overflow at either width on any screen. Empty states on /timetable and /notifications are good ("No classes today — enjoy it, or add your week below"). Signup states the college-domain rule up front, before you can fail it. Sub-44px tap targets remain in the mother app's header + text links (logo 19px wide, avatar chip 36px, "Requests" 57×20, "Delete my account" 342×16) — QUEUE A16 did this pass for gaterunner+vitcompass only; filed as A35 rather than fixed here, since it is J-wide and not J1-specific.

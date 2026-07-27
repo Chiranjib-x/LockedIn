@@ -18,6 +18,7 @@ import { catLabel } from "@/modules/communities/categories";
 
 const TABS = [
   { key: "all", label: "All" },
+  { key: "places", label: "Places" },
   { key: "market", label: "Marketplace" },
   { key: "board", label: "Board" },
   { key: "clubs", label: "Clubs & Teams" },
@@ -25,11 +26,23 @@ const TABS = [
   { key: "people", label: "People" },
 ] as const;
 
+// Buildings live in VIT Compass, but the search bar says "Search campus…" and a
+// fresher's first question is "where is SJT?". Before this, that search answered
+// "Nothing on campus for SJT" while the DB held 48 verified buildings — the app
+// knew the answer and denied it. campus_buildings is public-read (0065), so the
+// mother app can resolve the name and hand off to the map.
+const COMPASS_URL = process.env.NEXT_PUBLIC_COMPASS_URL ?? "https://map.chiranjib.online";
+
 type Listing = { id: string; title: string; price: number; category: string; status: string };
 type Post = { id: string; title: string; type: string; status: string };
 type Order = { id: string; title: string; category: string; status: string };
 type Person = { id: string; name: string; verified_name: string | null; username: string; hostel_block: string | null; karma: number };
 type Club = { id: string; name: string; emoji: string; logo_url: string | null; category: string; description: string | null; recruiting: boolean; is_official: boolean };
+type Place = { id: string; name: string; aka: string | null; category: string; near_landmark: string | null };
+
+const PLACE_EMOJI: Record<string, string> = {
+  academic: "🎓", hostel: "🛏️", mess: "🍽️", sports: "⚽", admin: "🏛️", landmark: "📍",
+};
 
 export default async function SearchPage({
   searchParams,
@@ -47,9 +60,14 @@ export default async function SearchPage({
   let orders: Order[] = [];
   let people: Person[] = [];
   let clubs: Club[] = [];
+  let places: Place[] = [];
+
+  // Same sanitiser the marketplace/board searches use — a bare "," or "(" in the
+  // query breaks PostgREST's or() filter (fixed once already; see STATE).
+  const safeQ = query.replace(/[,()]/g, " ");
 
   if (query.length >= 2) {
-    const [l, p, o, u, cl] = await Promise.all([
+    const [l, p, o, u, cl, pl] = await Promise.all([
       want("market")
         ? supabase
             .from("listings")
@@ -85,16 +103,26 @@ export default async function SearchPage({
             .ilike("name", `%${query}%`)
             .limit(10)
         : Promise.resolve({ data: [] }),
+      // Match the nickname too — students say "SJT" and "TT", never the full name.
+      want("places")
+        ? supabase
+            .from("campus_buildings")
+            .select("id, name, aka, category, near_landmark")
+            .or(`name.ilike.%${safeQ}%,aka.ilike.%${safeQ}%`)
+            .order("sort_order")
+            .limit(10)
+        : Promise.resolve({ data: [] }),
     ]);
     listings = (l.data ?? []) as Listing[];
     posts = (p.data ?? []) as Post[];
     orders = (o.data ?? []) as Order[];
     people = (u.data ?? []) as Person[];
     clubs = (cl.data ?? []) as Club[];
+    places = (pl.data ?? []) as Place[];
   } else {
     // No query yet → browse recent items for the active tab, so the category
     // toggles actually filter (People stays username-only).
-    const [l, p, o, cl] = await Promise.all([
+    const [l, p, o, cl, pl] = await Promise.all([
       want("market")
         ? supabase
             .from("listings")
@@ -129,14 +157,25 @@ export default async function SearchPage({
             .order("created_at", { ascending: false })
             .limit(12)
         : Promise.resolve({ data: [] }),
+      // Browsable with no query: the Places tab is a campus directory, which is
+      // exactly what a fresher wants before they know what to search for.
+      want("places")
+        ? supabase
+            .from("campus_buildings")
+            .select("id, name, aka, category, near_landmark")
+            .order("sort_order")
+            .limit(12)
+        : Promise.resolve({ data: [] }),
     ]);
     listings = (l.data ?? []) as Listing[];
     posts = (p.data ?? []) as Post[];
     orders = (o.data ?? []) as Order[];
     clubs = (cl.data ?? []) as Club[];
+    places = (pl.data ?? []) as Place[];
   }
 
-  const total = listings.length + posts.length + orders.length + people.length + clubs.length;
+  const total =
+    listings.length + posts.length + orders.length + people.length + clubs.length + places.length;
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 px-4 py-6">
@@ -182,6 +221,42 @@ export default async function SearchPage({
         )
       ) : (
         <div className="flex flex-col gap-5">
+          {places.length > 0 && (
+            <section className="flex flex-col gap-2">
+              <h2 className="text-lg font-semibold">Places on campus</h2>
+              {places.map((b) => (
+                // Opens the pin already selected — VIT Compass honours /?b=<id>.
+                <a
+                  key={b.id}
+                  href={`${COMPASS_URL}/?b=${b.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="press"
+                >
+                  <Card className="flex items-center gap-3">
+                    <span className="text-xl">{PLACE_EMOJI[b.category] ?? "📍"}</span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-semibold">
+                        {b.name}
+                        {b.aka && <span className="font-normal text-muted-foreground"> · {b.aka}</span>}
+                      </p>
+                      <p className="truncate text-xs text-muted-foreground">
+                        {/* Moderators type "Near Gate 3" as often as "Gate 3" —
+                            don't render "Near Near Gate 3". */}
+                        {b.near_landmark
+                          ? /^near\b/i.test(b.near_landmark.trim())
+                            ? b.near_landmark
+                            : `Near ${b.near_landmark}`
+                          : "Tap to see it on the campus map"}
+                      </p>
+                    </div>
+                    <span className="shrink-0 text-sm font-medium text-primary">Map →</span>
+                  </Card>
+                </a>
+              ))}
+            </section>
+          )}
+
           {listings.length > 0 && (
             <section className="flex flex-col gap-2">
               <h2 className="text-lg font-semibold">Marketplace</h2>
