@@ -4,8 +4,13 @@ import CampusMap, { type Building } from "@/components/campus-map";
 // Buildings change via the moderator CMS, so don't cache the page.
 export const dynamic = "force-dynamic";
 
-export default async function Page() {
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ b?: string }>;
+}) {
   const supabase = createAnonClient();
+  const { b: focusId } = await searchParams;
 
   // VIT Compass is VIT-specific; scope to VIT Vellore's college row.
   const { data: college } = await supabase
@@ -25,5 +30,5 @@ export default async function Page() {
     buildings = (data ?? []).filter((b) => b.lat != null && b.lng != null) as Building[];
   }
 
-  return <CampusMap buildings={buildings} />;
+  return <CampusMap buildings={buildings} focusId={focusId} />;
 }

@@ -33,13 +33,24 @@ const ORDER: Category[] = ["academic", "hostel", "mess", "sports", "admin", "lan
 // VIT Vellore campus centre (Technology Tower), for the initial view.
 const CENTER: [number, number] = [79.1592, 12.9711];
 
-export default function CampusMap({ buildings }: { buildings: Building[] }) {
+export default function CampusMap({
+  buildings,
+  focusId,
+}: {
+  buildings: Building[];
+  focusId?: string;
+}) {
   const mapDiv = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const markersRef = useRef<maplibregl.Marker[]>([]);
   const [ready, setReady] = useState(false);
   const [filter, setFilter] = useState<Category | null>(null);
-  const [selected, setSelected] = useState<Building | null>(null);
+  // Deep-linked building opens with its sheet already up. Derived from props in a
+  // lazy initialiser rather than an effect: it's deterministic on both server and
+  // client so it can't hydration-mismatch, and setState-in-effect is banned here.
+  const [selected, setSelected] = useState<Building | null>(
+    () => buildings.find((x) => x.id === focusId) ?? null
+  );
   const [showWeek, setShowWeek] = useState(false);
 
   // Only categories that actually have buildings get a chip.
@@ -117,6 +128,20 @@ export default function CampusMap({ buildings }: { buildings: Building[] }) {
       markersRef.current.push(marker);
     }
   }, [filter, buildings, ready, focusBuilding]);
+
+  // Deep link: /?b=<building id> opens straight on that building with its sheet
+  // up. This is how an event ("where is this Gravitas thing?") points at a place
+  // — the organiser picks the building, so the pin is chosen, never guessed.
+  // Runs on first ready only; re-firing would fight the user's own panning.
+  useEffect(() => {
+    if (!ready || !focusId) return;
+    const b = buildings.find((x) => x.id === focusId);
+    const map = mapRef.current;
+    // Camera move only — the sheet is already open via the initialiser above, so
+    // nothing here touches state.
+    if (b && map) map.flyTo({ center: [b.lng, b.lat], zoom: 17, speed: 0.8 });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready]);
 
   return (
     <main className="fixed inset-0 overflow-hidden">

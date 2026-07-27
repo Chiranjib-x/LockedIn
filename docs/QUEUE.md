@@ -119,7 +119,17 @@ would agree. "Improve X" is not an item. "X passes Y" is.
 - **Evidence:**
 
 ### A11 · Phase 5d events overlay — decide, then do or close
+- **State:** done 2026-07-27 — decided, and the decision is recorded in STATE `## Decisions`.
+- **Decision:** **won't-do** the filed option (a), fuzzy-matching free-text venues onto buildings. `posts.location` is free text ("SJT Auditorium", "Room 214, K Block"); resolving it by name similarity guesses, and a confidently-wrong pin is worse than no pin — same reasoning as `coords_verified` defaulting false. Not option (b) either: closing it outright was wrong once LAUNCH.md made Gravitas the launch vehicle and Compass's job became "where is this event happening". Replacement is deterministic: the organiser **picks** the building, and the event links to Compass focused on it.
+- **Evidence:** shipped the self-contained half — VIT Compass now honours `/?b=<building id>`: it flies to that pin and opens its sheet, with the sheet's initial state derived in a lazy `useState` initialiser (deterministic from props, so no hydration mismatch, and no banned setState-in-effect; the effect does the camera move only). Probed against a live server: `curl "/?b=ce6d9292…"` → "Technology Tower" appears 3× in the SSR'd HTML (flight data + the open sheet) vs **1×** without the param. `node scripts/gate.mjs vitcompass --build` → `GATE PASS — 1 app(s), 3 check(s)`. Remaining half filed as **A34**.
+
+### A34 · Event → building picker, so events can point at a place on the map
 - **State:** open
+- **Blocked by:** nothing (A11's decision settles the approach)
+- **Why:** the deterministic replacement for A11's rejected fuzzy matching. Compass already accepts `/?b=<id>`; what's missing is a way for an event to carry a building. Directly serves `docs/LAUNCH.md` G-2w/G0, where clubs push Gravitas event pages and attendees need to find the venue.
+- **Do:** (1) migration — `alter table posts add column building_id uuid references campus_buildings(id) on delete set null` (additive, nullable; free-text `location` stays for off-campus and room-level detail). Next free number is **0074** — note 0066/0067 are already duplicated (FINDINGS F8), do not add a third. (2) Event form: optional building `<select>` populated from the author's college buildings. (3) Event detail page: when `building_id` is set, render a "📍 Find it on the campus map →" link to `https://map.chiranjib.online/?b=<building_id>`. Byte-identical event surfaces exist in campusclubs/campustrade — check with `md5sum` before echoing, they were NOT identical for google-auth-button.
+- **Done when:** an event created with a building selected renders the link, and following it opens Compass with that building's sheet already open — pasted, plus `gate.mjs --build` PASS on every app touched.
+- **Evidence:**
 - **Why:** deferred because "events have free-text venues, no coords". It stays on the list forever unless it's decided.
 - **Do:** two viable paths — (a) map free-text venues onto `campus_buildings` by fuzzy name at write time with a picker fallback, or (b) close the item as won't-do. Write the choice into STATE `## Decisions` with its reason either way. If the choice needs the user, this becomes user-gated: say so and move on.
 - **Done when:** either the overlay ships with venue→building resolution tested, or STATE `## Decisions` carries a dated won't-do line.
@@ -144,28 +154,32 @@ would agree. "Improve X" is not an item. "X passes Y" is.
 - **Evidence:**
 
 ### A14 · gaterunner: redirect an already-authenticated user away from /login and /signup
-- **State:** open
+- **State:** done 2026-07-26 (5af18fe)
+- **Evidence:** scope was wider than filed — `/login` and `/signup` rendered a login form to already-authenticated users in **all four** apps, not just gaterunner (F10 had only spotted the one). Server-side guard redirects to each app's home. Verified: typecheck PASS on lockedin/campusclubs/campustrade/gaterunner; logged-out `/login`+`/signup` still render their forms, logged-in both redirect to `/home`.
 - **Why:** FINDINGS F10 — `app/page.tsx` redirects a logged-in user to `/gate`; `app/login/page.tsx` and `app/signup/page.tsx` don't have the equivalent guard, so a bookmark/back-button visit shows the auth form under a "Log out" header.
 - **Do:** add `if (user) redirect("/gate")` (same pattern as the landing page) to the top of both pages. Check whether lockedin/campusclubs/campustrade's `/login`+`/signup` have the same gap while touching this (F10 only confirmed it in gaterunner).
 - **Done when:** a Playwright probe — real login, then `page.goto("/login")` and `page.goto("/signup")` — lands on `/gate` (or each app's home route) both times, pasted per app touched.
 - **Evidence:**
 
 ### A15 · gaterunner: pending/error state on gate lifecycle action buttons
-- **State:** open
+- **State:** done 2026-07-26 (0b9223b)
+- **Evidence:** `markDroppedOff`/`unclaimPickup`/`confirmDelivered`/`cancelPickup` discarded their Supabase error, so a failed action looked identical to a successful one. They now return a user-facing message; a shared `ActionButton` disables while in flight (no double-submit on a slow campus connection) and shows the failure inline. Buttons brought to `min-h-11` while touched. Verified: `node scripts/gate.mjs gaterunner` → PASS (typecheck + lint).
 - **Why:** FINDINGS F11 — `RunnerActions`/`RequesterActions` in `modules/gate/client.tsx` ("Dropped it off ✓", "Can't make it", "Received it ✓", "Cancel") mutate with no busy flag and no error surface, unlike `ClaimButton`/`RunnerNote` in the same file.
 - **Do:** add the same `useState` busy pattern already used by `ClaimButton`; have `markDroppedOff`/`confirmDelivered`/`cancelPickup` in `modules/gate/actions.ts` return the Supabase error (or a boolean) instead of discarding it, and show it inline on failure.
 - **Done when:** clicking each button disables it until the action resolves, and a forced failure (e.g. stale row) shows a message instead of silently no-op'ing — demonstrated in a Playwright spec or pasted manual run.
 - **Evidence:**
 
 ### A16 · Tap-target pass: gaterunner pill buttons + vitcompass map markers/chips
-- **State:** open
+- **State:** done 2026-07-26 (10c8396)
+- **Evidence:** 18px markers wrapped in a 44×44 **transparent** hit area (growing the dot itself would collide on a dense map); filter chips, the First-week button and the suite footer link brought to `min-h-11`; MapLibre's own 29px zoom/locate controls overridden to 44px. Verified: sub-44px sweep over every `button, a` returns **0** at 390×844 AND 360×800 (was 5); 24 markers still render, tap opens the detail sheet, no horizontal overflow; gate PASS.
 - **Why:** FINDINGS F12 — several controls measure under the 44×44px mobile tap-target guideline: gaterunner's "Cancel" (30px), "I'm heading to the gate" (34px), "＋ My delivery" link (36px); vitcompass's building markers (18×18px, the app's primary interaction) and category chips (30px).
 - **Do:** bump the gaterunner buttons to `min-h-11` (matches `ClaimButton`/`RunnerNote` convention already in the same file). For vitcompass markers, grow the invisible hit-area without growing the visual dot (dense-map overlap risk) — look at `vc_map_initial_390.png` before picking a size.
 - **Done when:** the `getBoundingClientRect` sub-44px sweep (`button, a` filtered `h<44 || w<44`) returns empty on `/gate` and vitcompass's `/` at both 390×844 and 360×800, pasted.
 - **Evidence:**
 
 ### A17 · vitcompass: empty state for zero-building colleges + token-based marker colours
-- **State:** open
+- **State:** done 2026-07-26 (10c8396)
+- **Evidence:** the 6 hardcoded marker hex colours now read design-system tokens (`var(--color-tint-*-fg)`) — they resolve fine in an inline style even though markers are imperative DOM. Adds a "no buildings mapped yet" state so a college with an empty map explains itself instead of showing a bare map. Gate PASS.
 - **Why:** FINDINGS F13 — `campus-map.tsx` has no `buildings.length === 0` branch (silently renders an empty map), and the six category marker colours are raw hex instead of referencing the `@theme` tokens (`academic`'s `#2251c7` duplicates the documented brand-cobalt token).
 - **Do:** add a "no buildings mapped yet" message gated on `buildings.length === 0`. For colours, since markers are imperative DOM (`document.createElement`, not JSX/Tailwind), read the values via `getComputedStyle(document.documentElement).getPropertyValue(...)` or inline `var(--color-x)` in the `cssText` — needs the actual token names from `app/globals.css` `@theme`, not a blind hex swap.
 - **Done when:** rendering with `buildings=[]` shows the message (test by stubbing the query), and `grep -c '#[0-9a-fA-F]\{6\}' apps/vitcompass/components/campus-map.tsx` is 0.
@@ -182,28 +196,32 @@ would agree. "Improve X" is not an item. "X passes Y" is.
 - **Evidence:**
 
 ### A21 · Truthiness-on-zero cleanup (FINDINGS F31)
-- **State:** open
+- **State:** done 2026-07-26 (5af18fe, fork echo 9791082)
+- **Evidence:** `addBoxItem` stored 1 when a lead explicitly entered quantity 0 (zero is falsy); group-buy's share input blanked at a real 0; `createSubscription` conflated "missing cost" with "zero cost" — now rejects 0 **deliberately**, with a message that says why. The three sites are byte-identical fork copies, so fixing the mother alone would have been new drift: echoed to campusclubs + campustrade in 9791082. Verified: typecheck PASS on all four apps.
 - **Why:** FINDINGS F31 — three small `0`-is-falsy bugs in B6: `modules/communities/actions.ts:404` (`addBoxItem` coerces an explicit quantity of `0` to `1`), `modules/groupbuy/client.tsx:32` (share amount input visually blanks at `0`), `modules/subscriptions/actions.ts:22` (rejects `total_cost = 0` as "required"). None are data-breaking, all match the CLAUDE.md "zero is data" iron rule.
 - **Do:** `addBoxItem` — `Number.isFinite(quantity) ? Math.max(0, Math.floor(quantity)) : 1` instead of `Math.floor(quantity) || 1`. `JoinForm` — decide whether a literal-zero display matters enough to fix (e.g. track a separate "touched" flag) or close as intentional. `createSubscription` — switch to an explicit `total == null || Number.isNaN(total)` check, or confirm rejecting `0` is deliberate product behaviour and close as won't-fix.
 - **Done when:** each of the three sites either has a passing before/after example pasted (input `0` → stored `0`), or a dated won't-fix note in STATE `## Decisions` for the ones that are deliberate.
 - **Evidence:**
 
 ### A30 · `/admin/showcase` empty state for Toolbox/Deals lists
-- **State:** open
+- **State:** done 2026-07-26 (228b890, as FINDINGS F40)
+- **Evidence:** `/admin/showcase` renders an empty-state line for Toolbox and Deals instead of blank. Gate PASS on lockedin/campusclubs/campustrade.
 - **Why:** FINDINGS F40 — `app/admin/showcase/page.tsx` renders nothing but the create-form when a college has 0 showcase items / 0 merchants, unlike the sibling `/admin/campus` CMS which already has "No buildings yet — add the first one above."
 - **Do:** add the same short empty-state message under each of the two sections (`items?.length === 0` / `merchants?.length === 0`). Byte-identical file in campusclubs/campustrade — fix all three in one commit.
 - **Done when:** a moderator account with 0 showcase items and 0 merchants sees an explicit "nothing here yet" message under each section, pasted per app.
 - **Evidence:**
 
 ### A31 · Pending/error state on moderation-queue and campus-CMS delete buttons
-- **State:** open
+- **State:** done 2026-07-26 (228b890, as FINDINGS F41)
+- **Evidence:** moderation (dismiss/remove/ban) and the campus-CMS delete discarded their errors and had no busy state — a failed moderation action looked identical to a successful one. They now return a message and use the same `ActionButton` wrapper as GateRunner (disabled in flight, failure inline); destructive ones gained a confirm. Gate PASS on lockedin/campusclubs/campustrade.
 - **Why:** FINDINGS F41 — `modules/moderation/mod-actions.tsx`'s `ReportActions` (Dismiss/Remove content/Ban user) and `modules/campus/admin-client.tsx`'s `BuildingRow` Delete button mutate with no busy flag and no error surfaced, same class as F11/A15 (gaterunner). The four underlying server actions (`dismissReport`/`removeContent`/`banUser`/`deleteBuilding`) also discard their Supabase/RPC error today.
 - **Do:** wire the same `useState` busy pattern `ReportSheet` already uses two files over; return the error string from each server action instead of discarding it, and show it inline on failure. `mod-actions.tsx` is byte-identical across lockedin/campusclubs/campustrade — fix all three; `admin-client.tsx` is lockedin-only.
 - **Done when:** clicking each button disables it until the action resolves, and a forced 0-row update (e.g. a report another moderator already actioned) shows a message instead of silently no-op'ing — demonstrated in a Playwright spec or pasted manual run.
 - **Evidence:**
 
 ### A32 · Header unread-notification badge staleness on the /notifications visit itself
-- **State:** open
+- **State:** done 2026-07-26 (228b890, as FINDINGS F42)
+- **Evidence:** the header's unread badge stayed stale for one page load because the page marked notifications read *during render*, after the header had already queried. Moved to a server action fired after mount which revalidates the layout — which also takes a write out of render. Live probe: badge showed 1, then cleared on the same load after visiting `/notifications`; probe row cleaned up.
 - **Why:** FINDINGS F42 — `components/header.tsx`'s `NotificationBell` runs an independent `read = false` count with no ordering guarantee against `app/notifications/page.tsx`'s own mark-all-read update in the same navigation; live-verified showing a stale "2" badge on the very page that just marked those two notifications read. Self-heals on the next navigation — low priority.
 - **Do:** either have the page's mark-read update run in a step the layout can also await, or move the badge count into a client component that revalidates off the same server action rather than an independent RSC query. Byte-identical in campusclubs/campustrade — fix all three if picked up.
 - **Done when:** the badge count on the page that visits `/notifications` matches the post-mark-read DB state within that same render, demonstrated with a before/after count pasted.
