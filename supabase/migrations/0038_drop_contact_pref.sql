@@ -1,3 +1,9 @@
+-- ⚠ NOT APPLIED. This file is tracked but has NEVER been run against the live
+-- database, and no agent may run it. It is QUEUE item U6: a destructive DDL that
+-- needs the user's explicit word. Every other migration in this directory is
+-- applied; this one is the exception. Do not assume the column is gone —
+-- profiles.contact_pref is still present (nullable, null, read by no code).
+--
 -- 0038: finish the WhatsApp-number removal — drop profiles.contact_pref.
 -- Deferred from 0037: dropping it while the old build still `select`ed the
 -- column 404'd every listing/post detail page ("Nothing here"). Safe now that
