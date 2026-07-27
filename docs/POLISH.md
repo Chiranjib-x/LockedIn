@@ -39,7 +39,7 @@ Ordered by how many students hit them. A journey is walked only when it has been
 | **J7** | Split & share | /group-buy, /subscriptions, /cabs, /crews | P2, P5 | 2026-07-27 | J7-1 fixed |
 | **J8** | Spaces | Girls' Closet / Boys' Den, invites, vouching | P5, P1 | 2026-07-27 | **isolation verified clean** · J8-1 filed · J8-D1 dismissed |
 | **J9** | Come back | /notifications, push, "what changed since last time" | **P6**, P7 | 2026-07-28 | **J9-1, J9-2 fixed** |
-| **J10** | Trust & safety | moderation, reports, bans, /delete-account, /privacy | P5 | — | — |
+| **J10** | Trust & safety | moderation, reports, bans, /delete-account, /privacy | P5 | 2026-07-28 | **verified clean** · J10-D1 dismissed |
 
 **J9 is the one that matters most.** The live signup curve — 3 on 07-13, 4 on
 07-14, 6 on 07-15, then 1, 1, 1 — is a retention failure, not an acquisition
@@ -369,6 +369,27 @@ not a dismissal.
 
 <!-- POLISH-DISMISSED -->
 
+### J10-D1 · "A VIT moderator can ban a Demo College student" — **dismissed, my probe measured the wrong thing**
+The first probe reported `VIT mod bans a DEMO user -> ALLOWED` and I very nearly
+filed it as a P0 tenancy leak. It was a false positive: the probe asked *"did the
+RPC raise?"* when the question was *"did anything change?"* — and I had explicitly
+called the state check "redundant" a step earlier, which is precisely what made
+it wrong.
+
+`mod_ban_user` is correctly scoped:
+`update profiles set is_banned = true where id = uid and college_id = mod_college;`
+A cross-college call matches 0 rows, so it returns without error and **changes
+nothing**. Re-probed on actual state: VIT mod → DEMO user = `ACTUALLY BANNED:
+false`; VIT mod → own-college user = `true`. Tenancy holds.
+
+Residual, not worth fixing: the cross-college call is a **silent no-op** rather
+than an error. It is unreachable from the UI anyway — `profiles` is same-college
+read, so a VIT moderator cannot even list a Demo student, and the moderation
+queue is college-scoped.
+
+**Lesson for the next pass: for an RPC that guards with a WHERE clause rather than
+a RAISE, absence of an exception proves nothing. Assert on the row.**
+
 ### J8-D1 · "`/spaces` is a dead end for non-members" — **dismissed, self-inflicted**
 Typing `/spaces` shows "Nothing here — this page doesn't exist, or you don't have
 access to it". That is because **there is no `/spaces` index route** (only
@@ -410,6 +431,7 @@ waiting for streaming to settle — you will invent an S1 that does not exist.**
 One line per journey. Newest last.
 
 <!-- POLISH-LOG -->
+2026-07-28 · J10 trust & safety · 0 fixed / 1 dismissed · VERIFIED CLEAN, and this one was probed hard because it is the journey where a miss is a safety failure. Bans are enforced in the DATABASE, not just the UI: NOT is_banned() sits in the WITH CHECK of the INSERT policies on listings, posts and messages — a banned user's insert is refused by RLS, with a non-banned control proving the probe valid. mod_ban_user is college-scoped and a plain student calling it is refused 'not a moderator'. /privacy is specific and dated, /delete-account names exactly what it removes and demands you type DELETE, and /admin/moderation refuses a plain student without confirming the route exists. One dismissal recorded — I briefly mis-read a scoped no-op as a cross-college ban leak because the probe asserted on exceptions instead of on rows.
 2026-07-28 · J9 come back · 2 fixed (S2, the retention journey) · THE HEADLINE NUMBER: 166 notifications generated across 12 users but only 1 push subscription across 18 real students. The app makes plenty of reasons to return; almost nobody can receive them. Two one-line causes, both in the opt-in card: "Not now" wrote the SAME key as "Enable" so a single day-one dismissal silenced it forever, and a DENIED or FAILED enable was written as success because the caller threw away a status string the helpers already return. Both fixed; the prompt now returns after 7 days and only a real subscription counts as decided. Best severity-per-effort find of the loop so far.
 2026-07-27 · J8 spaces · 0 fixed / 1 filed / 1 dismissed · THE ISOLATION IS AIRTIGHT and that is the headline: probed as a non-member with a real role JWT, an outsider sees space row 0, roster 0, listings 0, requests 0 — all four boundaries hold. Cross-space invite scoping also holds: a Boys' Den member minting an invite to Girls' Closet is refused with "not a member of this space", while their own space is allowed. Design note worth keeping: spaces carry NO gender column and space_members no role — membership is purely social via vouching, with no INSERT policy so every write goes through a definer RPC. That is the right call; gender is not reliably storable. Only gap is discoverability (J8-1), and it is blocked on F7.
 2026-07-27 · J7 split & share · 1 fixed (S2, money) · removing a subscription member never recalculated shares, so the owner silently ate the leaver's cost every cycle — fixed by surfacing the shortfall rather than re-splitting money people may already have paid. Both directions proven (warns when short, stays quiet when balanced). PROCESS CHANGE after the probe account was spotted in the live app mid-pass: the walk account is now named zz.polish.probe@ / 'ZZ PROBE — delete me' so it can never be mistaken for a student, and seed→walk→delete happens in one run instead of spanning steps.
