@@ -38,7 +38,7 @@ Ordered by how many students hit them. A journey is walked only when it has been
 | **J6** | Talk to people | /chats, usernames, contact boundaries, reporting | P5, P2 | 2026-07-27 | **J6-1 filed (S1)** |
 | **J7** | Split & share | /group-buy, /subscriptions, /cabs, /crews | P2, P5 | 2026-07-27 | J7-1 fixed |
 | **J8** | Spaces | Girls' Closet / Boys' Den, invites, vouching | P5, P1 | 2026-07-27 | **isolation verified clean** · J8-1 filed · J8-D1 dismissed |
-| **J9** | Come back | /notifications, push, "what changed since last time" | **P6**, P7 | — | — |
+| **J9** | Come back | /notifications, push, "what changed since last time" | **P6**, P7 | 2026-07-28 | **J9-1, J9-2 fixed** |
 | **J10** | Trust & safety | moderation, reports, bans, /delete-account, /privacy | P5 | — | — |
 
 **J9 is the one that matters most.** The live signup curve — 3 on 07-13, 4 on
@@ -71,6 +71,43 @@ failure. Do not let J9 sit unwalked because J3 is more fun.
   known account + wrong password still returns `400 invalid_credentials` →
   "Invalid login credentials", i.e. good messages are not swallowed.
   `gate.mjs --build` PASS ×4.
+
+### J9-1 · "Not now" on the push prompt was permanent · **S2/E1** · P6 · **fixed**
+### J9-2 · A failed "Enable" was recorded as success · **S2/E1** · P6 · **fixed**
+- **The number that started it:** **166 notifications** generated across 12 users,
+  and **1 push subscription across 18 real students.** The app is producing plenty
+  of reasons to come back; 17 of 18 students only ever see them *if they are
+  already in the app*. A bell that rings only when you are already in the room —
+  which is precisely the retention flatline the signup curve shows.
+- **J9-1:** the "✕ Not now" button wrote the **same `DONE_KEY`** as "Enable". One
+  dismissal — almost always on day one, before you have a single chat, parcel or
+  class, i.e. **before push has any value at all** — silenced the prompt on every
+  page, forever. The code comment called this "one decision, remembered forever";
+  it was conflating *yes* with *not right now*.
+- **J9-2:** `Enable` awaited the subscribe and then unconditionally wrote
+  `DONE_KEY` and dismissed. The helpers **already return**
+  `"subscribed" | "denied" | "unsupported" | "failed"` — the caller **discarded
+  the status**. So a denied permission or a failed subscribe was recorded as a
+  completed decision and never asked again. Same class as J1-1: a failure
+  silently treated as a success.
+- **Fix:** `DONE_KEY` is now written **only** on `status === "subscribed"`.
+  Anything else surfaces an actionable message (blocked → how to unblock;
+  unsupported → add to home screen) and leaves the prompt live. "✕" writes a
+  separate `SNOOZE_KEY` timestamp and the card returns after **7 days**, once the
+  app has actually given them a reason.
+- **Caught by C5 mid-fix:** I first wrote `if (ok === false)`, assuming a boolean.
+  The helpers return a string union, so that guard would **never** have fired and
+  I would have shipped the exact bug I was fixing. Pasting the real signature is
+  the only reason this works.
+- **`LOADED_AT` is module-scope on purpose:** `useSyncExternalStore` calls
+  `getSnapshot` repeatedly during render, and reading `Date.now()` in there is how
+  you get a render loop. Captured once per page load; re-asking one page load
+  later is the right granularity anyway.
+- **Evidence:** `gate.mjs --build` PASS on all four apps; full suite **8 passed
+  (55.9s)**. Fork echo: clubs/trade were identical apart from a context key so
+  they were `cp`'d back to identical; **gaterunner was hand-ported** — it has no
+  `context` prop, different imports, its own `gr-` key prefix, and its helpers
+  take an app argument.
 
 ### J8-1 · The landing page sells two spaces a new student cannot find · **S2/E2** · P1 · **filed — blocked on F7**
 - `app/page.tsx` markets **Girls' Closet** and **Boys' Den** hard: their own titles
@@ -373,6 +410,7 @@ waiting for streaming to settle — you will invent an S1 that does not exist.**
 One line per journey. Newest last.
 
 <!-- POLISH-LOG -->
+2026-07-28 · J9 come back · 2 fixed (S2, the retention journey) · THE HEADLINE NUMBER: 166 notifications generated across 12 users but only 1 push subscription across 18 real students. The app makes plenty of reasons to return; almost nobody can receive them. Two one-line causes, both in the opt-in card: "Not now" wrote the SAME key as "Enable" so a single day-one dismissal silenced it forever, and a DENIED or FAILED enable was written as success because the caller threw away a status string the helpers already return. Both fixed; the prompt now returns after 7 days and only a real subscription counts as decided. Best severity-per-effort find of the loop so far.
 2026-07-27 · J8 spaces · 0 fixed / 1 filed / 1 dismissed · THE ISOLATION IS AIRTIGHT and that is the headline: probed as a non-member with a real role JWT, an outsider sees space row 0, roster 0, listings 0, requests 0 — all four boundaries hold. Cross-space invite scoping also holds: a Boys' Den member minting an invite to Girls' Closet is refused with "not a member of this space", while their own space is allowed. Design note worth keeping: spaces carry NO gender column and space_members no role — membership is purely social via vouching, with no INSERT policy so every write goes through a definer RPC. That is the right call; gender is not reliably storable. Only gap is discoverability (J8-1), and it is blocked on F7.
 2026-07-27 · J7 split & share · 1 fixed (S2, money) · removing a subscription member never recalculated shares, so the owner silently ate the leaver's cost every cycle — fixed by surfacing the shortfall rather than re-splitting money people may already have paid. Both directions proven (warns when short, stays quiet when balanced). PROCESS CHANGE after the probe account was spotted in the live app mid-pass: the walk account is now named zz.polish.probe@ / 'ZZ PROBE — delete me' so it can never be mistaken for a student, and seed→walk→delete happens in one run instead of spanning steps.
 2026-07-27 · J6 talk to people · 0 fixed / 1 filed (S1) · a journey where the UI is right and the API is not. /chats has a good empty state with a next action; the People tab correctly refuses NAME search and says to ask for the @username. But a plain student can read all 19 same-college profiles straight from PostgREST and filter them by partial name, then hand any uuid to find_or_create_dm — which never checks that you knew the username. The rule is client-side. Filed rather than half-fixed: ctype/ctx are caller-supplied so a quick guard is theatre, and the real fix is per-context verification across 6 call sites x 3 forks. NOT reachable by tapping around; needs devtools.
