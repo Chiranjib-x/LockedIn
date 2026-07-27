@@ -32,7 +32,7 @@ Ordered by how many students hit them. A journey is walked only when it has been
 |---|---|---|---|---|---|
 | **J1** | **First run** — signup → first screen → "now what?" | signup, /home, onboarding, empty states | P1, P6, P7 | 2026-07-27 | J1-1 fixed · J1-2 filed · J1-D1 dismissed |
 | **J2** | Find your way | VIT Compass, /timetable, free windows, /search | P1, P7 | 2026-07-27 | J2-1 fixed · J2-2 filed |
-| **J3** | Buy & sell | /marketplace, listings, offers, requests, /saved | P2, P5 | — | — |
+| **J3** | Buy & sell | /marketplace, listings, offers, requests, /saved | P2, P5 | 2026-07-27 | J3-1 fixed · J3-D1/D2 dismissed |
 | **J4** | Gate run | /gate, post, opt-in, claim, deliver, reward | P4, P2 | — | — |
 | **J5** | Clubs & events | /communities, /for-clubs, events, RSVP, check-in, analytics | P3, P1 | — | — |
 | **J6** | Talk to people | /chats, usernames, contact boundaries, reporting | P5, P2 | — | — |
@@ -71,6 +71,32 @@ failure. Do not let J9 sit unwalked because J3 is more fun.
   known account + wrong password still returns `400 invalid_credentials` →
   "Invalid login credentials", i.e. good messages are not swallowed.
   `gate.mjs --build` PASS ×4.
+
+### J3-1 · A pending offer on a sold listing was a dead end · **S2/E2** · P2 · **fixed**
+- **Found by the logic audit, not the UI walk** — the screens all look fine. The
+  rules did not: `listings` had one trigger (saved-search matching), `offers` had
+  one (the 0068 transition guard), and **neither resolves an offer when the
+  listing is marked sold.**
+- **The buyer's actual path:** make an offer → seller sells to someone else →
+  the offer stays `pending` **forever**, no notification, and offers surface
+  *only* on the listing detail page (there is no "my offers" screen), so the only
+  way to discover it is to revisit that exact listing and notice a live offer on
+  a sold item. A state with no legal next action.
+- **Fix — at the DB, not the app:** `0075` adds `close_offers_on_sold`, an AFTER
+  UPDATE trigger on `listings` that declines every pending/countered offer the
+  moment status becomes `sold` and notifies each buyer with the amount and a link.
+  Chosen over an app-layer fix because three forks each own a marketplace surface
+  and `setSold()` is a plain table update in all of them — the trigger closes it
+  once for every caller, including direct PostgREST writes. **Zero app-code
+  changes.**
+- **Guarded against the obvious regression:** re-listing (`sold → available`)
+  must not resurrect declined offers or re-notify, since the buyer was already
+  told. The trigger fires only on the transition *into* sold.
+- **Evidence** (probes inside a rolled-back transaction): pending offer after
+  sold → `declined`; **1** notification, to the buyer, reading
+  `"ZZ probe cycle" was sold — your ₹900 offer is closed.`; relist+resell →
+  status still `declined`, **0** extra notifications. `gate.mjs lockedin --build`
+  PASS; full suite **8 passed**; DB clean afterwards (0 probe listings).
 
 ### J2-1 · Global search couldn't find a single campus building · **S1/E2** · P1 · **fixed**
 - **Hit while:** the fresher's most common question. Typed `SJT` into the search
@@ -137,6 +163,23 @@ not a dismissal.
 
 <!-- POLISH-DISMISSED -->
 
+### J3-D1 · "A WhatsApp button on the listing page violates the no-WhatsApp constraint" — **dismissed**
+The listing detail does render a **WhatsApp** button, and STATE carries the
+verbatim rule *"i dont want anyone to share their whatsapp number like so easily"*.
+Traced it before acting: `components/share-button.tsx:49` is
+`https://wa.me/?text=<title> — <public link>` — **no phone number in the URL**. It
+opens WhatsApp's share sheet so the user picks a recipient, i.e. it shares a
+public listing link, not anyone's contact details. The constraint was about
+exposing your own number as a contact method, which remains removed. Not a
+violation. Recorded so a future pass does not "fix" a working share button.
+
+### J3-D2 · "`setSold` has no ownership check" — **dismissed**
+`modules/marketplace/actions.ts:130` updates `listings.status` filtered only by
+`id`, with no `.eq("seller_id", user.id)`. Checked the DB rather than assuming:
+policy `listings: seller update` is `USING (seller_id = auth.uid())`, so a
+non-owner's update affects 0 rows, and the control is never rendered to a
+non-owner anyway. Defence-in-depth would be nice, not a finding.
+
 ### J1-D1 · "`/home` renders completely blank for a new student" — **dismissed, measurement artifact**
 First walk reported `main` innerText as **empty** at both 390 and 360, which looked
 like the flagship S1 this loop exists to catch. It was wrong: `/home` streams its
@@ -154,5 +197,6 @@ waiting for streaming to settle — you will invent an S1 that does not exist.**
 One line per journey. Newest last.
 
 <!-- POLISH-LOG -->
+2026-07-27 · J3 buy & sell · 1 fixed (S2) / 2 dismissed · the UI walk found nothing wrong — empty states on /saved, /marketplace/mine and requests are all good, trust signals on a listing are strong (name + verified name + karma tier + ★3.7 rating + "Chat with seller" as the only contact path), no email/phone/WhatsApp-number leak in the page source, no overflow at 390 or 360. The finding came from the LOGIC audit instead: nothing resolved a pending offer when the listing sold, so the buyer sat in a dead end forever. Fixed in the DB so all three marketplace forks inherit it. Note for later: ZERO offers have ever been made in production — same shape as GateRunner's supply problem, worth a look once the marketplace has traffic.
 2026-07-27 · J2 find your way · 1 fixed (S1) / 1 filed · the headline: global search answered "Nothing on campus for SJT" while holding 48 verified buildings — places are now searchable by name AND nickname and deep-link into Compass. Clean on everything else: /timetable's zero-class state is good ("No classes today — enjoy it, or add your week below") with exactly one obvious next action and ZERO sub-44px targets at either width; search's no-results copy is good ("Try a different word — or post it yourself"); no horizontal overflow at 390 or 360 on any screen walked. Search's filter chips are 34px tall — already covered by QUEUE A35, not re-filed.
 2026-07-27 · J1 first run · 1 fixed / 1 filed / 1 dismissed · walked at 390×844 and 360×800 as a genuinely fresh zero-data VIT account (seeded at DB level because confirm-email is now ON, then deleted). No horizontal overflow at either width on any screen. Empty states on /timetable and /notifications are good ("No classes today — enjoy it, or add your week below"). Signup states the college-domain rule up front, before you can fail it. Sub-44px tap targets remain in the mother app's header + text links (logo 19px wide, avatar chip 36px, "Requests" 57×20, "Delete my account" 342×16) — QUEUE A16 did this pass for gaterunner+vitcompass only; filed as A35 rather than fixed here, since it is J-wide and not J1-specific.
