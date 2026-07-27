@@ -32,7 +32,6 @@ import FreshListings from "@/modules/feed/fresh-listings";
 import BoardHighlights from "@/modules/feed/board-highlights";
 import GroupBuysClosing from "@/modules/feed/group-buys-closing";
 import FreeWindow from "@/modules/feed/free-window";
-import QuantaBanner from "@/modules/communities/quanta-banner";
 import { InstallPrompt } from "@/components/pwa";
 
 // Personalized home feed (Phase 26, pulled forward). The chip row below is
@@ -302,7 +301,6 @@ export default async function HomePage() {
         <FreeWindow />
       </Suspense>
 
-      <QuantaBanner />
 
       <Suspense fallback={<SkeletonSection />}>
         <RecentChats />

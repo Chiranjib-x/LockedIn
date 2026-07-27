@@ -241,7 +241,7 @@ failure. Do not let J9 sit unwalked because J3 is more fun.
 - **Recommendation:** either name Gravitas if the same rules apply, or drop the
   event name entirely so the sentence stops rotting every semester.
 
-### J5-3 · Dead Quanta banner still imported by four surfaces · **S4/E1** · — · **filed**
+### J5-3 · Dead Quanta banner still imported by four surfaces · **S4/E1** · — · **fixed 2026-07-28**
 - `modules/communities/quanta-banner.tsx` hard-codes `QUANTA_END = 2026-07-19`
   and its own comment says *"delete after 2026-07-18"*. It now returns `null`
   unconditionally, but is still imported and rendered by
@@ -484,7 +484,7 @@ Gated behind all ten journeys, per `.claude/commands/polish.md`.
   `SpeederLoader`, which Next uses for any segment without its own. `error.tsx`
   and `not-found.tsx` both exist. No blank page, no layout shift.
 
-### 4 · Dead weight — **awaiting approval**
+### 4 · Dead weight — **done 2026-07-28**
 `QuantaBanner` (J5-3) has returned `null` unconditionally since 19 July and its
 own comment says delete it. C14 three-grep proof is clean: 13 bare-name hits
 (3 definitions, 5 imports, 5 render sites), **0** dynamic dispatch, **0** barrel

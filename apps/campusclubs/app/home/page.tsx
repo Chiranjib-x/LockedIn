@@ -6,7 +6,6 @@ import { istNow, istTodayISO } from "@/modules/timetable/helpers";
 import { SkeletonSection } from "@suite/ui";
 import LeaderStrip from "@/modules/feed/leader-strip";
 import ClubsStrip from "@/modules/feed/clubs-strip";
-import QuantaBanner from "@/modules/communities/quanta-banner";
 import { InstallPrompt } from "@/components/pwa";
 
 // CampusClubs home = leaders' command center + two flagship shelves (clubs,
@@ -144,7 +143,6 @@ export default async function HomePage() {
 
       <InstallPrompt />
 
-      <QuantaBanner />
     </main>
   );
 }

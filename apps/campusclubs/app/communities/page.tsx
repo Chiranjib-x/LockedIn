@@ -4,7 +4,6 @@ import { requireUser } from "@/lib/auth";
 import { Card } from "@suite/ui";
 import { EmptyState } from "@suite/ui";
 import { ApproveButtons } from "@/modules/communities/client";
-import QuantaBanner from "@/modules/communities/quanta-banner";
 import { CATEGORY_META, catGroup } from "@/modules/communities/categories";
 import { dismissDeletionRequest } from "@/modules/communities/actions";
 
@@ -84,7 +83,6 @@ export default async function CommunitiesPage({
         </Link>
       </div>
 
-      <QuantaBanner />
 
       <Link href="/for-clubs" className="press">
         <Card className="flex items-center justify-between gap-3 border-primary/30 bg-gradient-to-r from-primary/10 to-accent/5 transition-all duration-150 hover:-translate-y-0.5 hover:border-primary hover:shadow-md">
