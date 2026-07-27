@@ -35,7 +35,7 @@ Ordered by how many students hit them. A journey is walked only when it has been
 | **J3** | Buy & sell | /marketplace, listings, offers, requests, /saved | P2, P5 | 2026-07-27 | J3-1 fixed · J3-D1/D2 dismissed |
 | **J4** | Gate run | /gate, post, opt-in, claim, deliver, reward | P4, P2 | 2026-07-27 | J4-1 fixed |
 | **J5** | Clubs & events | /communities, /for-clubs, events, RSVP, check-in, analytics | P3, P1 | 2026-07-27 | J5-1 fixed · J5-2, J5-3 filed |
-| **J6** | Talk to people | /chats, usernames, contact boundaries, reporting | P5, P2 | 2026-07-27 | **J6-1 filed (S1)** |
+| **J6** | Talk to people | /chats, usernames, contact boundaries, reporting | P5, P2 | 2026-07-28 | **J6-1 fixed (S1)** |
 | **J7** | Split & share | /group-buy, /subscriptions, /cabs, /crews | P2, P5 | 2026-07-27 | J7-1 fixed |
 | **J8** | Spaces | Girls' Closet / Boys' Den, invites, vouching | P5, P1 | 2026-07-28 | **isolation verified clean** · **J8-1 fixed** · J8-D1 dismissed |
 | **J9** | Come back | /notifications, push, "what changed since last time" | **P6**, P7 | 2026-07-28 | **J9-1, J9-2 fixed** |
@@ -157,7 +157,7 @@ failure. Do not let J9 sit unwalked because J3 is more fun.
   the 0051 owner-guard trigger holds even against a direct DB connection, because
   `auth.uid()` is null outside a session.
 
-### J6-1 · The "you need their @username" rule is enforced in the UI only · **S1/E3** · P5 · **filed — needs your decision, deliberately NOT half-fixed**
+### J6-1 · The "you need their @username" rule is enforced in the UI only · **S1/E3** · P5 · **fixed 2026-07-28 (0078)**
 - **Your constraint, verbatim in STATE:** *"I dont want people to start using this
   app to text anyone they want by searching their name on it"* and *"to contact
   them, one should know their unique username"*.
