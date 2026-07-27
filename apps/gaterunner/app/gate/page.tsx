@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Footprints } from "lucide-react";
 import { requireUser } from "@suite/auth/auth";
 import { Card } from "@suite/ui";
-import { ClaimButton, RunnerActions, RequesterActions, HeadingToGate, RunnerNote } from "@/modules/gate/client";
+import { ClaimButton, RunnerActions, RequesterActions, HeadingToGate, RunnerNote, RunnerOptIn } from "@/modules/gate/client";
 import { EmptyState } from "@suite/ui";
 import PushOptIn from "@/components/push-opt-in";
 
@@ -62,6 +62,12 @@ type Row = {
 export default async function GatePage() {
   const { supabase, user } = await requireUser();
 
+  const { data: me } = await supabase
+    .from("profiles")
+    .select("gate_alerts")
+    .eq("id", user.id)
+    .single();
+
   const { data } = await supabase
     .from("pickup_requests")
     .select(
@@ -88,6 +94,8 @@ export default async function GatePage() {
       </div>
 
       <PushOptIn />
+
+      <RunnerOptIn enabled={me?.gate_alerts ?? false} />
 
       {mine.length > 0 && (
         <section className="flex flex-col gap-2">

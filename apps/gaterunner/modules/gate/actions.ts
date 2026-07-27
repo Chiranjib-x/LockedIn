@@ -74,6 +74,19 @@ export async function announceGateRun(gate: string) {
   return `Pinged ${n} ${n === 1 ? "person" : "people"} waiting on parcels 🎉`;
 }
 
+// Standing opt-in to be pinged when someone posts a pickup (0074). This is the
+// supply side of the app: before it existed, a request notified nobody and
+// every unclaimed one just expired.
+export async function setGateAlerts(on: boolean) {
+  const { supabase, user } = await ctx();
+  const { error } = await supabase
+    .from("profiles")
+    .update({ gate_alerts: on })
+    .eq("id", user.id);
+  revalidatePath("/gate");
+  return error ? "Couldn't save that — try again." : null;
+}
+
 export async function markDroppedOff(id: string) {
   const { supabase, user } = await ctx();
   const { error } = await supabase

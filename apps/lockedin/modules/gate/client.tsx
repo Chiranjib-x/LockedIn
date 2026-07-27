@@ -4,7 +4,53 @@ import { useState } from "react";
 import { inputClass } from "@suite/ui";
 import { UpiPay } from "@suite/ui";
 import { useRefresh } from "@suite/lib/use-refresh";
-import { claimPickup, unclaimPickup, confirmDelivered, cancelPickup, markDroppedOff, announceGateRun } from "./actions";
+import { claimPickup, unclaimPickup, confirmDelivered, cancelPickup, markDroppedOff, announceGateRun, setGateAlerts } from "./actions";
+
+// The supply side. Before 0074, posting a pickup notified nobody — a runner had
+// to already have the app open at the exact moment they were walking to the
+// gate, which is why 23 of 23 cancelled requests were never claimed. Opting in
+// is what turns someone into a runner.
+export function RunnerOptIn({ enabled }: { enabled: boolean }) {
+  const refresh = useRefresh();
+  const [on, setOn] = useState(enabled);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  return (
+    <div className={`flex flex-col gap-2 rounded-2xl border p-3 ${on ? "border-accent/40 bg-accent/5" : "border-border bg-card"}`}>
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <p className="font-semibold">{on ? "🏃 You're a gate runner" : "🏃 Become a gate runner"}</p>
+          <p className="text-sm text-muted-foreground">
+            {on
+              ? "You'll get a ping when someone needs a parcel picked up. Grab the ones that suit your walk."
+              : "Get a ping when someone needs a parcel picked up. Earn ₹ and karma for walks you're already taking."}
+          </p>
+        </div>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={on}
+          aria-label="Notify me about gate pickups"
+          disabled={busy}
+          onClick={async () => {
+            const next = !on;
+            setBusy(true);
+            setErr(null);
+            const e = await setGateAlerts(next);
+            setBusy(false);
+            if (e) { setErr(e); return; }
+            setOn(next);
+            refresh();
+          }}
+          className={`press relative h-7 w-12 shrink-0 rounded-full transition-colors disabled:opacity-50 ${on ? "bg-accent" : "bg-border"}`}
+        >
+          <span className={`absolute top-1 h-5 w-5 rounded-full bg-card transition-all ${on ? "left-6" : "left-1"}`} />
+        </button>
+      </div>
+      {err && <p className="text-sm text-destructive">{err}</p>}
+    </div>
+  );
+}
 
 export function HeadingToGate({ gate }: { gate: string }) {
   const [msg, setMsg] = useState<string | null>(null);
