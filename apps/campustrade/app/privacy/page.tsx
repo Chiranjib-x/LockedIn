@@ -42,7 +42,10 @@ const SECTIONS: { h: string; body: string[] }[] = [
   },
   {
     h: "Contact",
-    body: ["Questions or deletion requests: chiranjib.dash2024@vitstudent.ac.in"],
+    body: [
+      "Fastest: message @chiranjib_x on Instagram — instagram.com/chiranjib_x",
+      "Questions or deletion requests: chiranjib.dash2024@vitstudent.ac.in",
+    ],
   },
 ];
 

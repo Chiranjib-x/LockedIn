@@ -149,6 +149,17 @@ export default async function ProfilePage({
 
       <LogoutButton />
 
+      {/* Students had no route to a human anywhere in the app — the banned
+          banner said "contact an admin" with nothing to tap. */}
+      <a
+        href="https://www.instagram.com/chiranjib_x/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="press text-center text-xs text-muted-foreground underline hover:text-foreground"
+      >
+        Something broken or unfair? Message @chiranjib_x on Instagram
+      </a>
+
       <Link
         href="/delete-account"
         className="press text-center text-xs text-muted-foreground underline hover:text-destructive"

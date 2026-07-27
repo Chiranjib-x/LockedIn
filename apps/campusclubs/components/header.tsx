@@ -73,7 +73,11 @@ export default async function Header() {
     <>
     {prof?.is_banned && (
       <div className="bg-destructive px-4 py-2 text-center text-sm font-medium text-on-destructive">
-        Your account is restricted — you can browse but can’t post or message. Contact an admin if this is a mistake.
+        Your account is restricted — you can browse but can’t post or message.{" "}
+        <a href="https://www.instagram.com/chiranjib_x/" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">
+          Message @chiranjib_x on Instagram
+        </a>{" "}
+        if this is a mistake.
       </div>
     )}
     <header className="glass sticky top-0 z-10 flex items-center justify-between rounded-none border-x-0 border-t-0 px-4 py-2">
