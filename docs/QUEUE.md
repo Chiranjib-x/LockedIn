@@ -267,13 +267,10 @@ done** — the funnel is broken at the top until U4 lands, and every later stage
 first impressions that cannot be re-spent. IDs below are the same items listed further
 down, re-ordered by launch dependency (not renumbered).
 
-1. **U4** — the signup funnel. Google provider (button is live and *errors* today),
-   Confirm email back on, deep-link schemes allow-listed. Nothing else matters first.
-2. **U5** — rotate the two leaked credentials *before* inviting a campus in.
-3. **U10** — delete the `gmail.com` seed college + test accounts. A real student
-   seeing "Demo College" in the picker is an instant credibility loss.
-4. **F7 follow-through** — mint founding invites for Girls' Closet + Boys' Den at
-   `/admin/spaces` (both at 0 members). Bootstrap RPCs shipped in 0070/0071.
+1. ~~**U4** — the signup funnel~~ ✅ **DONE, verified live 2026-07-27**: `/auth/v1/authorize?provider=google` returns **302 → accounts.google.com** with a real client_id; settings report `google: true`; `mailer_autoconfirm: false` (confirm-email is ON); all four deep-link schemes survive the authorize round-trip un-stripped, i.e. allow-listed (`com.lockedin.{campus,gaterunner,campusclubs,campustrade}://auth/callback`); `disable_signup: false`.
+2. **U5** — rotate the two leaked credentials *before* inviting a campus in. **Still open** and not verifiable from here (needs the Vercel + Firebase dashboards).
+3. ~~**U10** — `gmail.com` seed college~~ ✅ **effectively done**: `colleges` now holds only `VIT Vellore → vitstudent.ac.in` and `Demo College → demo.invalid`. `demo.invalid` cannot receive mail, so no one can sign up into Demo College. Remaining tidy-up (optional, not a blocker): 7 non-`@vitstudent` test accounts still exist.
+4. **F7 follow-through** — ⚠️ **STILL OPEN, and it is now the only product-side blocker left.** Live counts: VIT Vellore **Girls' Closet = 0 members**, VIT Vellore Boys' Den = 1. (Demo College's two are fine at 2 each — irrelevant.) Mint a founding invite for VIT's Girls' Closet at `/admin/spaces`; bootstrap RPCs shipped in 0070/0071. A gendered space that opens empty to its first real user is worse than not shipping it.
 5. ~~**U7** — VIT building coordinates~~ ✅ **DONE 2026-07-27**: 48 buildings, all 48
    `coords_verified`, none missing coordinates. Compass runs on verified pins now.
 6. **U11 · Neutral domain** *(new)* — `map.chiranjib.online` pasted to 200 strangers

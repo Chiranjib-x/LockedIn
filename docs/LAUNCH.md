@@ -56,6 +56,21 @@ Katpadi Friday?"* lost in 40 messages; no way to run an event's attendance.
 
 ## Stage 0 — Unblock the funnel (blocking; nothing below matters first)
 
+> **STATUS 2026-07-27 (verified against the live project, not assumed):** U4 ✅ done
+> (Google provider returns 302→accounts.google.com, confirm-email ON, all four
+> deep-link schemes allow-listed). U7 ✅ done (48 buildings, all 48 coords_verified).
+> U10 ✅ effectively done (`gmail.com` is gone; only `vitstudent.ac.in` and the
+> unregisterable `demo.invalid` remain). **Still open: U5** (rotate leaked creds),
+> **F7** (VIT's Girls' Closet has 0 members), **U11** (neutral domain).
+>
+> **AND THE PLAN'S "no users yet" PREMISE IS DEAD:** there are already **18 real
+> `@vitstudent` accounts**. Signups: 3 on 07-13, 4 on 07-14, 6 on 07-15, then 1 on
+> 07-16, 1 on 07-22, 1 on 07-27. That shape — a burst, then flatline — is the exact
+> failure this plan is built to avoid, and it happened before any deliberate
+> distribution. Treat those 18 as the beachhead to re-activate, not as strangers to
+> acquire: find out how many of them ever came back, because that number IS the D7
+> gate below, measured on real users instead of projected.
+
 All of these are **user-gated** — see QUEUE.md `LAUNCH BLOCKERS`. In order:
 
 - [ ] **U4a** Finish Supabase Google provider. Per QUEUE U4 the button is *live and
