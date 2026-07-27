@@ -441,3 +441,58 @@ One line per journey. Newest last.
 2026-07-27 · J3 buy & sell · 1 fixed (S2) / 2 dismissed · the UI walk found nothing wrong — empty states on /saved, /marketplace/mine and requests are all good, trust signals on a listing are strong (name + verified name + karma tier + ★3.7 rating + "Chat with seller" as the only contact path), no email/phone/WhatsApp-number leak in the page source, no overflow at 390 or 360. The finding came from the LOGIC audit instead: nothing resolved a pending offer when the listing sold, so the buyer sat in a dead end forever. Fixed in the DB so all three marketplace forks inherit it. Note for later: ZERO offers have ever been made in production — same shape as GateRunner's supply problem, worth a look once the marketplace has traffic.
 2026-07-27 · J2 find your way · 1 fixed (S1) / 1 filed · the headline: global search answered "Nothing on campus for SJT" while holding 48 verified buildings — places are now searchable by name AND nickname and deep-link into Compass. Clean on everything else: /timetable's zero-class state is good ("No classes today — enjoy it, or add your week below") with exactly one obvious next action and ZERO sub-44px targets at either width; search's no-results copy is good ("Try a different word — or post it yourself"); no horizontal overflow at 390 or 360 on any screen walked. Search's filter chips are 34px tall — already covered by QUEUE A35, not re-filed.
 2026-07-27 · J1 first run · 1 fixed / 1 filed / 1 dismissed · walked at 390×844 and 360×800 as a genuinely fresh zero-data VIT account (seeded at DB level because confirm-email is now ON, then deleted). No horizontal overflow at either width on any screen. Empty states on /timetable and /notifications are good ("No classes today — enjoy it, or add your week below"). Signup states the college-domain rule up front, before you can fail it. Sub-44px tap targets remain in the mother app's header + text links (logo 19px wide, avatar chip 36px, "Requests" 57×20, "Delete my account" 342×16) — QUEUE A16 did this pass for gaterunner+vitcompass only; filed as A35 rather than fixed here, since it is J-wide and not J1-specific.
+
+---
+
+## Finishing pass — 2026-07-28
+
+Gated behind all ten journeys, per `.claude/commands/polish.md`.
+
+### 1 · Correctness sweep — **done**
+- `sweep.mjs --fork`: **8 drifts → 7**. Seven are expected product divergence,
+  confirmed by reading each: `bottom-nav`/`nav-link`/`header` (clubs has different
+  nav items, icons and no admin-toolbox link), `pwa.tsx` (reworded comment + brand
+  name), `lib/push/client.ts` (per-app name strings), and `modules/gate/{actions,client}`
+  (my J4/J5 work; `/gate` is denied in clubs/trade by A10 middleware).
+- **One was real and is fixed:** `offer-panel.tsx` had identical line counts but a
+  different hash across forks — the giveaway. lockedin carried
+  `aria-label="₹ your price"` and `aria-label="₹ counter"`; **both forks had
+  neither.** QUEUE A20's accessibility pass was echoed incompletely. All three
+  files are now byte-identical.
+- All **five** apps `gate.mjs --build` **PASS**; full suite **8 passed**.
+
+### 2 · Query cost — **no fix warranted**
+- No per-row query on any hot list screen. `.map(async` appears twice repo-wide:
+  `api/push/dispatch` is inherently one HTTP call per subscription and is bounded
+  by `MAX_SUBS` (correct by design), and `admin/moderation` issues one query per
+  **open** report.
+- The moderation one is a genuine N+1 but not worth collapsing: it is
+  moderator-only, parallelised through `Promise.all`, currently **1 row** in
+  production, and polymorphic across five target tables — a single query means a
+  union or five grouped queries, i.e. real complexity for a one-row screen.
+  **Threshold for revisiting: if open reports routinely exceed ~50**, at which
+  point a backlog that size is a moderation problem before it is a perf one.
+- Indexes were already done properly in QUEUE A9 (8 additive indexes, each proven
+  usable with `enable_seqscan=off` EXPLAIN).
+
+### 3 · First paint — **clean**
+- 12 routes ship content-shaped skeletons (`/home`, `/marketplace`, `/board`,
+  `/communities`, `/gate`, `/cabs`, `/group-buy`, `/subscriptions`, `/timetable`,
+  `/spaces`, `/matches`, `/notifications`).
+- The other 9 are **not blank**: `app/loading.tsx` is a root fallback rendering
+  `SpeederLoader`, which Next uses for any segment without its own. `error.tsx`
+  and `not-found.tsx` both exist. No blank page, no layout shift.
+
+### 4 · Dead weight — **awaiting approval**
+`QuantaBanner` (J5-3) has returned `null` unconditionally since 19 July and its
+own comment says delete it. C14 three-grep proof is clean: 13 bare-name hits
+(3 definitions, 5 imports, 5 render sites), **0** dynamic dispatch, **0** barrel
+exports. Deletion is a hard-stop action, so the exact target list was pasted for
+the user and it is not removed yet.
+
+### 5 · Empty-app test — **effectively continuous**
+Not run as a separate step because every journey J1–J10 was walked on a
+**brand-new zero-data account**, seeded and deleted per pass. That is the same
+check, applied ten times. Its findings are already logged (J1-1, J2-1, and the
+empty states confirmed good on `/timetable`, `/notifications`, `/saved`,
+`/marketplace/mine`, `/events`, `/chats`).
