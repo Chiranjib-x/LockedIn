@@ -40,7 +40,7 @@ export default async function CommunityPage({
   const [{ data: members }, { data: posts }, { data: interests }, { data: questions }, { data: applications }, { data: achievements }] = await Promise.all([
     supabase
       .from("community_members")
-      .select("user_id, role, position, profile:profiles!community_members_user_id_fkey(name)")
+      .select("user_id, role, position, profile:profiles!community_members_user_id_fkey(name, username)")
       .eq("community_id", id),
     supabase
       .from("posts")
@@ -51,7 +51,7 @@ export default async function CommunityPage({
     // RLS: a regular viewer gets only their own row; a moderator gets all leads.
     supabase
       .from("community_interests")
-      .select("user_id, created_at, profile:profiles!community_interests_user_id_fkey(name)")
+      .select("user_id, created_at, profile:profiles!community_interests_user_id_fkey(name, username)")
       .eq("community_id", id),
     supabase.from("community_questions").select("id, prompt").eq("community_id", id).order("ord").order("created_at"),
     // RLS: applicant sees own; leads see all of this community's.
@@ -317,20 +317,16 @@ export default async function CommunityPage({
           </h2>
           <p className="text-xs text-muted-foreground">Students who tapped “I’m interested” — reach out to recruit them.</p>
           {interests!.map((it) => {
-            async function message() {
-              "use server";
-              await openChat(it.user_id, null, null);
-            }
+            // QUEUE A36: shared membership is NOT permission to DM — the
+            // founder's rule is that the username wins even here. Show it so a
+            // lead can look them up, instead of a one-tap cold message.
+            const uname = (it.profile as unknown as { username: string | null } | null)?.username;
             return (
               <Card key={it.user_id} className="flex items-center justify-between gap-2">
-                <span className="truncate font-medium">
+                <span className="min-w-0 truncate font-medium">
                   {(it.profile as unknown as { name: string } | null)?.name ?? "Student"}
+                  {uname && <span className="ml-1 font-normal text-muted-foreground">@{uname}</span>}
                 </span>
-                <form action={message}>
-                  <button type="submit" className="press min-h-9 shrink-0 rounded-full border border-border px-4 text-sm font-medium hover:bg-muted">
-                    Message
-                  </button>
-                </form>
               </Card>
             );
           })}
@@ -352,17 +348,20 @@ export default async function CommunityPage({
           )}
           {(members ?? []).map((m) => {
             const name = (m.profile as unknown as { name: string } | null)?.name ?? "Student";
-            async function message() {
-              "use server";
-              await openChat(m.user_id, null, null);
-            }
             const position = (m as { position: string | null }).position;
             const attended = attendedByUser[m.user_id] ?? 0;
             return (
               <Card key={m.user_id} className="flex flex-col gap-2">
                 <div className="flex items-center justify-between gap-2">
                   <span className="flex min-w-0 items-center gap-2">
-                    <span className="truncate font-medium">{name}</span>
+                    <span className="truncate font-medium">
+                      {name}
+                      {(m.profile as unknown as { username: string | null } | null)?.username && (
+                        <span className="ml-1 font-normal text-muted-foreground">
+                          @{(m.profile as unknown as { username: string }).username}
+                        </span>
+                      )}
+                    </span>
                     {m.role === "moderator" && (
                       <span className="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">Moderator</span>
                     )}
@@ -372,13 +371,9 @@ export default async function CommunityPage({
                       </span>
                     )}
                   </span>
-                  {m.user_id !== user.id && (
-                    <form action={message}>
-                      <button type="submit" className="press min-h-9 shrink-0 rounded-full border border-border px-4 text-sm font-medium hover:bg-muted">
-                        Message
-                      </button>
-                    </form>
-                  )}
+                  {/* QUEUE A36: no one-tap DM from a roster — the username
+                      wins even inside a shared club. The handle is shown on the
+                      name above so a lead can look them up. */}
                 </div>
                 <PositionEditor cid={id} uid={m.user_id} current={position} />
                 <RoleControls cid={id} uid={m.user_id} role={m.role} isSelf={m.user_id === user.id} />

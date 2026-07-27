@@ -5,7 +5,17 @@ import { redirect } from "next/navigation";
 
 // Start (or resume) a DM about a context, then open it. Blocks/bans enforced
 // inside the RPC.
-export async function openChat(otherId: string, contextType: string | null, contextId: string | null) {
+// `username` is the caller proving they know who they are messaging (QUEUE A36).
+// 0078 accepts a DM only when a thread already exists, OR the target genuinely
+// owns the named context (verified against the row — ctype/ctx are caller-
+// supplied and must never be trusted), OR this exact username matches. Shared
+// membership of a club is deliberately NOT enough: founder's call, 2026-07-28.
+export async function openChat(
+  otherId: string,
+  contextType: string | null,
+  contextId: string | null,
+  username?: string | null
+) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -16,6 +26,7 @@ export async function openChat(otherId: string, contextType: string | null, cont
     other: otherId,
     ctype: contextType,
     ctx: contextId,
+    uname: username ?? null,
   });
   if (error) redirect("/chats?error=" + encodeURIComponent(error.message === "blocked" ? "You can’t message this person." : error.message));
   redirect(`/chats/${data}`);

@@ -269,7 +269,9 @@ export default async function SearchPage({
               {people.map((person) => {
                 async function message() {
                   "use server";
-                  await openChat(person.id, null, null);
+                  // Exact-username lookup (0037), so the caller demonstrably
+                  // knew it — pass it as the proof 0078 requires.
+                  await openChat(person.id, null, null, person.username);
                 }
                 return (
                   <Card key={person.id} className="flex items-center gap-3">
