@@ -50,7 +50,7 @@ export default function FilterBar() {
           <button
             key={t.label}
             onClick={() => apply({ ltype: t.v })}
-            className={`press rounded-full border px-3 py-1.5 font-medium ${
+            className={`press inline-flex min-h-11 items-center justify-center rounded-full border px-3 font-medium ${
               ltype === t.v ? "border-primary bg-primary text-on-primary" : "border-border bg-card"
             }`}
           >
@@ -61,7 +61,7 @@ export default function FilterBar() {
       <div className="flex items-center gap-2 overflow-x-auto pb-1">
         <button
           onClick={() => apply({ category: null })}
-          className={`press shrink-0 rounded-full border px-3 py-1.5 text-sm font-medium ${!activeCat ? "border-primary bg-primary text-on-primary" : "border-border bg-card"}`}
+          className={`press inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-full border px-3 text-sm font-medium ${!activeCat ? "border-primary bg-primary text-on-primary" : "border-border bg-card"}`}
         >
           All
         </button>
@@ -69,7 +69,7 @@ export default function FilterBar() {
           <button
             key={c}
             onClick={() => apply({ category: activeCat === c ? null : c })}
-            className={`press shrink-0 rounded-full border px-3 py-1.5 text-sm font-medium ${activeCat === c ? "border-primary bg-primary text-on-primary" : "border-border bg-card"}`}
+            className={`press inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-full border px-3 text-sm font-medium ${activeCat === c ? "border-primary bg-primary text-on-primary" : "border-border bg-card"}`}
           >
             {c}
           </button>
@@ -80,7 +80,7 @@ export default function FilterBar() {
         <select
           value={sort}
           onChange={(e) => apply({ sort: e.target.value === "new" ? null : e.target.value })}
-          className="min-h-9 rounded-full border border-border bg-card px-3"
+          className="min-h-11 rounded-full border border-border bg-card px-3"
         >
           <option value="new">Newest</option>
           <option value="price_asc">Price: low → high</option>

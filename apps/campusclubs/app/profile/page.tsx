@@ -146,14 +146,14 @@ export default async function ProfilePage({
         href="https://www.instagram.com/chiranjib_x/"
         target="_blank"
         rel="noopener noreferrer"
-        className="press text-center text-xs text-muted-foreground underline hover:text-foreground"
+        className="press inline-flex min-h-11 items-center justify-center text-center text-xs text-muted-foreground underline hover:text-foreground"
       >
         Something broken or unfair? Message @chiranjib_x on Instagram
       </a>
 
       <Link
         href="/delete-account"
-        className="press text-center text-xs text-muted-foreground underline hover:text-destructive"
+        className="press inline-flex min-h-11 items-center justify-center text-center text-xs text-muted-foreground underline hover:text-destructive"
       >
         Delete my account
       </Link>

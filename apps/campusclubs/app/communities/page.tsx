@@ -77,7 +77,7 @@ export default async function CommunitiesPage({
         <h1 className="text-2xl font-bold">Communities</h1>
         <Link
           href="/communities/new"
-          className="press rounded-full bg-primary px-4 py-2 text-sm font-semibold text-on-primary hover:bg-primary-strong"
+          className="press inline-flex min-h-11 items-center rounded-full bg-primary px-4 text-sm font-semibold text-on-primary hover:bg-primary-strong"
         >
           ＋ Propose
         </Link>

@@ -187,7 +187,7 @@ export default async function SearchPage({
           <Link
             key={t.key}
             href={`/search?q=${encodeURIComponent(query)}&tab=${t.key}`}
-            className={`press shrink-0 rounded-full px-4 py-1.5 text-sm font-medium ${
+            className={`press inline-flex min-h-11 shrink-0 items-center rounded-full px-4 text-sm font-medium ${
               active === t.key
                 ? "bg-primary text-on-primary"
                 : "border border-border bg-card text-muted-foreground hover:bg-muted"

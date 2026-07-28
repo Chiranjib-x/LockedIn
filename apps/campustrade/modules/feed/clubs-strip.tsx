@@ -45,7 +45,7 @@ export default async function ClubsStrip() {
           <h2 className="font-heading text-xl font-bold">Clubs, chapters & teams</h2>
           <p className="text-sm text-muted-foreground">Find your people on campus.</p>
         </div>
-        <Link href="/communities" className="press flex shrink-0 items-center gap-1 text-sm font-semibold text-primary">
+        <Link href="/communities" className="press flex min-h-11 shrink-0 items-center gap-1 text-sm font-semibold text-primary">
           See all <ArrowRight className="h-4 w-4" strokeWidth={2.2} />
         </Link>
       </div>

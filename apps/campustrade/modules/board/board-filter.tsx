@@ -44,7 +44,7 @@ export default function BoardFilter() {
       <div className="flex items-center gap-2 overflow-x-auto pb-1">
         <button
           onClick={() => apply({ type: null })}
-          className={`press shrink-0 rounded-full border px-3 py-1.5 text-sm font-medium ${!active ? "border-primary bg-primary text-on-primary" : "border-border bg-card"}`}
+          className={`press inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-full border px-3 text-sm font-medium ${!active ? "border-primary bg-primary text-on-primary" : "border-border bg-card"}`}
         >
           All
         </button>
@@ -52,7 +52,7 @@ export default function BoardFilter() {
           <button
             key={t.value}
             onClick={() => apply({ type: active === t.value ? null : t.value })}
-            className={`press shrink-0 rounded-full border px-3 py-1.5 text-sm font-medium ${active === t.value ? "border-primary bg-primary text-on-primary" : "border-border bg-card"}`}
+            className={`press inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-full border px-3 text-sm font-medium ${active === t.value ? "border-primary bg-primary text-on-primary" : "border-border bg-card"}`}
           >
             {t.label}
           </button>

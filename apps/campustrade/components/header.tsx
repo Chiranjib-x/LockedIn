@@ -44,7 +44,7 @@ function AvatarChip({ name, karma }: { name: string | null; karma: number }) {
       .map((w) => w[0]!.toUpperCase())
       .join("") || "?";
   return (
-    <Link href="/profile" aria-label="Your profile" className="press relative ml-1 flex min-h-11 items-center">
+    <Link href="/profile" aria-label="Your profile" className="press relative ml-1 flex min-h-11 min-w-11 items-center justify-center">
       <span className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary font-heading text-sm font-bold text-primary">
         {initials}
       </span>
@@ -83,7 +83,7 @@ export default async function Header() {
     <header className="glass sticky top-0 z-10 flex items-center justify-between rounded-none border-x-0 border-t-0 px-4 py-2">
       <Link
         href="/"
-        className="flex min-h-11 items-center gap-1.5"
+        className="flex min-h-11 min-w-11 items-center gap-1.5"
       >
         <LogoMark className="h-6 w-auto shrink-0 text-primary" />
         {/* tiny screens keep the mark only — a moderator's 6 header icons overflow 360px otherwise */}

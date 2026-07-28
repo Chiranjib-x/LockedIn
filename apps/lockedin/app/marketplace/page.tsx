@@ -41,10 +41,10 @@ export default async function MarketplacePage({
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Marketplace</h1>
         <span className="flex items-center gap-3 text-sm font-medium text-primary">
-          <Link href="/marketplace/requests" className="hover:underline">
+          <Link href="/marketplace/requests" className="inline-flex min-h-11 items-center hover:underline">
             Requests
           </Link>
-          <Link href="/marketplace/mine" className="hover:underline">
+          <Link href="/marketplace/mine" className="inline-flex min-h-11 items-center hover:underline">
             My listings
           </Link>
         </span>

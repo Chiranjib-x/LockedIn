@@ -54,7 +54,7 @@ export default async function BoardPage({
         <h1 className="text-2xl font-bold">Campus board</h1>
         <Link
           href="/board/new"
-          className="press rounded-full bg-primary px-4 py-2 text-sm font-semibold text-on-primary hover:bg-primary-strong"
+          className="press inline-flex min-h-11 items-center rounded-full bg-primary px-4 text-sm font-semibold text-on-primary hover:bg-primary-strong"
         >
           ＋ Post
         </Link>
