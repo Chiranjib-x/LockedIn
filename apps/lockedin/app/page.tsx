@@ -249,6 +249,7 @@ export default async function Home() {
       <p className="mt-8 flex gap-4 text-xs text-muted-foreground">
         <Link href="/terms" className="hover:underline">Terms</Link>
         <Link href="/privacy" className="hover:underline">Privacy</Link>
+        <a href="https://www.instagram.com/chiranjib_x/" target="_blank" rel="noopener noreferrer" className="hover:underline">Contact</a>
         <Link href="/delete-account" className="hover:underline">Delete account</Link>
       </p>
     </main>

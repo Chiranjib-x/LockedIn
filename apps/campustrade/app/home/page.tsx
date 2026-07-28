@@ -257,6 +257,17 @@ export default async function HomePage() {
       <Suspense fallback={<SkeletonSection />}>
         <GroupBuysClosing />
       </Suspense>
+
+      {/* A human at the bottom of the feed. Students had no route to one:
+          the banned banner said "contact an admin" with nothing to tap. */}
+      <a
+        href="https://www.instagram.com/chiranjib_x/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="press inline-flex min-h-11 items-center justify-center gap-1.5 rounded-2xl border border-border bg-card text-sm text-muted-foreground hover:border-primary hover:text-foreground"
+      >
+        💬 Feedback, a bug, or an idea? Message @chiranjib_x on Instagram
+      </a>
     </main>
   );
 }
