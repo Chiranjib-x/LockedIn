@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Bell, Megaphone, Search, ShieldCheck, Wrench } from "lucide-react";
+import { Bell, Search, ShieldCheck, Wrench } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import ThemeToggle from "@/components/theme-toggle";
 import { LogoMark } from "@suite/ui";
@@ -95,9 +95,6 @@ export default async function Header() {
             <>
               <Link href="/admin/moderation" aria-label="Moderation" className="press flex min-h-11 min-w-11 items-center justify-center text-foreground/70 hover:text-foreground">
                 <ShieldCheck className="h-5 w-5" strokeWidth={2} />
-              </Link>
-              <Link href="/admin/broadcast" aria-label="Broadcast an update" className="press flex min-h-11 min-w-11 items-center justify-center text-foreground/70 hover:text-foreground">
-                <Megaphone className="h-5 w-5" strokeWidth={2} />
               </Link>
               <Link href="/admin/showcase" aria-label="Toolbox and Deals admin" className="press flex min-h-11 min-w-11 items-center justify-center text-foreground/70 hover:text-foreground">
                 <Wrench className="h-5 w-5" strokeWidth={2} />

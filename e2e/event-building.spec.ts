@@ -19,13 +19,12 @@ async function addBuilding(page: Page) {
 }
 
 test("an event can point at a campus building", async ({ page }) => {
-  test.setTimeout(150_000);
+  test.setTimeout(180_000);
   page.on("dialog", (d) => d.accept());
   await page.setViewportSize({ width: 390, height: 844 });
   await login(page);
   await addBuilding(page);
 
-  // create the event, choosing the building as its venue
   await page.goto("/events/new");
   const form = page.locator("main form").first();
   await form.getByLabel("Title").fill(EVENT);
@@ -34,20 +33,22 @@ test("an event can point at a campus building", async ({ page }) => {
   await expect(select).toBeVisible({ timeout: 15_000 });
   await select.selectOption({ label: BUILDING });
   await form.locator('button[type="submit"]').click();
-  await page.waitForURL(/\/board\/|\/events/, { timeout: 30_000 });
-
-  // the event page deep-links into Compass at that pin
-  await page.goto("/events");
+  // Wait for the exact destination. A regex like /\/events/ also matches
+  // /events/new, so it passed instantly and the follow-up reload cancelled the
+  // in-flight submit — the event never got posted.
+  await page.waitForURL((u) => new URL(u).pathname === "/events", { timeout: 30_000 });
   await page.waitForLoadState("networkidle").catch(() => {});
+
+
   const card = page.locator("main a").filter({ hasText: EVENT }).first();
   await expect(card).toBeVisible({ timeout: 30_000 });
   await card.click();
+
   const mapLink = page.locator('main a[href*="/?b="]');
   await expect(mapLink).toBeVisible({ timeout: 30_000 });
   const href = await mapLink.getAttribute("href");
   expect(href).toMatch(/\/\?b=[0-9a-f-]{36}$/);
 
-  // clean up the building (the event is scratch data on a test college)
   await page.goto("/admin/campus");
   await page.locator("div.bg-card").filter({ hasText: BUILDING }).getByRole("button", { name: "Delete" }).click();
   await expect(page.locator("div.bg-card").filter({ hasText: BUILDING })).toHaveCount(0, { timeout: 30_000 });

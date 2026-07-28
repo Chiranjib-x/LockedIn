@@ -52,14 +52,17 @@ export default async function ModerationPage() {
           otherwise unreachable — the header can't take a third icon without
           re-breaking the 360px overflow fixed earlier. */}
       <nav className="flex flex-wrap gap-2">
-        <Link href="/admin/campus" className="press rounded-full border border-border bg-card px-4 py-1.5 text-sm font-medium hover:bg-muted">
+        <Link href="/admin/campus" className="press inline-flex min-h-11 items-center rounded-full border border-border bg-card px-4 text-sm font-medium hover:bg-muted">
           🗺️ Campus map
         </Link>
-        <Link href="/admin/spaces" className="press rounded-full border border-border bg-card px-4 py-1.5 text-sm font-medium hover:bg-muted">
+        <Link href="/admin/spaces" className="press inline-flex min-h-11 items-center rounded-full border border-border bg-card px-4 text-sm font-medium hover:bg-muted">
           🔒 Spaces
         </Link>
-        <Link href="/admin/showcase" className="press rounded-full border border-border bg-card px-4 py-1.5 text-sm font-medium hover:bg-muted">
+        <Link href="/admin/showcase" className="press inline-flex min-h-11 items-center rounded-full border border-border bg-card px-4 text-sm font-medium hover:bg-muted">
           🧰 Toolbox &amp; Deals
+        </Link>
+        <Link href="/admin/broadcast" className="press inline-flex min-h-11 items-center rounded-full border border-border bg-card px-4 text-sm font-medium hover:bg-muted">
+          📣 Broadcast
         </Link>
       </nav>
 
