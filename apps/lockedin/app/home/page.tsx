@@ -75,7 +75,7 @@ export default async function HomePage() {
         .single<{ name: string; colleges: { name: string } | null }>(),
       // RLS: only spaces the user is a member of come back. Everyone else
       // never sees this section exists.
-      supabase.from("spaces").select("id, name, emoji"),
+      supabase.from("spaces").select("id, name, emoji, description"),
       // Live flagship stats — both RLS-scoped to the user's college.
       supabase.from("pickup_requests").select("reward").eq("status", "open"),
       supabase
@@ -191,16 +191,19 @@ export default async function HomePage() {
         {(mySpaces ?? []).map((s) => (
           <Link key={s.id} href={`/spaces/${s.id}`} className="animate-fade-up press" style={{ animationDelay: "180ms" }}>
             <div className="urgent-border glass press-glow flex items-center gap-4 rounded-3xl p-4">
-              <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-tint-rose text-2xl">
+              {/* Neutral tile: the emoji carries the space's identity, so a new
+                  space can never inherit another one's colour. */}
+              <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-muted text-2xl">
                 {s.emoji}
               </span>
               <div className="min-w-0 flex-1">
                 <h2 className="font-heading font-bold">{s.name}</h2>
                 <p className="text-sm text-muted-foreground">
-                  {/* ponytail: name-based copy; per-space tagline column if spaces multiply */}
-                  {s.name.toLowerCase().includes("closet")
-                    ? "Rent out fest fits — dresses, jewellery, heels — girls only."
-                    : "Rent or sell your niche stuff — consoles, kits, gear — boys only."}
+                  {/* Was `name.includes("closet") ? … : …`, which sent BOTH
+                      spaces down the men's branch the moment 0084 renamed them —
+                      "Her Circle … boys only" shipped. The copy lives on the row
+                      now, so it cannot drift from the name again. */}
+                  {s.description}
                 </p>
               </div>
               <ArrowRight className="h-4 w-4 shrink-0 text-primary" strokeWidth={2.2} />
