@@ -6,7 +6,7 @@ import { istNow, istTodayISO } from "@/modules/timetable/helpers";
 import { SkeletonSection } from "@suite/ui";
 import LeaderStrip from "@/modules/feed/leader-strip";
 import ClubsStrip from "@/modules/feed/clubs-strip";
-import { InstallPrompt } from "@/components/pwa";
+import { InstallPrompt } from "@/components/install-prompt";
 
 // CampusClubs home = leaders' command center + two flagship shelves (clubs,
 // events) + discovery. Everything the mother app showed for marketplace/gate/

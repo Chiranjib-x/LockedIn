@@ -32,7 +32,7 @@ import FreshListings from "@/modules/feed/fresh-listings";
 import BoardHighlights from "@/modules/feed/board-highlights";
 import GroupBuysClosing from "@/modules/feed/group-buys-closing";
 import FreeWindow from "@/modules/feed/free-window";
-import { InstallPrompt } from "@/components/pwa";
+import { InstallPrompt } from "@/components/install-prompt";
 
 // Personalized home feed (Phase 26, pulled forward). The chip row below is
 // the "compact module nav" the phase brief asks for — direct access to any
