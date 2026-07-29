@@ -40,7 +40,9 @@ USER still owes Supabase Dashboard Google-provider setup (button live but errors
 ## Facts (14.5 additions)
 - Build APK: `cd android && ./gradlew.bat assembleDebug` (Java 21 system, sdk.dir in android/local.properties — gitignored)
 - After changing capacitor.config.ts or public/: `npx cap sync android`
-- Brand mark (2026-07-15): components/logo.tsx (F3 flame+keyhole+key, user-picked). Raster icons regenerated via scratchpad gen-icons.js (sharp) + make-ico.py (Pillow) — keep tile SVG geometry in sync with logo.tsx if the mark changes. Android launcher mipmaps still the OLD icon — regenerate at next APK/AAB rebuild.
+- Brand mark: packages/ui/logo.tsx (F3 flame+keyhole+key, user-picked 2026-07-15). Still the inline, theme-tintable mark (currentColor) used by AuthHero — unchanged.
+- App icon (2026-07-29): user-supplied artwork — torch + blue flame over a key, "LOCKEDIN" wordmark, deep purple #361861. Raster icons are NO LONGER derived from logo.tsx geometry; the master lives at apps/lockedin/assets/icon-only.png. Regenerate every size with `node scripts/make-icons.mjs <master.png> [--app <name>] --write` (dry-run without --write). It writes web+PWA+favicon.ico+all six Android mipmap densities+the adaptive background colour+the Capacitor assets/public copy. Android launcher mipmaps are now CURRENT (were stale since 2026-07-15).
+- sharp trap: `.png({ effort })` is the PALETTE-search knob — passing it quantises to 256 colours even without `palette: true`, which bands a gradient logo. Use `compressionLevel` alone. (Cost an hour on 2026-07-29.)
 
 
 ## Constraints

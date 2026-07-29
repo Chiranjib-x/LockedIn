@@ -1,7 +1,11 @@
 // LockedIn brand mark — flame with a keyhole, its shaft descending into key
 // teeth ("ignition + security"). Strokes use currentColor so surfaces tint it
-// via text-* classes; raster app icons are generated from this same geometry
-// (see docs/STATE.md Facts for the regen command).
+// via text-* classes, which is why this stays an inline SVG.
+//
+// The raster app icons are NO LONGER generated from this geometry: since
+// 2026-07-29 they come from a supplied artwork master via
+// `node scripts/make-icons.mjs`. Editing this file does not change the launcher
+// or favicon — same concept, two independent assets.
 export default function LogoMark({ className }: { className?: string }) {
   return (
     <svg
