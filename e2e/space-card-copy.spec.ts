@@ -34,4 +34,13 @@ test("a members-only space card shows its own description, not another space's",
 
   // The retired stereotype copy must not come back.
   await expect(page.getByText(/boys only|girls only|consoles, kits, gear/i)).toHaveCount(0);
+
+  // The retired NAMES must not either. One survived the 0084 rename sweep by
+  // being written with HTML entities ("Girls&rsquo; Closet"), which no grep for
+  // the plain apostrophe could match — so this asserts on rendered text instead.
+  await expect(page.getByText(/Girls|Closet|Boys|Den/)).toHaveCount(0);
+
+  // A campus-scale figure must never be a "1" — the strip exists to convey
+  // scale, and "1 clubs & teams" is both ungrammatical and self-defeating.
+  await expect(page.getByText(/^1 (students|clubs & teams|places mapped)$/)).toHaveCount(0);
 });

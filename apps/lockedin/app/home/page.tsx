@@ -70,9 +70,9 @@ export default async function HomePage() {
     await Promise.all([
       supabase
         .from("profiles")
-        .select("name, colleges(name)")
+        .select("name, college_id, colleges(name)")
         .eq("id", user.id)
-        .single<{ name: string; colleges: { name: string } | null }>(),
+        .single<{ name: string; college_id: string | null; colleges: { name: string } | null }>(),
       // RLS: only spaces the user is a member of come back. Everyone else
       // never sees this section exists.
       supabase.from("spaces").select("id, name, emoji, description"),
@@ -85,8 +85,17 @@ export default async function HomePage() {
         .is("space_id", null),
     ]);
 
+  const collegeId = profile?.college_id ?? null;
+
   // Second-tier live stats (cabs / group-buys / pools) — head counts only.
-  const [{ count: tripCount }, { count: orderCount }, { count: poolCount }] = await Promise.all([
+  const [
+    { count: tripCount },
+    { count: orderCount },
+    { count: poolCount },
+    { count: studentCount },
+    { count: clubCount },
+    { data: spaceMemberRows },
+  ] = await Promise.all([
     supabase.from("trips").select("id", { count: "exact", head: true }).eq("status", "open"),
     supabase.from("group_orders").select("id", { count: "exact", head: true }).eq("status", "open"),
     supabase
@@ -94,7 +103,44 @@ export default async function HomePage() {
       .select("id", { count: "exact", head: true })
       .eq("is_discoverable", true)
       .gt("open_seats", 0),
+    // Campus scale. RLS already scopes both of these to the viewer's own college
+    // ("profiles: same-college read", "communities: college read").
+    supabase.from("profiles").select("id", { count: "exact", head: true }),
+    supabase.from("communities").select("id", { count: "exact", head: true }).eq("is_approved", true),
+    // RLS returns only the spaces this user belongs to, so one query counts them
+    // all without an N+1 and without leaking any space they are not in.
+    supabase.from("space_members").select("space_id"),
   ]);
+
+  // campus_buildings is public-read (0065: `using (true)`) so RLS does NOT scope
+  // it — without this filter the count would include every other college's map.
+  const { count: placeCount } = collegeId
+    ? await supabase
+        .from("campus_buildings")
+        .select("id", { count: "exact", head: true })
+        .eq("college_id", collegeId)
+    : { count: 0 as number | null };
+
+  const membersBySpace = new Map<string, number>();
+  for (const r of spaceMemberRows ?? []) {
+    membersBySpace.set(r.space_id, (membersBySpace.get(r.space_id) ?? 0) + 1);
+  }
+
+  // What the campus actually has, as opposed to what happens to be listed today.
+  // A student's first read of /home was "6 things for sale" — the smallest true
+  // number in the database — while 93 classmates and 76 clubs stayed invisible.
+  // Same data, and the honest total is the one worth showing first.
+  const campusStats = [
+    { n: studentCount ?? 0, label: "students" },
+    { n: clubCount ?? 0, label: "clubs & teams" },
+    { n: placeCount ?? 0, label: "places mapped" },
+  ]
+    // Drop anything below 2. A "1" conveys no scale, and it also keeps every
+    // label correctly plural without a singular case for each one.
+    .filter((s) => s.n >= 2);
+  // Below this there is no scale to report, and claiming any would be worse than
+  // saying nothing — an empty college should read as empty.
+  const showCampusStats = (studentCount ?? 0) >= 10 && campusStats.length >= 2;
 
   const firstName = profile?.name?.split(" ")[0] ?? "";
   const gateCount = openPickups?.length ?? 0;
@@ -111,6 +157,22 @@ export default async function HomePage() {
           </span>
         )}
       </div>
+
+      {/* flex, not a fixed grid: a college with only two stats left a dead third
+          column when the grid stayed three wide. */}
+      {showCampusStats && (
+        <div
+          className="animate-fade-up glass flex items-center justify-around gap-2 rounded-3xl px-3 py-3"
+          style={{ animationDelay: "30ms" }}
+        >
+          {campusStats.map((s) => (
+            <div key={s.label} className="text-center">
+              <p className="font-heading text-xl font-bold text-primary">{s.n}</p>
+              <p className="text-[11px] leading-tight text-muted-foreground">{s.label}</p>
+            </div>
+          ))}
+        </div>
+      )}
 
       <Link
         href="/search"
@@ -197,7 +259,16 @@ export default async function HomePage() {
                 {s.emoji}
               </span>
               <div className="min-w-0 flex-1">
-                <h2 className="font-heading font-bold">{s.name}</h2>
+                <h2 className="flex flex-wrap items-center gap-x-2 font-heading font-bold">
+                  {s.name}
+                  {/* Members can already read this roster; showing the size tells
+                      someone inside a 30-person room that it is a 30-person room. */}
+                  {(membersBySpace.get(s.id) ?? 0) > 1 && (
+                    <span className="text-xs font-semibold text-primary">
+                      {membersBySpace.get(s.id)} members
+                    </span>
+                  )}
+                </h2>
                 <p className="text-sm text-muted-foreground">
                   {/* Was `name.includes("closet") ? … : …`, which sent BOTH
                       spaces down the men's branch the moment 0084 renamed them —
@@ -223,7 +294,7 @@ export default async function HomePage() {
               🔒
             </span>
             <div className="min-w-0 flex-1">
-              <h2 className="font-heading font-bold">Girls&rsquo; Closet &amp; Boys&rsquo; Den</h2>
+              <h2 className="font-heading font-bold">Her Circle &amp; His Circle</h2>
               <p className="text-sm text-muted-foreground">
                 Members-only spaces, invisible to everyone else. A member vouches you
                 in — ask someone who&rsquo;s already inside.
