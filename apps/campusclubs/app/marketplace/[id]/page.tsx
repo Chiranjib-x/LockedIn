@@ -76,7 +76,12 @@ export default async function ListingDetailPage({
         </Link>
         <span className="flex items-center gap-2">
           <SaveButton targetType="listing" targetId={listing.id} initialSaved={savedRow !== null} />
-          <ShareButton path={`/p/listing/${listing.id}`} title={listing.title} />
+          {/* A space listing is members-only. The share link is a PUBLIC preview
+              page, so offering it here would hand out exactly what the space
+              exists to keep in. No share button for space-scoped items. */}
+          {listing.space_id == null && (
+            <ShareButton path={`/p/listing/${listing.id}`} title={listing.title} />
+          )}
           {!isMine && <ReportSheet targetType="listing" targetId={listing.id} authorId={seller.id} />}
         </span>
       </div>

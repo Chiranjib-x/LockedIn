@@ -16,6 +16,7 @@ import ProfileEditor from "@/modules/communities/profile-editor";
 import Achievements from "@/modules/communities/achievements";
 import DeleteControls from "@/modules/communities/delete-controls";
 import { CATEGORY_META } from "@/modules/communities/categories";
+import ShareButton from "@/components/share-button";
 import { decideApplication, withdrawApplication } from "@/modules/communities/actions";
 
 export default async function CommunityPage({
@@ -125,7 +126,12 @@ export default async function CommunityPage({
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 px-4 py-6">
-      <Link href="/communities" className="text-sm text-muted-foreground hover:text-foreground">← Communities</Link>
+      <div className="flex items-center justify-between gap-2">
+        <Link href="/communities" className="text-sm text-muted-foreground hover:text-foreground">← Communities</Link>
+        {/* Shares the PUBLIC preview, not this gated page — a club's own group
+            is mostly people without an account yet, and that is the point. */}
+        <ShareButton path={`/p/club/${id}`} title={community.name} />
+      </div>
 
       <div className="animate-fade-up flex items-start justify-between gap-3">
         <div className="flex min-w-0 items-start gap-3">
