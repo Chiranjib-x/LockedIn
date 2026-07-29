@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { Card } from "@suite/ui";
 import FounderInvite from "@/modules/spaces/founder-invite";
+import MemberPicker, { type Student } from "@/modules/spaces/member-picker";
 
 // FINDINGS F7: a space with no members can never be joined — every door needs
 // an existing member. This screen is the only way to open that first door, and
@@ -22,13 +23,32 @@ export default async function SpacesAdminPage() {
   const { data: spaces } = await supabase.rpc("admin_list_spaces");
   const rows = (spaces ?? []) as { id: string; name: string; emoji: string | null; member_count: number }[];
 
+  // Everyone at this college, and each space's roster. Rosters go through a
+  // definer RPC because the founder is NOT a member, so space_members is
+  // invisible to them under RLS — the same reason admin_list_spaces exists.
+  const { data: allStudents } = await supabase
+    .from("profiles")
+    .select("id, name, username")
+    .eq("is_banned", false)
+    .order("name");
+  const students = (allStudents ?? []) as Student[];
+
+  const rosters = Object.fromEntries(
+    await Promise.all(
+      rows.map(async (s) => {
+        const { data } = await supabase.rpc("admin_space_roster", { p_space: s.id });
+        return [s.id, (data ?? []) as { user_id: string; name: string | null; username: string | null }[]] as const;
+      })
+    )
+  );
+
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-4 py-6">
       <div>
         <h1 className="text-2xl font-bold">Spaces</h1>
         <p className="text-sm text-muted-foreground">
-          Members-only spaces in your college. You can open an empty one by sending its first
-          founding invite — after that, its members invite each other and you have no access.
+          Members-only spaces in your college. Add or remove members by tapping a name —
+          everyone you add is told who added them and can leave whenever they want.
         </p>
       </div>
 
@@ -57,6 +77,19 @@ export default async function SpacesAdminPage() {
               </div>
             </div>
             {s.member_count === 0 && <FounderInvite spaceId={s.id} spaceName={s.name} />}
+
+            {(() => {
+              const roster = rosters[s.id] ?? [];
+              const inSpace = new Set(roster.map((r) => r.user_id));
+              return (
+                <MemberPicker
+                  spaceId={s.id}
+                  spaceName={s.name}
+                  members={roster.map((r) => ({ id: r.user_id, name: r.name, username: r.username }))}
+                  candidates={students.filter((st) => !inSpace.has(st.id))}
+                />
+              );
+            })()}
           </Card>
         ))
       )}
