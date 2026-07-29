@@ -40,6 +40,7 @@ USER still owes Supabase Dashboard Google-provider setup (button live but errors
 ## Facts (14.5 additions)
 - Build APK: `cd android && ./gradlew.bat assembleDebug` (Java 21 system, sdk.dir in android/local.properties — gitignored)
 - After changing capacitor.config.ts or public/: `npx cap sync android`
+- Spaces renamed (2026-07-29, migration 0084): Girls' Closet -> **Her Circle** 💜, Boys' Den -> **His Circle** 💙, both with a `spaces.description` line. Old names survive only in pre-0084 migrations, dated ledger entries, and comments about past events — those are history, not state. `scripts/demo-bots.mjs` picks stock with `/\bher\b|girl|closet/i` so it still works against either naming.
 - Brand mark: packages/ui/logo.tsx (F3 flame+keyhole+key, user-picked 2026-07-15). Still the inline, theme-tintable mark (currentColor) used by AuthHero — unchanged.
 - App icon (2026-07-29): user-supplied artwork — torch + blue flame over a key, "LOCKEDIN" wordmark, deep purple #361861. Raster icons are NO LONGER derived from logo.tsx geometry; the master lives at apps/lockedin/assets/icon-only.png. Regenerate every size with `node scripts/make-icons.mjs <master.png> [--app <name>] --write` (dry-run without --write). It writes web+PWA+favicon.ico+all six Android mipmap densities+the adaptive background colour+the Capacitor assets/public copy. Android launcher mipmaps are now CURRENT (were stale since 2026-07-15).
 - sharp trap: `.png({ effort })` is the PALETTE-search knob — passing it quantises to 256 colours even without `palette: true`, which bands a gradient logo. Use `compressionLevel` alone. (Cost an hour on 2026-07-29.)
@@ -78,7 +79,7 @@ USER still owes Supabase Dashboard Google-provider setup (button live but errors
 - Dev server: http://localhost:3001 (task bwafmsrj8) — PORT 3000 IS ANOTHER APP (user's IWAI portal, do not kill). Identity-check curl by <title>, not status code.
 - Prod: https://lockedin-swart-ten.vercel.app (Vercel project chiranjibs-projects-c31c03e0/lockedin).
 - Type check: npx tsc --noEmit. Build: npm run build. E2E: python + playwright sync API, 390x844 viewport.
-- Test accounts (password testpass1234): lockedin.phase1.test@gmail.com (founder/moderator), lockedin.test.girl@gmail.com (Girls' Closet), lockedin.test.boy@gmail.com (Boys' Den) — all Demo College.
+- Test accounts (password testpass1234): lockedin.phase1.test@gmail.com (founder/moderator), lockedin.test.girl@gmail.com (Her Circle), lockedin.test.boy@gmail.com (His Circle) — all Demo College.
 - Icon tooling: Pillow 12.3.0 and sharp both available.
 
 ## Done
@@ -123,7 +124,7 @@ USER still owes Supabase Dashboard Google-provider setup (button live but errors
 - REQUESTS feature (2026-07-14, DEPLOYED LIVE 03a69d4): migration 0039 `requests` table (inverse of listings; college+space RLS mirrors listings). Surfaces: /marketplace/requests (browse) + /marketplace/requests/new, "Requests" link on marketplace header, "🙋 Request something" + Requests section on space pages. Contact via openChat context 'request'. Both DEFERRED items closed 2026-07-15 by 0051 (reporting + reopen visibility). modules/requests/{actions,request-form,request-card}.
 - DEFERRED DROP: profiles.contact_pref was re-added to the live DB (2026-07-13) after dropping it in 0037 broke PROD (old build still `select`s it → every listing/post detail 404'd "Nothing here"). Column is now present + null, unused by new code. After prod deploys the new build, drop it in a 0038 migration. Until then the WhatsApp-removal is app-layer only on new code; OLD prod build still exposes contact_pref.
 - Delete gmail.com seed college + test accounts at real launch (DEPLOY.md item 3).
-- Re-point Girls' Closet/Boys' Den founding members to real hostel reps at launch (DEPLOY.md item 4).
+- Re-point Her Circle/His Circle founding members to real hostel reps at launch (DEPLOY.md item 4).
 - Manual phone QA: photo upload, two-account realtime chat, UPI QR (can't automate). UPI flow REWORKED 2026-07-13 (copy-VPA + QR, deep link removed) — needs fresh phone QA.
 - DONE 2026-07-15: Google native-flow prerequisites BOTH verified — (a) Drive file behind /download now serves the v1.1 APK byte-exact (Content-Length 4737883); (b) `com.lockedin.campus://auth/callback` accepted by GoTrue (authorize probe: redirect_to survives verbatim into the accounts.google.com URL — an unlisted URL gets stripped). ONLY remaining: user taps Continue-with-Google inside the newly installed APK on a real phone (unautomatable).
 - Rotate Firebase service-account key (was pasted into chat during Phase 21b).

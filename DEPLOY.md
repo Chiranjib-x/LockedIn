@@ -26,10 +26,10 @@
    Keep only real campus domains (VIT Vellore's `vitstudent.ac.in` is seeded).
    Clean the test accounts + demo data too if you want a fresh start.
 
-4. **Girls' Closet founding member.** `space_members` currently seeds the dev
-   test account as Demo College's founder. Re-point each college's Girls' Closet
+4. **Her Circle founding member.** `space_members` currently seeds the dev
+   test account as Demo College's founder. Re-point each college's Her Circle
    to a real founding member (a hostel rep) — see the seed block in
-   `migrations/0004_spaces.sql`.
+   `migrations/0004_spaces.sql` (which still uses the pre-0084 names).
 
 5. **Deployment protection.** Vercel → Project → Settings → Deployment Protection.
    Production is public by default; preview URLs are SSO-gated (that's why a
@@ -47,7 +47,7 @@ Then run the QA checklist against the production URL.
 - [ ] Profile edit saves and persists across reload.
 - [ ] Marketplace: post a listing **with a photo** (Storage upload works in prod), it shows in browse + detail; contact reveal works for a second account; mark sold/edit/delete.
 - [ ] Board: post lost/found/notice/event; filters + search; mark resolved.
-- [ ] Girls' Closet: a member sees it, a non-member cannot (verify with a second account); vouch someone in.
+- [ ] Her Circle: a member sees it, a non-member cannot (verify with a second account); vouch someone in.
 - [ ] Group-buy: create → second account joins → advance to collecting → UPI QR renders → who-paid tracking.
 - [ ] Subscription pool: create → add member → split evenly → renewal countdown.
 - [ ] Gate Runner: post a pickup → second account claims → requester taps "Received it" → reward UPI.

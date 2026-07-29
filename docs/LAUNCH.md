@@ -61,7 +61,7 @@ Katpadi Friday?"* lost in 40 messages; no way to run an event's attendance.
 > deep-link schemes allow-listed). U7 ✅ done (48 buildings, all 48 coords_verified).
 > U10 ✅ effectively done (`gmail.com` is gone; only `vitstudent.ac.in` and the
 > unregisterable `demo.invalid` remain). **Still open: U5** (rotate leaked creds),
-> **F7** (VIT's Girls' Closet has 0 members), **U11** (neutral domain).
+> **F7** (VIT's Her Circle has 0 members), **U11** (neutral domain).
 >
 > **AND THE PLAN'S "no users yet" PREMISE IS DEAD:** there are already **18 real
 > `@vitstudent` accounts**. Signups: 3 on 07-13, 4 on 07-14, 6 on 07-15, then 1 on
@@ -86,7 +86,7 @@ All of these are **user-gated** — see QUEUE.md `LAUNCH BLOCKERS`. In order:
       the wedge; a fresher walking to a pin 200m off kills it in one try. All 24 exact.
 - [ ] **U10** Delete the `gmail.com` seed college + test accounts (DEPLOY.md §3). A real
       student seeing "Demo College" in the picker is an instant credibility loss.
-- [ ] **F7** Mint founding invites for Girls' Closet + Boys' Den at `/admin/spaces`
+- [ ] **F7** Mint founding invites for Her Circle + His Circle at `/admin/spaces`
       (DEPLOY.md §4). Both currently at 0 members.
 - [ ] **U11 · Neutral domain.** `map.chiranjib.online` pasted to 200 strangers reads as
       *some guy's side project*. ~₹1000/yr; the cheapest credibility purchase available.

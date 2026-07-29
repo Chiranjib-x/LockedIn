@@ -300,7 +300,7 @@ desperate-looking thing in the funnel) · **U9** monitoring before W+4 campus-wi
 - **U7 · Refine the estimated VIT building coordinates** — ✅ **DONE by the user 2026-07-27**, same day the drag-and-drop admin shipped. DB state: **48 buildings, 48 `coords_verified = true`, 0 without coordinates** (was 24 buildings, 7 exact / 17 estimated). The user also added 24 new ones through the CMS while placing pins — real campus detail the seed never had (Gate 11, N/B/K block MH, Aavins Tea Stall, Sri Suki Pharmacy, DSW Office, CS Hall). VIT Compass now runs on fully human-verified coordinates. Tool: `/admin/campus` (0073 + `map-editor.tsx`) — drag a pin onto its building, saves on drop; amber = estimate, green = confirmed.
 - **U8 · Manual phone QA** — the unautomatable set: barcode camera scan, photo upload, two-account realtime chat, UPI QR, Continue-with-Google inside the installed APK.
 - **U9 · Monitoring (Gate #12)** — Sentry or equivalent needs an account and a DSN before the wiring can be done.
-- **U10 · Launch-day data cleanup** — delete the `gmail.com` seed college and test accounts; re-point Girls' Closet / Boys' Den founding members to real hostel reps.
+- **U10 · Launch-day data cleanup** — delete the `gmail.com` seed college and test accounts; re-point Her Circle / His Circle founding members to real hostel reps.
 - **U11 · Neutral domain** — buy and point a domain that isn't a personal name. `map.chiranjib.online` in a group of strangers reads as a side project, not a product; it undercuts `docs/LAUNCH.md` W-1, which depends on the link being shared by other people. Keep `chiranjib.online` as the origin, add the new domain in Vercel per app, and update `capacitor.config.ts` `server.url` + Supabase Site URL / redirect allow-list to match.
 
 ---

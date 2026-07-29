@@ -40,6 +40,9 @@ export default async function SpacePage({ params }: { params: Promise<{ id: stri
         <h1 className="text-2xl font-bold">
           {space.emoji} {space.name}
         </h1>
+        {space.description && (
+          <p className="mt-0.5 text-sm text-foreground">{space.description}</p>
+        )}
         <p className="text-sm text-muted-foreground">
           {members?.length ?? 0} member{(members?.length ?? 0) === 1 ? "" : "s"} · members-only —
           invisible to everyone else

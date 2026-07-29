@@ -5,12 +5,12 @@ import {
   CarTaxiFront,
   Download,
   Footprints,
-  Gamepad2,
   Handshake,
+  Mars,
   MessageCircle,
   ShoppingBag,
-  Sparkles,
   Tv,
+  Venus,
   type LucideIcon,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
@@ -44,16 +44,16 @@ const PILLARS: {
     body: "Haggle on listings, make offers, coordinate pickups — and every study group and group-buy gets its own room. Your number stays private until you choose to share it.",
   },
   {
-    icon: Sparkles,
+    icon: Venus,
     tint: "bg-tint-rose text-tint-rose-fg",
-    title: "Girls' Closet",
-    body: "That lehenga you wore once? Rent it out for the next fest. Dresses, jewellery, heels — rented and sold between girls only, invisible to everyone else.",
+    title: "Her Circle",
+    body: "A verified women-only space to buy, sell, swap, and talk freely with others on campus — invisible to everyone else.",
   },
   {
-    icon: Gamepad2,
+    icon: Mars,
     tint: "bg-tint-blue text-tint-blue-fg",
-    title: "Boys' Den",
-    body: "A boys-only space no one else can see. Rent out the console between sems, sell the keyboard you never use, flip cricket kits and GPU upgrades.",
+    title: "His Circle",
+    body: "A verified men-only space to buy, sell, swap, and talk freely with others on campus — invisible to everyone else.",
   },
   {
     icon: CarTaxiFront,
@@ -102,7 +102,7 @@ const EVERYTHING: { group: string; items: { name: string; blurb: string }[] }[] 
     items: [
       { name: "Clubs, chapters & teams", blurb: "Leads run recruiting, positions, broadcasts, analytics, and rosters — no WhatsApp needed." },
       { name: "Events + barcode check-in", blurb: "Organizers scan college IDs at the door and get a live attendee roster." },
-      { name: "Girls' Closet & Boys' Den", blurb: "Members-only spaces invisible to everyone else — rent out that lehenga or the console." },
+      { name: "Her Circle & His Circle", blurb: "Verified women-only and men-only spaces to buy, sell, swap and talk freely — invisible to everyone else." },
       { name: "Study groups", blurb: "Course-tagged groups with their own built-in group chat." },
       { name: "Roommate match", blurb: "Compatibility-scored matches — sleep schedule, tidiness, guests, all of it." },
       { name: "Crews", blurb: "Private groups for roommates & friends with shared to-dos." },
