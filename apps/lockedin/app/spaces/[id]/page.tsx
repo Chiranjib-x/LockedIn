@@ -5,6 +5,7 @@ import { Card } from "@suite/ui";
 import { BackLink } from "@suite/ui";
 import ListingCard from "@/modules/marketplace/listing-card";
 import RequestCard, { type RequestRow } from "@/modules/requests/request-card";
+import MemberPicker, { type Student } from "@/modules/spaces/member-picker";
 import AddMember from "@/modules/spaces/add-member";
 
 export default async function SpacePage({ params }: { params: Promise<{ id: string }> }) {
@@ -18,7 +19,7 @@ export default async function SpacePage({ params }: { params: Promise<{ id: stri
   const [{ data: members }, { data: listings }, { data: requests }] = await Promise.all([
     supabase
       .from("space_members")
-      .select("user_id, profile:profiles!space_members_user_id_fkey(name)")
+      .select("user_id, is_lead, profile:profiles!space_members_user_id_fkey(name)")
       .eq("space_id", id),
     supabase
       .from("listings")
@@ -33,6 +34,24 @@ export default async function SpacePage({ params }: { params: Promise<{ id: stri
       .order("created_at", { ascending: false }),
   ]);
 
+  // The space lead manages the roster without needing a moderator. is_lead lives
+  // on space_members, which members can already read for their own space.
+  const meRow = (members ?? []).find((m) => m.user_id === user.id) as { is_lead?: boolean } | undefined;
+  const iAmLead = meRow?.is_lead === true;
+
+  // Only fetched for the lead: the same tap-to-add list the admin screen uses.
+  let leadRoster: { user_id: string; name: string | null; username: string | null; is_lead: boolean }[] = [];
+  let leadCandidates: Student[] = [];
+  if (iAmLead) {
+    const [{ data: r }, { data: all }] = await Promise.all([
+      supabase.rpc("admin_space_roster", { p_space: id }),
+      supabase.from("profiles").select("id, name, username").eq("is_banned", false).order("name"),
+    ]);
+    leadRoster = (r ?? []) as typeof leadRoster;
+    const inSpace = new Set(leadRoster.map((x) => x.user_id));
+    leadCandidates = ((all ?? []) as Student[]).filter((p) => !inSpace.has(p.id));
+  }
+
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 px-4 py-6">
       <BackLink href="/home" label="Home" />
@@ -45,6 +64,46 @@ export default async function SpacePage({ params }: { params: Promise<{ id: stri
           invisible to everyone else
         </p>
       </div>
+
+      {/* Members can already READ this roster (policy "space_members: members
+          see the roster"), it was simply never rendered — you could see the
+          count but not who. In a members-only space, knowing who else is in the
+          room is the point. */}
+      {(members ?? []).length > 0 && (
+        <div className="flex flex-col gap-2">
+          <p className="text-sm font-semibold">Who&rsquo;s in here</p>
+          <div className="flex flex-wrap gap-2">
+            {(members ?? []).map((m) => {
+              const nm = (m.profile as unknown as { name: string } | null)?.name ?? "Student";
+              const lead = (m as { is_lead?: boolean }).is_lead === true;
+              return (
+                <span
+                  key={m.user_id}
+                  className={`inline-flex min-h-11 items-center gap-1.5 rounded-full border px-3 text-sm ${
+                    lead ? "border-primary/40 bg-primary/10" : "border-border bg-card"
+                  }`}
+                >
+                  {lead && <span title="Space lead">👑</span>}
+                  {nm}
+                  {m.user_id === user.id && <span className="text-muted-foreground">· you</span>}
+                </span>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {iAmLead && (
+        <div className="flex flex-col gap-2 rounded-2xl border border-primary/30 bg-card p-3">
+          <p className="text-sm font-semibold">👑 You manage this space</p>
+          <MemberPicker
+            spaceId={id}
+            spaceName={space.name}
+            members={leadRoster.map((r) => ({ id: r.user_id, name: r.name, username: r.username, isLead: r.is_lead }))}
+            candidates={leadCandidates}
+          />
+        </div>
+      )}
 
       <div className="flex flex-wrap items-center gap-2">
         <AddMember spaceId={id} />

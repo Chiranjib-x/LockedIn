@@ -29,6 +29,19 @@ export async function addSpaceMember(spaceId: string, userId: string) {
   return data === "already" ? "They're already in." : null;
 }
 
+// Appoint (or clear, with null) the one member trusted to manage this space.
+// Moderator-only — a lead cannot promote anyone, including themselves.
+export async function setSpaceLead(spaceId: string, userId: string | null) {
+  const { supabase } = await ctx();
+  const { error } = await supabase.rpc("admin_set_space_lead", {
+    p_space: spaceId,
+    p_user: userId,
+  });
+  revalidatePath("/admin/spaces");
+  revalidatePath(`/spaces/${spaceId}`);
+  return error ? error.message : null;
+}
+
 export async function removeSpaceMember(spaceId: string, userId: string) {
   const { supabase } = await ctx();
   const { error } = await supabase.rpc("admin_remove_space_member", {

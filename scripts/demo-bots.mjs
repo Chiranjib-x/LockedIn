@@ -58,6 +58,25 @@ const POSTS = [
   ["notice", "Badminton doubles, courts free at 6", "Two of us looking for two more. Bring your own racquet.", "Sports Complex"],
 ];
 
+// Members-only spaces need to look lived-in too, or a demo of Girls' Closet is
+// an empty room. Names are matched to the space by the same social convention
+// the spaces themselves use — these are demo accounts in a college nobody can
+// sign up to, so nothing here is a claim about a real person.
+const SPACE_STOCK = {
+  girls: [
+    ["Lehenga — wore it once at Riviera", "Clothing", 0, "Free to borrow for a fest. Size S. Just return it dry-cleaned."],
+    ["Heels, size 38 — two pairs", "Clothing", 250, "Black and nude. Renting both for a weekend."],
+    ["Kundan jewellery set", "Clothing", 150, "Borrowed it for a wedding, happy to lend on."],
+    ["Straightener + dryer", "Appliances", 400, "Selling, moving out this sem."],
+  ],
+  boys: [
+    ["PS4 + 2 controllers", "Electronics", 900, "Rent by the weekend. FIFA and GTA included."],
+    ["Cricket kit — full", "Other", 2000, "Bat, pads, gloves, helmet. Used one season."],
+    ["Mechanical keyboard (blue switches)", "Electronics", 1800, "Loud. Roommate made me sell it."],
+    ["Gym belt + wrist wraps", "Other", 350, "Barely used, bought the wrong size."],
+  ],
+};
+
 const PICKUPS = [
   ["Amazon", "Small parcel — phone case", "A Block", 20],
   ["Flipkart", "Books box, a bit heavy", "D Block", 30],
@@ -178,6 +197,37 @@ const main = async () => {
      values ($1,$2,'Spotify Duo',149,'monthly', now() + interval '18 days', 2, true, 1)`,
     [collegeId, pick(6)]
   );
+
+  // ---- members-only spaces ----
+  const spaces = (
+    await c.query(`select id, name from spaces where college_id = $1`, [collegeId])
+  ).rows;
+  let spaceMembers = 0;
+  let spaceListings = 0;
+  for (const sp of spaces) {
+    const girls = /girl|closet/i.test(sp.name);
+    const stock = girls ? SPACE_STOCK.girls : SPACE_STOCK.boys;
+    // Indices chosen so the two spaces get different people, as they would.
+    const picks = girls ? [0, 2, 6, 8] : [1, 3, 5, 9];
+    for (const [n, i] of picks.entries()) {
+      const uid = pick(i);
+      const r = await c.query(
+        `insert into space_members (space_id, user_id, added_by, is_lead)
+         values ($1,$2,$3,$4) on conflict do nothing returning user_id`,
+        [sp.id, uid, uid, n === 0] // first pick runs the space
+      );
+      spaceMembers += r.rowCount;
+    }
+    for (const [i, [title, category, price, description]] of stock.entries()) {
+      await c.query(
+        `insert into listings (college_id, seller_id, space_id, title, category, price, description, status)
+         values ($1,$2,$3,$4,$5,$6,$7,'available')`,
+        [collegeId, pick(picks[i % picks.length]), sp.id, title, category, price, description]
+      );
+      spaceListings++;
+    }
+  }
+  console.log(`seeded spaces: ${spaceMembers} members, ${spaceListings} listings across ${spaces.length} space(s)`);
 
   console.log("seeded campus activity: listings, board, event, gate pickups, cab trip, group-buy, pool");
   console.log(`\nlog in as any of: ${BOTS.map((b) => b[1] + "@" + DEMO_DOMAIN).slice(0, 3).join(", ")} …  password: demopass1234`);

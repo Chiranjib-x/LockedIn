@@ -37,7 +37,7 @@ export default async function SpacesAdminPage() {
     await Promise.all(
       rows.map(async (s) => {
         const { data } = await supabase.rpc("admin_space_roster", { p_space: s.id });
-        return [s.id, (data ?? []) as { user_id: string; name: string | null; username: string | null }[]] as const;
+        return [s.id, (data ?? []) as { user_id: string; name: string | null; username: string | null; is_lead: boolean }[]] as const;
       })
     )
   );
@@ -85,7 +85,8 @@ export default async function SpacesAdminPage() {
                 <MemberPicker
                   spaceId={s.id}
                   spaceName={s.name}
-                  members={roster.map((r) => ({ id: r.user_id, name: r.name, username: r.username }))}
+                  members={roster.map((r) => ({ id: r.user_id, name: r.name, username: r.username, isLead: r.is_lead }))}
+                  canPromote
                   candidates={students.filter((st) => !inSpace.has(st.id))}
                 />
               );

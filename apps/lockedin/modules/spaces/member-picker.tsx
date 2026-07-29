@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { useRefresh } from "@suite/lib/use-refresh";
 import { inputClass } from "@suite/ui";
-import { addSpaceMember, removeSpaceMember } from "./admin-actions";
+import { addSpaceMember, removeSpaceMember, setSpaceLead } from "./admin-actions";
 
-export type Student = { id: string; name: string | null; username: string | null };
+export type Student = { id: string; name: string | null; username: string | null; isLead?: boolean };
 
 // Tap a name to add them, tap × to remove. Filter is client-side because a
 // college roster is small enough that a round-trip per keystroke would feel
@@ -15,11 +15,14 @@ export default function MemberPicker({
   spaceName,
   members,
   candidates,
+  canPromote = false,
 }: {
   spaceId: string;
   spaceName: string;
   members: Student[];
   candidates: Student[];
+  /** Only a college moderator appoints the lead. */
+  canPromote?: boolean;
 }) {
   const refresh = useRefresh();
   const [q, setQ] = useState("");
@@ -59,7 +62,19 @@ export default function MemberPicker({
                 key={m.id}
                 className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-accent/40 bg-accent/10 px-3 text-sm"
               >
+                {m.isLead && <span title="Space lead">👑</span>}
                 {m.name ?? "Student"}
+                {canPromote && !m.isLead && (
+                  <button
+                    type="button"
+                    aria-label={`Make ${m.name ?? "student"} the lead of ${spaceName}`}
+                    disabled={busy === m.id}
+                    onClick={() => run(() => setSpaceLead(spaceId, m.id), m.id)}
+                    className="press min-h-11 min-w-11 shrink-0 text-muted-foreground hover:text-primary disabled:opacity-50"
+                  >
+                    {busy === m.id ? "…" : "👑"}
+                  </button>
+                )}
                 <button
                   type="button"
                   aria-label={`Remove ${m.name ?? "student"} from ${spaceName}`}
@@ -119,6 +134,7 @@ export default function MemberPicker({
       {msg && <p className="text-sm text-destructive">{msg}</p>}
       <p className="text-xs text-muted-foreground">
         They get a notification saying you added them, and can leave whenever they want.
+        {canPromote && " Tap 👑 to let one member manage this roster without you."}
       </p>
     </div>
   );
