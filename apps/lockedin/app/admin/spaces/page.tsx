@@ -3,6 +3,7 @@ import { requireUser } from "@/lib/auth";
 import { Card } from "@suite/ui";
 import FounderInvite from "@/modules/spaces/founder-invite";
 import MemberPicker, { type Student } from "@/modules/spaces/member-picker";
+import PendingRequests, { type PendingRequest } from "@/modules/spaces/pending-requests";
 
 // FINDINGS F7: a space with no members can never be joined — every door needs
 // an existing member. This screen is the only way to open that first door, and
@@ -20,6 +21,9 @@ export default async function SpacesAdminPage() {
 
   // The founder is not a member, so `spaces` is invisible under RLS — count
   // members through the same definer helper the bootstrap rule uses.
+  const { data: pendingRows } = await supabase.rpc("pending_space_requests");
+  const pending = (pendingRows ?? []) as PendingRequest[];
+
   const { data: spaces } = await supabase.rpc("admin_list_spaces");
   const rows = (spaces ?? []) as { id: string; name: string; emoji: string | null; member_count: number }[];
 
@@ -51,6 +55,21 @@ export default async function SpacesAdminPage() {
           everyone you add is told who added them and can leave whenever they want.
         </p>
       </div>
+
+      {/* Requests first — someone is waiting on these, and a queue below three
+          screens of rosters is a queue nobody reads. */}
+      <Card className="flex flex-col gap-3">
+        <div>
+          <h2 className="font-heading font-bold">
+            Waiting to join{pending.length > 0 && ` · ${pending.length}`}
+          </h2>
+          <p className="text-xs text-muted-foreground">
+            Students choose the circle they belong in and you decide. Nothing is sorted
+            automatically, and no profile field is consulted.
+          </p>
+        </div>
+        <PendingRequests requests={pending} />
+      </Card>
 
       {rows.length === 0 ? (
         <p className="text-sm text-muted-foreground">No spaces exist for your college yet.</p>

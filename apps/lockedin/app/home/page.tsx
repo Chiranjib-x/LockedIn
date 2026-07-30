@@ -33,6 +33,7 @@ import BoardHighlights from "@/modules/feed/board-highlights";
 import GroupBuysClosing from "@/modules/feed/group-buys-closing";
 import FreeWindow from "@/modules/feed/free-window";
 import { InstallPrompt } from "@/components/install-prompt";
+import RequestJoin, { type JoinableSpace } from "@/modules/spaces/request-join";
 
 // Personalized home feed (Phase 26, pulled forward). The chip row below is
 // the "compact module nav" the phase brief asks for — direct access to any
@@ -132,6 +133,12 @@ export default async function HomePage() {
         .select("id", { count: "exact", head: true })
         .eq("college_id", collegeId)
     : { count: 0 as number | null };
+
+  // Every circle at this college plus whether I'm in it or already asked. `spaces`
+  // is member-only under RLS, so a non-member cannot even see what to ask for —
+  // hence the definer RPC.
+  const { data: joinableRows } = await supabase.rpc("list_joinable_spaces");
+  const joinableSpaces = (joinableRows ?? []) as JoinableSpace[];
 
   const membersBySpace = new Map<string, number>();
   for (const r of spaceMemberRows ?? []) {
@@ -330,18 +337,23 @@ export default async function HomePage() {
             already in. Students who signed up *because* of that pitch just
             concluded it did not exist. This says nothing the public landing page
             does not already say, so it leaks no membership. */}
-        {(mySpaces ?? []).length === 0 && (
-          <div className="animate-fade-up glass flex items-center gap-4 rounded-3xl p-4" style={{ animationDelay: "180ms" }}>
-            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-tint-rose text-2xl">
-              🔒
-            </span>
-            <div className="min-w-0 flex-1">
-              <h2 className="font-heading font-bold">Her Circle &amp; His Circle</h2>
-              <p className="text-sm text-muted-foreground">
-                Members-only spaces, invisible to everyone else. A member vouches you
-                in — ask someone who&rsquo;s already inside.
-              </p>
+        {/* "Ask someone who's already inside" was a dead end for anyone who knew
+            nobody inside — which is most people. They can now ask directly, for
+            whichever circle is theirs, and a person decides (0088). */}
+        {(mySpaces ?? []).length === 0 && joinableSpaces.length > 0 && (
+          <div className="animate-fade-up glass flex flex-col gap-3 rounded-3xl p-4" style={{ animationDelay: "180ms" }}>
+            <div className="flex items-center gap-4">
+              <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-tint-rose text-2xl">
+                🔒
+              </span>
+              <div className="min-w-0 flex-1">
+                <h2 className="font-heading font-bold">Her Circle &amp; His Circle</h2>
+                <p className="text-sm text-muted-foreground">
+                  Members-only spaces, invisible to everyone else.
+                </p>
+              </div>
             </div>
+            <RequestJoin spaces={joinableSpaces} />
           </div>
         )}
 
