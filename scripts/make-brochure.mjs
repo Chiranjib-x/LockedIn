@@ -29,6 +29,21 @@ const OUT_DIR = "docs/brochure";
 const SHOT_DIR = path.join(OUT_DIR, "shots");
 fs.mkdirSync(SHOT_DIR, { recursive: true });
 
+// Supplied screenshots (e.g. taken on a real phone) go here. Drop files in and
+// re-run — no flag needed. --photos <dir> overrides the location.
+const PHOTO_DIR = args.includes("--photos")
+  ? args[args.indexOf("--photos") + 1]
+  : path.join(OUT_DIR, "photos");
+
+function suppliedPhotos() {
+  if (!fs.existsSync(PHOTO_DIR)) return [];
+  return fs
+    .readdirSync(PHOTO_DIR)
+    .filter((f) => /\.(png|jpe?g|webp)$/i.test(f))
+    .sort()
+    .map((f) => path.join(PHOTO_DIR, f));
+}
+
 // Demo College dev account (docs/STATE.md). Seeded data, no real students.
 const EMAIL = "lockedin.phase1.test@gmail.com";
 const PASSWORD = "testpass1234";
@@ -216,6 +231,24 @@ async function loadShots() {
 
 const dataUri = (file) => shotCache.get(file) ?? null;
 
+// Supplied phone screenshots, normalised to the same width and encoding as the
+// captured ones so they sit in the same grid without special-casing.
+const photoUris = [];
+async function loadPhotos() {
+  for (const p of suppliedPhotos()) {
+    const buf = await sharp(p).resize({ width: 700 }).jpeg({ quality: 85, mozjpeg: true }).toBuffer();
+    photoUris.push("data:image/jpeg;base64," + buf.toString("base64"));
+  }
+  if (photoUris.length) console.log(`included ${photoUris.length} supplied photo(s) from ${PHOTO_DIR}`);
+}
+
+/** Chunk supplied photos into pages of six for the 3x2 gallery grid. */
+function photoPages() {
+  const pages = [];
+  for (let i = 0; i < photoUris.length; i += 6) pages.push(photoUris.slice(i, i + 6));
+  return pages;
+}
+
 async function qr(text) {
   return QRCode.toDataURL(text, {
     margin: 0,
@@ -315,6 +348,9 @@ async function buildHtml() {
   .gallery { grid-template-columns:1fr 1fr; gap:6mm 7mm; }
   .gallery img { height:96mm; width:100%; object-fit:cover; object-position:top; }
   .gallery figcaption { font-size:8.5pt; }
+  /* Supplied photos: six to a page, uncaptioned, so three columns and shorter. */
+  .gallery.three { grid-template-columns:1fr 1fr 1fr; gap:5mm; }
+  .gallery.three img { height:107mm; }
   .phone { margin:0; break-inside:avoid; }
   .phone img {
     width:100%; display:block; border-radius:4mm;
@@ -439,6 +475,18 @@ async function buildHtml() {
   <div class="foot"><span>Screens</span><span>www.chiranjib.online</span></div>
 </section>
 
+${photoPages()
+  .map(
+    (group, i) => `<section class="page">
+  ${i === 0 ? `<p class="kicker">On a real phone</p><h2>Straight off the device</h2>` : ""}
+  <div class="shots gallery three">
+    ${group.map((src) => `<figure class="phone"><img src="${src}" alt=""></figure>`).join("")}
+  </div>
+  <div class="foot"><span>Screens${photoPages().length > 1 ? ` — ${i + 1} of ${photoPages().length}` : ""}</span><span>www.chiranjib.online</span></div>
+</section>`
+  )
+  .join("")}
+
 <!-- 5-6. Scenarios -->
 <section class="page">
   <p class="kicker">Use cases</p>
@@ -516,6 +564,7 @@ async function buildHtml() {
 
 if (!SKIP_SHOTS) await capture();
 await loadShots();
+await loadPhotos();
 
 const html = await buildHtml();
 const htmlPath = path.join(OUT_DIR, "brochure.html");
@@ -548,7 +597,9 @@ await page.pdf({
 await browser.close();
 
 const mb = (fs.statSync(pdfPath).size / 1024 / 1024).toFixed(2);
-const pdfPages = (fs.readFileSync(pdfPath).toString("latin1").match(/\/Count\s+(\d+)/) || [])[1];
+// Count page objects, not /Count. The page tree is nested, so the first /Count in
+// the file is a subtree — it reported 8 for a document that had 10 pages.
+const pdfPages = (fs.readFileSync(pdfPath).toString("latin1").match(/\/Type\s*\/Page[^s]/g) || []).length;
 console.log(`wrote ${pdfPath} — ${mb} MB, ${pdfPages} PDF pages from ${heights.length} sections`);
 
 if (overflowing.length) {
