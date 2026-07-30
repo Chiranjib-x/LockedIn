@@ -68,46 +68,9 @@ export default async function SpacePage({ params }: { params: Promise<{ id: stri
         </p>
       </div>
 
-      {/* Members can already READ this roster (policy "space_members: members
-          see the roster"), it was simply never rendered — you could see the
-          count but not who. In a members-only space, knowing who else is in the
-          room is the point. */}
-      {(members ?? []).length > 0 && (
-        <div className="flex flex-col gap-2">
-          <p className="text-sm font-semibold">Who&rsquo;s in here</p>
-          <div className="flex flex-wrap gap-2">
-            {(members ?? []).map((m) => {
-              const nm = (m.profile as unknown as { name: string } | null)?.name ?? "Student";
-              const lead = (m as { is_lead?: boolean }).is_lead === true;
-              return (
-                <span
-                  key={m.user_id}
-                  className={`inline-flex min-h-11 items-center gap-1.5 rounded-full border px-3 text-sm ${
-                    lead ? "border-primary/40 bg-primary/10" : "border-border bg-card"
-                  }`}
-                >
-                  {lead && <span title="Space lead">👑</span>}
-                  {nm}
-                  {m.user_id === user.id && <span className="text-muted-foreground">· you</span>}
-                </span>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {iAmLead && (
-        <div className="flex flex-col gap-2 rounded-2xl border border-primary/30 bg-card p-3">
-          <p className="text-sm font-semibold">👑 You manage this space</p>
-          <MemberPicker
-            spaceId={id}
-            spaceName={space.name}
-            members={leadRoster.map((r) => ({ id: r.user_id, name: r.name, username: r.username, isLead: r.is_lead }))}
-            candidates={leadCandidates}
-          />
-        </div>
-      )}
-
+      {/* What you came to do goes first. The roster used to sit here, above the
+          actions and the listings, so on a 30-person space you scrolled past
+          thirty names to reach the reason you opened the page. */}
       <div className="flex flex-wrap items-center gap-2">
         <AddMember spaceId={id} />
         <Link
@@ -138,7 +101,7 @@ export default async function SpacePage({ params }: { params: Promise<{ id: stri
           <span className="text-3xl">{space.emoji}</span>
           <p className="font-medium">Nothing shared yet</p>
           <p className="text-sm text-muted-foreground">
-            Lehengas, jackets, heels, jewellery — post what you’re happy to lend or sell.
+            Post whatever you&rsquo;re happy to lend or sell — it stays inside this space.
           </p>
         </Card>
       ) : (
@@ -146,6 +109,51 @@ export default async function SpacePage({ params }: { params: Promise<{ id: stri
           {listings.map((l, i) => (
             <ListingCard key={l.id} listing={l} index={i} />
           ))}
+        </div>
+      )}
+
+      {/* Members can already READ this roster (policy "space_members: members see
+          the roster"). Knowing who else is in the room matters in a members-only
+          space, but it is reference material, not the point of the page — so it
+          lives down here in a fixed-height box that scrolls instead of pushing
+          the listings off screen. */}
+      {(members ?? []).length > 0 && (
+        <section className="flex flex-col gap-2">
+          <h2 className="text-sm font-semibold">
+            Who&rsquo;s in here <span className="text-muted-foreground">· {members?.length}</span>
+          </h2>
+          <div className="max-h-28 overflow-y-auto rounded-2xl border border-border bg-card p-2.5">
+            <div className="flex flex-wrap gap-1.5">
+              {(members ?? []).map((m) => {
+                const nm = (m.profile as unknown as { name: string } | null)?.name ?? "Student";
+                const lead = (m as { is_lead?: boolean }).is_lead === true;
+                return (
+                  <span
+                    key={m.user_id}
+                    className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs ${
+                      lead ? "border-primary/40 bg-primary/10" : "border-border bg-muted"
+                    }`}
+                  >
+                    {lead && <span title="Space lead">👑</span>}
+                    {nm}
+                    {m.user_id === user.id && <span className="text-muted-foreground">· you</span>}
+                  </span>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {iAmLead && (
+        <div className="flex flex-col gap-2 rounded-2xl border border-primary/30 bg-card p-3">
+          <p className="text-sm font-semibold">👑 You manage this space</p>
+          <MemberPicker
+            spaceId={id}
+            spaceName={space.name}
+            members={leadRoster.map((r) => ({ id: r.user_id, name: r.name, username: r.username, isLead: r.is_lead }))}
+            candidates={leadCandidates}
+          />
         </div>
       )}
     </main>

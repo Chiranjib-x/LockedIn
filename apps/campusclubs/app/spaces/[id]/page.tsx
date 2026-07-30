@@ -18,7 +18,7 @@ export default async function SpacePage({ params }: { params: Promise<{ id: stri
   const [{ data: members }, { data: listings }, { data: requests }] = await Promise.all([
     supabase
       .from("space_members")
-      .select("user_id, profile:profiles!space_members_user_id_fkey(name)")
+      .select("user_id, is_lead, profile:profiles!space_members_user_id_fkey(name)")
       .eq("space_id", id),
     supabase
       .from("listings")
@@ -79,7 +79,7 @@ export default async function SpacePage({ params }: { params: Promise<{ id: stri
           <span className="text-3xl">{space.emoji}</span>
           <p className="font-medium">Nothing shared yet</p>
           <p className="text-sm text-muted-foreground">
-            Lehengas, jackets, heels, jewellery — post what you’re happy to lend or sell.
+            Post whatever you&rsquo;re happy to lend or sell — it stays inside this space.
           </p>
         </Card>
       ) : (
@@ -88,6 +88,39 @@ export default async function SpacePage({ params }: { params: Promise<{ id: stri
             <ListingCard key={l.id} listing={l} index={i} />
           ))}
         </div>
+      )}
+
+      {/* Members can already READ this roster (policy "space_members: members see
+          the roster"). Knowing who else is in the room matters in a members-only
+          space, but it is reference material, not the point of the page — so it
+          lives down here in a fixed-height box that scrolls instead of pushing
+          the listings off screen. */}
+      {(members ?? []).length > 0 && (
+        <section className="flex flex-col gap-2">
+          <h2 className="text-sm font-semibold">
+            Who&rsquo;s in here <span className="text-muted-foreground">· {members?.length}</span>
+          </h2>
+          <div className="max-h-28 overflow-y-auto rounded-2xl border border-border bg-card p-2.5">
+            <div className="flex flex-wrap gap-1.5">
+              {(members ?? []).map((m) => {
+                const nm = (m.profile as unknown as { name: string } | null)?.name ?? "Student";
+                const lead = (m as { is_lead?: boolean }).is_lead === true;
+                return (
+                  <span
+                    key={m.user_id}
+                    className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs ${
+                      lead ? "border-primary/40 bg-primary/10" : "border-border bg-muted"
+                    }`}
+                  >
+                    {lead && <span title="Space lead">👑</span>}
+                    {nm}
+                    {m.user_id === user.id && <span className="text-muted-foreground">· you</span>}
+                  </span>
+                );
+              })}
+            </div>
+          </div>
+        </section>
       )}
     </main>
   );
