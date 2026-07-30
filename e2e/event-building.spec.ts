@@ -3,7 +3,11 @@ import { login } from "./helpers";
 
 // QUEUE A34: an event can name a campus building, and the event page deep-links
 // into VIT Compass at that pin. Self-seeding through the UI — creates its own
-// building and event, then deletes the building, so it survives U10 cleanup.
+// building and event and deletes BOTH, so it survives U10 cleanup.
+//
+// It used to delete only the building. Every run therefore left its event on the
+// board; nine had piled up in Demo College before a screenshot of the board
+// showed them. A test that seeds through the UI has to clean up through it too.
 const STAMP = Date.now();
 const BUILDING = `ZZ Venue Hall ${STAMP}`;
 const EVENT = `ZZ Gravitas Probe ${STAMP}`;
@@ -48,6 +52,24 @@ test("an event can point at a campus building", async ({ page }) => {
   await expect(mapLink).toBeVisible({ timeout: 30_000 });
   const href = await mapLink.getAttribute("href");
   expect(href).toMatch(/\/\?b=[0-9a-f-]{36}$/);
+
+  // Still on the event's own page, where its author gets a delete control.
+  // deletePost() redirects to /events on success.
+  await page.getByRole("button", { name: /Delete event/i }).click();
+  await page.waitForURL((u) => new URL(u).pathname === "/events", { timeout: 30_000 });
+
+  // Re-fetch on every attempt. toHaveCount only re-queries the DOM, so a single
+  // goto that landed before revalidation propagated left it polling a stale page
+  // for the full timeout while the row was already gone from the database.
+  await expect
+    .poll(
+      async () => {
+        await page.goto("/events");
+        return page.locator("main a").filter({ hasText: EVENT }).count();
+      },
+      { timeout: 30_000, message: `event "${EVENT}" still listed after delete` }
+    )
+    .toBe(0);
 
   await page.goto("/admin/campus");
   await page.locator("div.bg-card").filter({ hasText: BUILDING }).getByRole("button", { name: "Delete" }).click();

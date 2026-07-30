@@ -55,3 +55,7 @@ dist-apks/
 *service-account*.json
 *serviceaccount*.json
 gcp-*.json
+
+# Brochure intermediates — regenerate with scripts/make-brochure.mjs
+docs/brochure/shots/
+docs/brochure/brochure.html
