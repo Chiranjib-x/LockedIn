@@ -20,7 +20,7 @@ const DESC = "Run your club, all in one place.";
 // This link gets pasted into student group chats; without metadataBase the
 // opengraph-image file convention can't resolve to an absolute URL and the link
 // previews as a bare URL. Env override so U11 (neutral domain) is a config change.
-const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://clubs.chiranjib.online";
+const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://clubs.lockedincampus.online";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),

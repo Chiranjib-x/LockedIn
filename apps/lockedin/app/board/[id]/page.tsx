@@ -14,7 +14,7 @@ import SaveButton from "@/components/save-button";
 
 // VIT Compass lives on its own subdomain; env-overridable so U11's neutral
 // domain is a config change, not a code change.
-const COMPASS_URL = process.env.NEXT_PUBLIC_COMPASS_URL ?? "https://map.chiranjib.online";
+const COMPASS_URL = process.env.NEXT_PUBLIC_COMPASS_URL ?? "https://map.lockedincampus.online";
 
 export default async function PostDetailPage({
   params,

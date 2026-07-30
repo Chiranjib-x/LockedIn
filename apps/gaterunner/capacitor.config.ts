@@ -11,7 +11,7 @@ const config = {
   server: {
     // This app's own subdomain (set up post-deploy). Must not redirect on the
     // root origin, so use the exact host Vercel serves.
-    url: "https://gate.chiranjib.online",
+    url: "https://gate.lockedincampus.online",
     androidScheme: "https",
   },
   plugins: {

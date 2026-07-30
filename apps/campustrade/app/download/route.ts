@@ -4,5 +4,5 @@ import { NextResponse } from "next/server";
 // so nobody is handed the wrong app's APK (this route used to 302 straight to
 // the mother LockedIn APK). Redirect to the hub, which lists every app.
 export function GET() {
-  return NextResponse.redirect("https://www.chiranjib.online/download", 302);
+  return NextResponse.redirect("https://www.lockedincampus.online/download", 302);
 }

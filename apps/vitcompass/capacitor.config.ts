@@ -7,7 +7,7 @@ const config = {
   appName: "VIT Compass",
   webDir: "public",
   server: {
-    url: "https://map.chiranjib.online",
+    url: "https://map.lockedincampus.online",
     androidScheme: "https",
   },
   plugins: {

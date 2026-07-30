@@ -157,7 +157,7 @@ export default function CampusMap({
             <p className="font-heading text-sm font-bold">VIT Compass</p>
             <p className="text-[11px] text-muted-foreground">Tap a building to see what&rsquo;s inside</p>
             <a
-              href="https://www.chiranjib.online"
+              href="https://www.lockedincampus.online"
               className="inline-flex min-h-11 items-center py-2 text-[10px] font-medium text-primary hover:underline"
             >
               Part of LockedIn ↗

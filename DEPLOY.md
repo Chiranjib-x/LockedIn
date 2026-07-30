@@ -9,8 +9,10 @@
 ## Before going to production
 
 1. **Supabase Auth URLs.** Supabase → Authentication → URL Configuration:
-   - Site URL → your production domain (`https://chiranjib.online`).
-   - Redirect URLs → add the production domain and any custom domain.
+   - Site URL → your production domain (`https://www.lockedincampus.online`).
+   - Redirect URLs → add BOTH domains. `chiranjib.online` stays attached and
+     serving, because links to it are already in group chats and in the printed
+     brochure; dropping it would break them.
    (Without this, email-confirmation / password links point at localhost.)
 
 2. **Email confirmation.** Decide: Supabase → Auth → Providers → Email.

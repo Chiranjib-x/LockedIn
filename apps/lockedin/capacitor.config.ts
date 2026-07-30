@@ -13,7 +13,7 @@ const config: CapacitorConfig = {
     // 308-redirects to it). A Capacitor server.url must not redirect on the
     // app's root origin, so we point at www, not the apex. The .vercel.app
     // alias still resolves, so the previously-distributed APK keeps working.
-    url: "https://www.chiranjib.online",
+    url: "https://www.lockedincampus.online",
     androidScheme: "https",
   },
   plugins: {

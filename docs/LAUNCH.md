@@ -88,8 +88,11 @@ All of these are **user-gated** — see QUEUE.md `LAUNCH BLOCKERS`. In order:
       student seeing "Demo College" in the picker is an instant credibility loss.
 - [ ] **F7** Mint founding invites for Her Circle + His Circle at `/admin/spaces`
       (DEPLOY.md §4). Both currently at 0 members.
-- [ ] **U11 · Neutral domain.** `map.chiranjib.online` pasted to 200 strangers reads as
-      *some guy's side project*. ~₹1000/yr; the cheapest credibility purchase available.
+- [x] **U11 · Neutral domain — DONE 2026-07-31.** `lockedincampus.online`, bought at
+      Hostinger, DNS on Cloudflare (DNS-only, never proxied — Vercel cannot issue a
+      certificate behind the orange cloud). All six hostnames serve 200:
+      apex + www → lockedin, and gate/map/clubs/trade → their own projects.
+      `chiranjib.online` stays attached so existing links keep working.
 
 **Do not wait for Play Store.** For the wedge a web link is *lower* friction than an
 APK — the "install from unknown sources" warning is the most desperate-looking thing

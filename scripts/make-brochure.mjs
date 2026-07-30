@@ -49,12 +49,12 @@ const EMAIL = "lockedin.phase1.test@gmail.com";
 const PASSWORD = "testpass1234";
 
 const LINKS = {
-  app: "https://www.chiranjib.online",
-  download: "https://www.chiranjib.online/download",
-  compass: "https://map.chiranjib.online",
-  clubs: "https://clubs.chiranjib.online",
-  trade: "https://trade.chiranjib.online",
-  gate: "https://gate.chiranjib.online",
+  app: "https://www.lockedincampus.online",
+  download: "https://www.lockedincampus.online/download",
+  compass: "https://map.lockedincampus.online",
+  clubs: "https://clubs.lockedincampus.online",
+  trade: "https://trade.lockedincampus.online",
+  gate: "https://gate.lockedincampus.online",
   instagram: "https://instagram.com/chiranjib_x",
 };
 
@@ -404,7 +404,7 @@ async function buildHtml() {
   <div class="cover-foot">
     <div>
       <p class="lede" style="margin-bottom:2mm">Open it in a browser. Nothing to install.</p>
-      <div class="url">www.chiranjib.online</div>
+      <div class="url">www.lockedincampus.online</div>
     </div>
     <div class="qr"><img src="${qrApp}" alt=""></div>
   </div>
@@ -435,7 +435,7 @@ async function buildHtml() {
   <div class="shots">
     ${shotsAvailable.slice(0, 3).map((s) => phone(s.file, s.caption)).join("")}
   </div>
-  <div class="foot"><span>LockedIn</span><span>www.chiranjib.online</span></div>
+  <div class="foot"><span>LockedIn</span><span>www.lockedincampus.online</span></div>
 </section>
 
 <!-- 3-4. Features -->
@@ -449,7 +449,7 @@ async function buildHtml() {
       </div></div>`
     )
     .join("")}
-  <div class="foot"><span>Feature map — 1 of 2</span><span>www.chiranjib.online</span></div>
+  <div class="foot"><span>Feature map — 1 of 2</span><span>www.lockedincampus.online</span></div>
 </section>
 
 <section class="page">
@@ -460,7 +460,7 @@ async function buildHtml() {
       </div></div>`
     )
     .join("")}
-  <div class="foot"><span>Feature map — 2 of 2</span><span>www.chiranjib.online</span></div>
+  <div class="foot"><span>Feature map — 2 of 2</span><span>www.lockedincampus.online</span></div>
 </section>
 
 <!-- Screens get their own page. Squeezed under the feature map they overflowed
@@ -472,7 +472,7 @@ async function buildHtml() {
   <div class="shots gallery">
     ${shotsAvailable.slice(3).map((s) => phone(s.file, s.caption)).join("")}
   </div>
-  <div class="foot"><span>Screens</span><span>www.chiranjib.online</span></div>
+  <div class="foot"><span>Screens</span><span>www.lockedincampus.online</span></div>
 </section>
 
 ${photoPages()
@@ -482,7 +482,7 @@ ${photoPages()
   <div class="shots gallery three">
     ${group.map((src) => `<figure class="phone"><img src="${src}" alt=""></figure>`).join("")}
   </div>
-  <div class="foot"><span>Screens${photoPages().length > 1 ? ` — ${i + 1} of ${photoPages().length}` : ""}</span><span>www.chiranjib.online</span></div>
+  <div class="foot"><span>Screens${photoPages().length > 1 ? ` — ${i + 1} of ${photoPages().length}` : ""}</span><span>www.lockedincampus.online</span></div>
 </section>`
   )
   .join("")}
@@ -497,7 +497,7 @@ ${photoPages()
         `<div class="scn"><h3>${esc(q)}</h3><p>${esc(a)}</p><span class="tag">${esc(tag)}</span></div>`
     )
     .join("")}
-  <div class="foot"><span>Use cases — 1 of 2</span><span>www.chiranjib.online</span></div>
+  <div class="foot"><span>Use cases — 1 of 2</span><span>www.lockedincampus.online</span></div>
 </section>
 
 <section class="page">
@@ -521,7 +521,7 @@ ${photoPages()
       campus's data.
     </p>
   </div>
-  <div class="foot"><span>Use cases — 2 of 2</span><span>www.chiranjib.online</span></div>
+  <div class="foot"><span>Use cases — 2 of 2</span><span>www.lockedincampus.online</span></div>
 </section>
 
 <!-- 7. Apps + get it -->
@@ -554,7 +554,7 @@ ${photoPages()
   <p style="margin-top:5mm" class="muted">
     Questions, or want your club set up on it? <b>instagram.com/chiranjib_x</b>
   </p>
-  <div class="foot"><span>LockedIn — built by a student at VIT Vellore</span><span>www.chiranjib.online</span></div>
+  <div class="foot"><span>LockedIn — built by a student at VIT Vellore</span><span>www.lockedincampus.online</span></div>
 </section>
 
 </body></html>`;

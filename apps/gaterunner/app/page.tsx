@@ -58,9 +58,9 @@ export default async function Landing() {
 
       <p className="mt-10 text-center text-xs text-muted-foreground">
         Part of the{" "}
-        <a href="https://www.chiranjib.online" className="font-medium text-primary hover:underline">LockedIn</a>{" "}
+        <a href="https://www.lockedincampus.online" className="font-medium text-primary hover:underline">LockedIn</a>{" "}
         campus suite ·{" "}
-        <a href="https://www.chiranjib.online/download" className="font-medium text-primary hover:underline">get the apps</a>
+        <a href="https://www.lockedincampus.online/download" className="font-medium text-primary hover:underline">get the apps</a>
       </p>
     </main>
   );

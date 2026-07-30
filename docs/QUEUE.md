@@ -282,8 +282,8 @@ down, re-ordered by launch dependency (not renumbered).
 4. ~~**F7 follow-through**~~ ✅ **DONE 2026-07-28** — VIT Girls' Closet 0 → 1 member (the founder, as an interim bootstrap; a real hostel rep replaces them, per DEPLOY.md item 4). All four spaces now have ≥1 member, so vouching works. Superseded detail: Live counts: VIT Vellore **Girls' Closet = 0 members**, VIT Vellore Boys' Den = 1. (Demo College's two are fine at 2 each — irrelevant.) Mint a founding invite for VIT's Girls' Closet at `/admin/spaces`; bootstrap RPCs shipped in 0070/0071. A gendered space that opens empty to its first real user is worse than not shipping it.
 5. ~~**U7** — VIT building coordinates~~ ✅ **DONE 2026-07-27**: 48 buildings, all 48
    `coords_verified`, none missing coordinates. Compass runs on verified pins now.
-6. **U11 · Neutral domain** *(new)* — `map.chiranjib.online` pasted to 200 strangers
-   reads as a personal side project. ~₹1000/yr, the cheapest credibility buy available.
+6. ~~**U11 · Neutral domain**~~ ✅ **DONE 2026-07-31**: `lockedincampus.online` live on
+   all six hostnames; every URL in the five apps now points at it.
 
 Then by stage, not before: **U8** phone QA during W-3 seeding · **U2** Play Console
 by W+2 (web link beats an APK for the wedge — the unknown-sources warning is the most
@@ -301,7 +301,8 @@ desperate-looking thing in the funnel) · **U9** monitoring before W+4 campus-wi
 - **U8 · Manual phone QA** — the unautomatable set: barcode camera scan, photo upload, two-account realtime chat, UPI QR, Continue-with-Google inside the installed APK.
 - **U9 · Monitoring (Gate #12)** — Sentry or equivalent needs an account and a DSN before the wiring can be done.
 - **U10 · Launch-day data cleanup** — delete the `gmail.com` seed college and test accounts; re-point Her Circle / His Circle founding members to real hostel reps.
-- **U11 · Neutral domain** — buy and point a domain that isn't a personal name. `map.chiranjib.online` in a group of strangers reads as a side project, not a product; it undercuts `docs/LAUNCH.md` W-1, which depends on the link being shared by other people. Keep `chiranjib.online` as the origin, add the new domain in Vercel per app, and update `capacitor.config.ts` `server.url` + Supabase Site URL / redirect allow-list to match.
+- ~~**U11 · Neutral domain**~~ ✅ DONE 2026-07-31 — see the AGENT list above.
+  Original note: buy and point a domain that isn't a personal name. `map.chiranjib.online` in a group of strangers reads as a side project, not a product; it undercuts `docs/LAUNCH.md` W-1, which depends on the link being shared by other people. Keep `chiranjib.online` as the origin, add the new domain in Vercel per app, and update `capacitor.config.ts` `server.url` + Supabase Site URL / redirect allow-list to match.
 
 ---
 

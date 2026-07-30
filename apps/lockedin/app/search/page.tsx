@@ -31,7 +31,7 @@ const TABS = [
 // "Nothing on campus for SJT" while the DB held 48 verified buildings — the app
 // knew the answer and denied it. campus_buildings is public-read (0065), so the
 // mother app can resolve the name and hand off to the map.
-const COMPASS_URL = process.env.NEXT_PUBLIC_COMPASS_URL ?? "https://map.chiranjib.online";
+const COMPASS_URL = process.env.NEXT_PUBLIC_COMPASS_URL ?? "https://map.lockedincampus.online";
 
 type Listing = { id: string; title: string; price: number; category: string; status: string };
 type Post = { id: string; title: string; type: string; status: string };

@@ -40,7 +40,19 @@ test("gender can be set from a preset, self-described, and cleared again", async
   await page.getByRole("button", { name: "Self-describe", exact: true }).click();
   await expect(hidden).toHaveValue("");
   await page.locator('main form button[type="submit"]').first().click();
-  await page.waitForURL((u) => new URL(u).searchParams.get("saved") === "1", { timeout: 30_000 });
-  await page.reload();
-  await expect(page.locator('input[name="gender"]')).toHaveValue("");
+
+  // Re-fetch until the cleared value is what the server actually returns.
+  // Waiting on ?saved=1 does NOT work for the second save: the URL is already
+  // ?saved=1 from the first one, so the wait matches instantly and the reload
+  // races the write. Poll the rendered value, which only one of the two states
+  // can satisfy.
+  await expect
+    .poll(
+      async () => {
+        await page.goto("/profile");
+        return page.locator('input[name="gender"]').inputValue();
+      },
+      { timeout: 30_000, message: "gender did not clear" }
+    )
+    .toBe("");
 });

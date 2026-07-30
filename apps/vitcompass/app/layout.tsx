@@ -9,7 +9,7 @@ const DESC = "Find your way around VIT — every building, one tap away.";
 // This link gets pasted into student group chats; without metadataBase the
 // opengraph-image file convention can't resolve to an absolute URL and the link
 // previews as a bare URL. Env override so U11 (neutral domain) is a config change.
-const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://map.chiranjib.online";
+const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://map.lockedincampus.online";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),

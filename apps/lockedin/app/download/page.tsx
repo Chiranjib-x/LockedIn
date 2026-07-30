@@ -18,11 +18,11 @@ const APK_LOCKEDIN =
 type SuiteApp = { name: string; emoji: string; tagline: string; web: string; apk: string | null };
 
 const APPS: SuiteApp[] = [
-  { name: "LockedIn", emoji: "🔥", tagline: "The full campus super-app — everything in one place.", web: "https://www.chiranjib.online", apk: APK_LOCKEDIN },
-  { name: "GateRunner", emoji: "🏃", tagline: "Your parcel, picked up at the gate by someone already walking there.", web: "https://gate.chiranjib.online", apk: "https://drive.usercontent.google.com/download?id=1LH96iavtO7nJsRWzXInPiuIFh4GyxZSZ&export=download&confirm=t" },
-  { name: "CampusClubs", emoji: "🎓", tagline: "Run your club, chapter or team — recruiting, meetings, events, all in one.", web: "https://clubs.chiranjib.online", apk: "https://drive.usercontent.google.com/download?id=1up21V5PtvHMLRpdu5Zm9yTXhiDZ56MFA&export=download&confirm=t" },
-  { name: "CampusTrade", emoji: "🛍️", tagline: "Buy, sell & rent with verified students, plus daily campus life.", web: "https://trade.chiranjib.online", apk: "https://drive.usercontent.google.com/download?id=111jsS_NN-ad58pjzwVH_VKtsVa9JL2MU&export=download&confirm=t" },
-  { name: "VIT Compass", emoji: "🧭", tagline: "Find your way around VIT — every building, one tap away.", web: "https://map.chiranjib.online", apk: "https://drive.usercontent.google.com/download?id=1JGZbYyFvuaQHx9ZcOMxy8u1jDgnUglD9&export=download&confirm=t" },
+  { name: "LockedIn", emoji: "🔥", tagline: "The full campus super-app — everything in one place.", web: "https://www.lockedincampus.online", apk: APK_LOCKEDIN },
+  { name: "GateRunner", emoji: "🏃", tagline: "Your parcel, picked up at the gate by someone already walking there.", web: "https://gate.lockedincampus.online", apk: "https://drive.usercontent.google.com/download?id=1LH96iavtO7nJsRWzXInPiuIFh4GyxZSZ&export=download&confirm=t" },
+  { name: "CampusClubs", emoji: "🎓", tagline: "Run your club, chapter or team — recruiting, meetings, events, all in one.", web: "https://clubs.lockedincampus.online", apk: "https://drive.usercontent.google.com/download?id=1up21V5PtvHMLRpdu5Zm9yTXhiDZ56MFA&export=download&confirm=t" },
+  { name: "CampusTrade", emoji: "🛍️", tagline: "Buy, sell & rent with verified students, plus daily campus life.", web: "https://trade.lockedincampus.online", apk: "https://drive.usercontent.google.com/download?id=111jsS_NN-ad58pjzwVH_VKtsVa9JL2MU&export=download&confirm=t" },
+  { name: "VIT Compass", emoji: "🧭", tagline: "Find your way around VIT — every building, one tap away.", web: "https://map.lockedincampus.online", apk: "https://drive.usercontent.google.com/download?id=1JGZbYyFvuaQHx9ZcOMxy8u1jDgnUglD9&export=download&confirm=t" },
 ];
 
 export default function DownloadHub() {

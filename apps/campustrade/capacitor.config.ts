@@ -11,7 +11,7 @@ const config: CapacitorConfig = {
   server: {
     // Load this app's own subdomain (set up post-deploy). Must NOT redirect on
     // the root origin, so use the exact host Vercel serves.
-    url: "https://trade.chiranjib.online",
+    url: "https://trade.lockedincampus.online",
     androidScheme: "https",
   },
   plugins: {
