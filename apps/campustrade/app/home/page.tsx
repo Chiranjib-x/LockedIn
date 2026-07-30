@@ -86,6 +86,7 @@ export default async function HomePage() {
     { count: studentCount },
     { count: clubCount },
     { data: spaceMemberRows },
+    { count: toolCount },
   ] = await Promise.all([
     supabase.from("trips").select("id", { count: "exact", head: true }).eq("status", "open"),
     supabase.from("group_orders").select("id", { count: "exact", head: true }).eq("status", "open"),
@@ -101,6 +102,9 @@ export default async function HomePage() {
     // RLS returns only the spaces this user belongs to, so one query counts them
     // all without an N+1 and without leaking any space they are not in.
     supabase.from("space_members").select("space_id"),
+    // Toolbox size, so the card advertises what is actually in there. RLS scopes
+    // showcase_items to the viewer's college ("showcase_items: college read").
+    supabase.from("showcase_items").select("id", { count: "exact", head: true }).eq("is_active", true),
   ]);
 
   // campus_buildings is public-read (0065: `using (true)`) so RLS does NOT scope
@@ -117,6 +121,14 @@ export default async function HomePage() {
   for (const r of spaceMemberRows ?? []) {
     membersBySpace.set(r.space_id, (membersBySpace.get(r.space_id) ?? 0) + 1);
   }
+
+  // Live counts for the feature cards below, keyed by route. Only routes whose
+  // number means something to a student before they tap belong here — a count of
+  // how many tools are in the Toolbox is a reason to open it; a count of pages in
+  // Timetable is not.
+  const FEATURE_COUNTS: Record<string, number> = {
+    "/toolbox": toolCount ?? 0,
+  };
 
   // What the campus actually has, as opposed to what happens to be listed today.
   const campusStats = [
@@ -294,20 +306,39 @@ export default async function HomePage() {
           </div>
         </Link>
 
-        {FEATURES.map((m, i) => (
-          <Link key={m.short} href={m.href} className="animate-fade-up press" style={{ animationDelay: `${260 + i * 20}ms` }}>
-            <div className="glass press-glow flex items-center gap-4 rounded-3xl p-4">
-              <span className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl ${m.tint}`}>
-                <m.icon className="h-7 w-7" strokeWidth={2} />
-              </span>
-              <div className="min-w-0 flex-1">
-                <h2 className="font-heading font-bold">{m.short}</h2>
-                <p className="text-sm text-muted-foreground">{m.blurb}</p>
+        {FEATURES.map((m, i) => {
+          // Keyed by href, not by array position or label, so a count can never
+          // end up on the wrong card if this list is reordered or renamed.
+          const badge = FEATURE_COUNTS[m.href];
+          return (
+            <Link key={m.short} href={m.href} className="animate-fade-up press" style={{ animationDelay: `${260 + i * 20}ms` }}>
+              <div className="glass press-glow flex items-center gap-4 rounded-3xl p-4">
+                <span className="relative shrink-0">
+                  <span className={`flex h-14 w-14 items-center justify-center rounded-2xl ${m.tint}`}>
+                    <m.icon className="h-7 w-7" strokeWidth={2} />
+                  </span>
+                  {badge != null && badge > 0 && (
+                    <span
+                      aria-hidden="true"
+                      className="absolute -right-1.5 -top-1.5 flex h-6 min-w-6 items-center justify-center rounded-full border-2 border-bg bg-primary px-1 text-[11px] font-bold text-on-primary"
+                    >
+                      {badge}
+                    </span>
+                  )}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <h2 className="font-heading font-bold">{m.short}</h2>
+                  <p className="text-sm text-muted-foreground">
+                    {badge != null && badge > 0 && m.href === "/toolbox"
+                      ? `${badge} free tools and resources, all legal`
+                      : m.blurb}
+                  </p>
+                </div>
+                <ArrowRight className="h-4 w-4 shrink-0 text-primary" strokeWidth={2.2} />
               </div>
-              <ArrowRight className="h-4 w-4 shrink-0 text-primary" strokeWidth={2.2} />
-            </div>
-          </Link>
-        ))}
+            </Link>
+          );
+        })}
       </div>
 
       <InstallPrompt />
