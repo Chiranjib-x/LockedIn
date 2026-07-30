@@ -3,7 +3,11 @@
 import { useSyncExternalStore } from "react";
 import { Moon, Sun, SunMoon } from "lucide-react";
 
-// Three-state theme: system (default) -> dark -> light -> system.
+// Three-state theme, LIGHT BY DEFAULT: light -> dark -> system -> light.
+//
+// 'system' now has to be STORED, because an absent key means light. It used to
+// be the absence of the key, which made following the OS the default — and put
+// every dark-phone student into dark mode without asking.
 // The no-flash script in layout.tsx applies the class before paint;
 // this just mutates it live and persists the choice.
 //
@@ -20,16 +24,15 @@ function subscribe(cb: () => void) {
 }
 function getSnapshot(): Mode {
   const stored = localStorage.getItem("li-theme");
-  return stored === "dark" || stored === "light" ? stored : "system";
+  return stored === "dark" || stored === "light" || stored === "system" ? stored : "light";
 }
-const getServerSnapshot = (): Mode => "system";
+const getServerSnapshot = (): Mode => "light";
 
 export default function ThemeToggle() {
   const mode = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   function apply(next: Mode) {
-    if (next === "system") localStorage.removeItem("li-theme");
-    else localStorage.setItem("li-theme", next);
+    localStorage.setItem("li-theme", next);
     const dark =
       next === "dark" ||
       (next === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
@@ -37,7 +40,7 @@ export default function ThemeToggle() {
     listeners.forEach((l) => l()); // re-read the snapshot so the icon updates
   }
 
-  const next = mode === "system" ? "dark" : mode === "dark" ? "light" : "system";
+  const next = mode === "light" ? "dark" : mode === "dark" ? "system" : "light";
   const Icon = mode === "system" ? SunMoon : mode === "dark" ? Moon : Sun;
 
   return (

@@ -29,8 +29,14 @@ export const viewport = {
   ],
 };
 
-// Applied before paint so there's no light flash for dark users.
-const themeInit = `try{var t=localStorage.getItem('gr-theme');var d=t==='dark'||(t!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',d)}catch(e){}`;
+// Applied before paint so a dark-mode user never sees a light flash.
+//
+// LIGHT IS THE DEFAULT. This used to fall back to the OS preference, so
+// every student whose phone is in dark mode landed in dark without ever
+// choosing it — and the design system's identity is warm cream paper.
+// Dark now requires an explicit choice: 'dark', or 'system' to opt back
+// into following the OS. An absent key means light.
+const themeInit = `try{var t=localStorage.getItem('gr-theme');var d=t==='dark'||(t==='system'&&matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',d)}catch(e){}`;
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
