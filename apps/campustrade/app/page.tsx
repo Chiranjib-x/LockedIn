@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import {
   ArrowRight,
   CarTaxiFront,
-  Download,
   Handshake,
   Mars,
   MessageCircle,
@@ -164,15 +163,18 @@ export default async function Home() {
         Get started <ArrowRight className="h-4 w-4" strokeWidth={2.4} />
       </Link>
 
-      <a
-        href="/download"
-        className="animate-fade-up mt-3 flex min-h-11 items-center gap-2 rounded-full border border-border bg-card/70 px-6 text-sm font-semibold backdrop-blur transition-all duration-150 hover:-translate-y-0.5 hover:border-primary"
+      <p
+        className="animate-fade-up mt-3 text-sm font-medium text-foreground"
         style={{ animationDelay: "300ms" }}
       >
-        <Download className="h-4 w-4" strokeWidth={2.2} /> Download the Android app
-      </a>
-      <p className="animate-fade-up mt-1.5 text-xs text-muted-foreground" style={{ animationDelay: "340ms" }}>
-        Android APK · iPhone? Open in Safari → Share → Add to Home Screen
+        Works in your browser. Nothing to install.
+      </p>
+      <p className="animate-fade-up mt-1 text-xs text-muted-foreground" style={{ animationDelay: "340ms" }}>
+        Any phone, any laptop —{" "}
+        <a href="/download" className="underline decoration-dotted hover:text-foreground">
+          and an Android app if you&rsquo;d rather
+        </a>
+        .
       </p>
 
       {/* The three pillars */}
@@ -227,12 +229,13 @@ export default async function Home() {
         >
           Sign up with your college email <ArrowRight className="h-4 w-4" strokeWidth={2.4} />
         </Link>
-        <a
-          href="/download"
-          className="press flex min-h-11 items-center gap-2 rounded-full border border-border bg-card/70 px-6 text-sm font-semibold backdrop-blur hover:border-primary"
-        >
-          <Download className="h-4 w-4" strokeWidth={2.2} /> Download the Android app
-        </a>
+        <p className="text-xs text-muted-foreground">
+          Opens straight in your browser ·{" "}
+          <a href="/download" className="underline decoration-dotted hover:text-foreground">
+            Android app
+          </a>{" "}
+          optional
+        </p>
       </div>
 
       <p className="mt-10 text-center text-xs text-muted-foreground">

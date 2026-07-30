@@ -33,9 +33,15 @@ export default function DownloadHub() {
           <ArrowLeft className="h-4 w-4" strokeWidth={2.2} /> Home
         </Link>
         <h1 className="text-3xl font-bold">Get the apps</h1>
+        {/* "APKs roll out per app; until then each opens in any browser" framed the
+            web version as a stopgap, which is backwards — it is the whole product,
+            and treating it as temporary is what made people think they were stuck
+            waiting for a download. */}
         <p className="mt-1 text-sm text-muted-foreground">
-          The LockedIn suite — one account across every app. Android APKs roll out per app; until
-          then each opens in any browser (add to home screen to install).
+          One account across every app. <span className="font-medium text-foreground">Every
+          one of these works right now in any browser</span> — open it and you&rsquo;re in. The
+          Android builds below are for people who want a home-screen icon and phone
+          notifications; nothing needs installing first.
         </p>
       </div>
 
