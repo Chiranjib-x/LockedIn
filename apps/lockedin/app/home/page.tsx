@@ -26,6 +26,7 @@ import { SkeletonSection } from "@suite/ui";
 import NowStrip from "@/modules/feed/now-strip";
 import LeaderStrip from "@/modules/feed/leader-strip";
 import ClubsStrip from "@/modules/feed/clubs-strip";
+import CampusPulse from "@/modules/feed/campus-pulse";
 import RecentChats from "@/modules/feed/recent-chats";
 import RenewalsSoon from "@/modules/feed/renewals-soon";
 import FreshListings from "@/modules/feed/fresh-listings";
@@ -231,6 +232,12 @@ export default async function HomePage() {
         <Search className="h-4 w-4" strokeWidth={2.2} />
         Search campus…
       </Link>
+
+      {/* LIVELY L1 — proof that other people are here, above the feature grid.
+          Every row is real; it renders nothing rather than pad a quiet campus. */}
+      <Suspense fallback={<SkeletonSection />}>
+        <CampusPulse />
+      </Suspense>
 
       {/* Club owners & team leads get their management command center first —
           renders nothing for normal students, so no toggle, no confusion. */}
