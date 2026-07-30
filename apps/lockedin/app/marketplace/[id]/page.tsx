@@ -15,11 +15,14 @@ import { BuyerOffer, SellerOffers, type OfferRow } from "@/modules/marketplace/o
 
 export default async function ListingDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ new?: string }>;
 }) {
   const { supabase, user } = await requireUser();
   const { id } = await params;
+  const justPosted = (await searchParams).new === "1";
 
   const { data: listing } = await supabase
     .from("listings")
@@ -85,6 +88,23 @@ export default async function ListingDetailPage({
           {!isMine && <ReportSheet targetType="listing" targetId={listing.id} authorId={seller.id} />}
         </span>
       </div>
+
+      {/* The one moment a seller is guaranteed to be motivated: they have just
+          posted and want it seen. The link is the PUBLIC preview, so whoever
+          receives it can open it without an account — that is the whole point,
+          and it is why this appears here rather than as a generic share icon. */}
+      {justPosted && listing.space_id == null && (
+        <div className="animate-fade-up flex flex-col gap-2 rounded-2xl border border-accent/40 bg-accent/10 p-4">
+          <p className="text-sm font-semibold">Posted. Now get it seen.</p>
+          <p className="text-xs text-muted-foreground">
+            Drop it in your block or class group — the link opens without an account, so
+            people who aren&rsquo;t on LockedIn yet can still see it.
+          </p>
+          <span className="flex flex-wrap gap-2">
+            <ShareButton path={`/p/listing/${listing.id}`} title={listing.title} />
+          </span>
+        </div>
+      )}
 
       <Gallery images={listing.images ?? []} title={listing.title} />
 

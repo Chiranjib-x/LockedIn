@@ -96,6 +96,7 @@ export default async function HomePage() {
     { count: clubCount },
     { data: spaceMemberRows },
     { count: toolCount },
+    { count: myListingCount },
   ] = await Promise.all([
     supabase.from("trips").select("id", { count: "exact", head: true }).eq("status", "open"),
     supabase.from("group_orders").select("id", { count: "exact", head: true }).eq("status", "open"),
@@ -114,6 +115,13 @@ export default async function HomePage() {
     // Toolbox size, so the card advertises what is actually in there. RLS scopes
     // showcase_items to the viewer's college ("showcase_items: college read").
     supabase.from("showcase_items").select("id", { count: "exact", head: true }).eq("is_active", true),
+    // Has this student ever put anything up for sale? 124 of 143 never have, and
+    // 8 live listings is what makes the app feel empty to the next arrival. Asked
+    // once, concretely, and only of people it applies to.
+    supabase
+      .from("listings")
+      .select("id", { count: "exact", head: true })
+      .eq("seller_id", user.id),
   ]);
 
   // campus_buildings is public-read (0065: `using (true)`) so RLS does NOT scope
@@ -169,6 +177,28 @@ export default async function HomePage() {
           </span>
         )}
       </div>
+
+      {/* One ask, once, and only to people who have never sold anything. A
+          generic "+" produced 8 listings across 143 students; a specific request
+          with a named first step is what marketplaces bootstrap on. It disappears
+          the moment they post, so it never becomes wallpaper. */}
+      {myListingCount === 0 && (
+        <Link href="/marketplace/new" className="animate-fade-up press" style={{ animationDelay: "20ms" }}>
+          <div className="glass press-glow flex items-center gap-4 rounded-3xl border border-primary/30 p-4">
+            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-tint-green text-tint-green-fg">
+              <Tag className="h-7 w-7" strokeWidth={2} />
+            </span>
+            <div className="min-w-0 flex-1">
+              <h2 className="font-heading font-bold">Sell one thing you&rsquo;re not using</h2>
+              <p className="text-sm text-muted-foreground">
+                A calculator, a lab coat, last sem&rsquo;s cycle. Takes about 30 seconds, and
+                it&rsquo;s what makes this place worth opening for everyone else.
+              </p>
+            </div>
+            <ArrowRight className="h-4 w-4 shrink-0 text-primary" strokeWidth={2.2} />
+          </div>
+        </Link>
+      )}
 
       {/* flex, not a fixed grid: a college with only two stats left a dead third
           column when the grid stayed three wide. */}

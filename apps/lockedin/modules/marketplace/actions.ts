@@ -51,14 +51,24 @@ export async function saveListing(formData: FormData) {
     const collegeId = await myCollegeId(supabase, user.id);
     // college_id stamped server-side; RLS WITH CHECK enforces it AND space
     // membership when space_id is set.
-    const { error } = await supabase
+    // The id comes back so the seller can be handed straight to their listing
+    // with a prompt to share it — every share is a link into the app from
+    // someone who is not the founder, which is the only distribution that scales.
+    const { data: created, error } = await supabase
       .from("listings")
-      .insert({ ...payload, seller_id: user.id, college_id: collegeId, space_id: spaceId });
+      .insert({ ...payload, seller_id: user.id, college_id: collegeId, space_id: spaceId })
+      .select("id")
+      .single();
     if (error) redirect("/marketplace/new?error=" + encodeURIComponent(error.message));
     if (spaceId) {
       revalidatePath(`/spaces/${spaceId}`);
+      // NO share prompt for a space listing. Its share link is a PUBLIC preview
+      // page, which is exactly what a members-only space must not hand out (0083).
       redirect(`/spaces/${spaceId}`);
     }
+    revalidatePath("/marketplace");
+    revalidatePath("/marketplace/mine");
+    if (created?.id) redirect(`/marketplace/${created.id}?new=1`);
   }
 
   revalidatePath("/marketplace");
