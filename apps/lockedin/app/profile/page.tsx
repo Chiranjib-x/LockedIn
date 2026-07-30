@@ -10,6 +10,7 @@ import { KarmaProgress } from "@/modules/karma/progress";
 import HunterCard from "@/modules/karma/hunter-card";
 import LogoutButton from "@/components/logout-button";
 import LinkId from "@/modules/events/link-id";
+import GenderField from "@/modules/profile/gender-field";
 
 async function updateProfile(formData: FormData) {
   "use server";
@@ -28,6 +29,10 @@ async function updateProfile(formData: FormData) {
       batch: String(formData.get("batch") ?? "").trim() || null,
       hostel_block: String(formData.get("hostel_block") ?? "").trim() || null,
       room: String(formData.get("room") ?? "").trim() || null,
+      // Blank means "not answered" and is stored as null, which is distinct from
+      // the deliberate answer "Prefer not to say". Sliced to the 40 the DB check
+      // allows so a long paste is trimmed rather than rejected with a raw error.
+      gender: String(formData.get("gender") ?? "").trim().slice(0, 40) || null,
     })
     .eq("id", user.id);
 
@@ -55,8 +60,10 @@ export default async function ProfilePage({
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  // my_profile() (migration 0041) — `room` is no longer selectable through the
-  // API by anyone, so the owner reads their own full row via this definer RPC.
+  // my_profile() — `room` is no longer selectable through the API by anyone, so
+  // the owner reads their own full row via this definer RPC. Introduced in 0041;
+  // the LIVE definition is 0042 (+ roll_number) and then 0087 (+ gender). Rebuild
+  // it from the latest, never from 0041, or the later columns vanish.
   const { data: profile } = await supabase
     .rpc("my_profile")
     .single<{
@@ -69,6 +76,7 @@ export default async function ProfilePage({
       room: string | null;
       roll_number: string | null;
       karma: number;
+      gender: string | null;
     }>();
 
   if (!profile) redirect("/login");
@@ -133,6 +141,7 @@ export default async function ProfilePage({
           Room <span className="font-normal text-muted-foreground">(optional, private)</span>
           <input name="room" defaultValue={profile.room ?? ""} className={field} />
         </label>
+        <GenderField value={profile.gender} />
         <SubmitButton pendingLabel="Saving…" className="mt-2">
           Save
         </SubmitButton>
