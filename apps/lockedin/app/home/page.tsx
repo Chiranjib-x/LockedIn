@@ -57,14 +57,21 @@ import RequestJoin, { type JoinableSpace } from "@/modules/spaces/request-join";
 //     the app cannot currently deliver, so it goes below.
 // Demoted: Deals (empty by content), Study Groups (1), Crews (2). Nothing is
 // deleted — every route stays one tap away under "More".
+// A42 renames, applied only where a student would have to decode the word:
+//   Match -> Roommate       "Match" reads as dating on a campus app
+//   My Pools -> Subscriptions   "Pools" says nothing about what it is
+//   Board -> Campus Board   matches the page's own h1
+// Toolbox, Crews and Deals were considered and LEFT: no replacement was clearly
+// better, and renaming for its own sake churns copy and breaks muscle memory for
+// the 143 students already here.
 const FEATURES: { short: string; href: string; icon: LucideIcon; tint: string; blurb: string }[] = [
   { short: "Clubs & Teams", href: "/communities", icon: Users, tint: "bg-tint-blue text-tint-blue-fg", blurb: "Chapters, clubs, and student teams." },
   { short: "Toolbox", href: "/toolbox", icon: Wrench, tint: "bg-tint-amber text-tint-amber-fg", blurb: "Handy tools picked for students." },
-  { short: "Board", href: "/board", icon: Pin, tint: "bg-tint-rose text-tint-rose-fg", blurb: "Lost & found and campus notices." },
-  { short: "Match", href: "/matches", icon: Target, tint: "bg-tint-violet text-tint-violet-fg", blurb: "Find a compatible roommate." },
+  { short: "Campus Board", href: "/board", icon: Pin, tint: "bg-tint-rose text-tint-rose-fg", blurb: "Lost & found and campus notices." },
+  { short: "Roommate", href: "/matches", icon: Target, tint: "bg-tint-violet text-tint-violet-fg", blurb: "Find a compatible roommate." },
   { short: "Events", href: "/events", icon: PartyPopper, tint: "bg-tint-violet text-tint-violet-fg", blurb: "What's happening on campus." },
   { short: "Timetable", href: "/timetable", icon: CalendarDays, tint: "bg-tint-violet text-tint-violet-fg", blurb: "Classes, attendance, bunk math." },
-  { short: "My Pools", href: "/subscriptions", icon: Tv, tint: "bg-tint-teal text-tint-teal-fg", blurb: "Subscriptions you're sharing." },
+  { short: "Subscriptions", href: "/subscriptions", icon: Tv, tint: "bg-tint-teal text-tint-teal-fg", blurb: "Subscriptions you're sharing." },
 ];
 
 // Demoted, not removed — one tap away, just not competing for the first screen.

@@ -36,15 +36,22 @@ import { InstallPrompt } from "@/components/install-prompt";
 
 // Every feature gets a flagship-style card (icon chip + title + blurb +
 // arrow) — same visual weight as Marketplace/Gate Runner, no smaller tiles.
+// A42 renames, applied only where a student would have to decode the word:
+//   Match -> Roommate       "Match" reads as dating on a campus app
+//   My Pools -> Subscriptions   "Pools" says nothing about what it is
+//   Board -> Campus Board   matches the page's own h1
+// Toolbox, Crews and Deals were considered and LEFT: no replacement was clearly
+// better, and renaming for its own sake churns copy and breaks muscle memory for
+// the 143 students already here.
 const FEATURES: { short: string; href: string; icon: LucideIcon; tint: string; blurb: string }[] = [
-  { short: "Board", href: "/board", icon: Pin, tint: "bg-tint-rose text-tint-rose-fg", blurb: "Lost & found and campus notices." },
-  { short: "Match", href: "/matches", icon: Target, tint: "bg-tint-violet text-tint-violet-fg", blurb: "Find a compatible roommate." },
+  { short: "Campus Board", href: "/board", icon: Pin, tint: "bg-tint-rose text-tint-rose-fg", blurb: "Lost & found and campus notices." },
+  { short: "Roommate", href: "/matches", icon: Target, tint: "bg-tint-violet text-tint-violet-fg", blurb: "Find a compatible roommate." },
   { short: "Crews", href: "/crews", icon: Users2, tint: "bg-tint-rose text-tint-rose-fg", blurb: "Private groups for roommates & friends." },
   { short: "Toolbox", href: "/toolbox", icon: Wrench, tint: "bg-tint-amber text-tint-amber-fg", blurb: "Handy tools picked for students." },
   { short: "Deals", href: "/deals", icon: Tag, tint: "bg-tint-green text-tint-green-fg", blurb: "Offers from campus merchants." },
   { short: "Timetable", href: "/timetable", icon: CalendarDays, tint: "bg-tint-violet text-tint-violet-fg", blurb: "Classes, attendance, bunk math." },
   { short: "Study Groups", href: "/study-groups", icon: BookOpen, tint: "bg-tint-teal text-tint-teal-fg", blurb: "Find people studying your course." },
-  { short: "My Pools", href: "/subscriptions", icon: Tv, tint: "bg-tint-teal text-tint-teal-fg", blurb: "Subscriptions you're sharing." },
+  { short: "Subscriptions", href: "/subscriptions", icon: Tv, tint: "bg-tint-teal text-tint-teal-fg", blurb: "Subscriptions you're sharing." },
 ];
 
 function greeting() {

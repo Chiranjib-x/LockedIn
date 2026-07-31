@@ -325,12 +325,25 @@ would agree. "Improve X" is not an item. "X passes Y" is.
 - **Verified:** `node scripts/gate.mjs {lockedin,campusclubs,campustrade}` → GATE PASS ×3; `npx playwright test` → 22 passed (4.8m).
 
 ### A42 · LIVELY L9 — check feature names against what a student would say
-- **State:** open
+- **State:** done 2026-07-31
 - **Blocked by:** A41
 - **Why:** "Group-buys", "Crews", "Toolbox", "My Pools" are internal names. A name a student has to decode is a tap they do not make.
 - **Do:** for each grid card, write the internal name beside the phrase a VIT student would actually use. Change only the ones where the gap is real and the replacement is unambiguous — renaming for its own sake churns copy and breaks muscle memory for the 143 people already here.
 - **Done when:** the comparison table is in the Evidence line, and any rename is applied across all three forks together.
-- **Evidence:**
+- **Evidence — every user-facing grid name against what a VIT student would actually say:**
+
+  | internal | what a student says | decision |
+  |---|---|---|
+  | Match | "roommate finder" | **renamed → Roommate.** "Match" reads as *dating* on a campus app — not merely opaque but misleading, which is the strongest case for changing a name |
+  | My Pools | "Netflix split" | **renamed → Subscriptions.** "Pools" says nothing about what it is |
+  | Board | "notice board" | **renamed → Campus Board.** The page's own h1 already said "Campus board"; the card did not match it |
+  | Clubs & Teams | "clubs", "chapters" | keep — already aligned, and A41 fixed the page title to match |
+  | Toolbox | — | **keep.** Considered and rejected: it is brandable, and the "34" badge plus the blurb already say what is inside |
+  | Events, Timetable, Study Groups | same words | keep — no gap |
+  | Crews, Deals | "squad", "offers" | **keep.** A gap exists but no replacement is clearly better, and renaming on a coin-flip churns copy and breaks muscle memory for the 143 students already here |
+
+- **Applied to lockedin and campustrade. campusclubs has NO FEATURES array** — it is the clubs-only fork and never had those cards, so 0/3 there is correct, not a missed echo. Verified by grep rather than assumed.
+- **Verified:** `node scripts/gate.mjs {lockedin,campusclubs,campustrade}` → GATE PASS ×3; `npx playwright test` → 22 passed (4.5m).
 
 ## USER-GATED — `/loop` reports these, never attempts them
 
@@ -409,3 +422,4 @@ desperate-looking thing in the funnel) · **U9** monitoring before W+4 campus-wi
 2026-07-31 · A39 · done · 6e33897 · home grid 10 -> 7 cards, ranked by measured rows; Deals/StudyGroups/Crews demoted but one tap away
 2026-07-31 · A40 · done · dc28f4f · last_seen_at + since-you-were-last-here line; read-then-advance proven across transactions
 2026-07-31 · A41 · done · 9322532 · seven-route one-screen audit; /communities retitled Clubs & Teams; two layout failures filed
+2026-07-31 · A42 · done · bc2cd1d · Match->Roommate, My Pools->Subscriptions, Board->Campus Board; Toolbox/Crews/Deals deliberately kept
