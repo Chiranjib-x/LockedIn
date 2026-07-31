@@ -1,6 +1,6 @@
 import { BackLink } from "@suite/ui";
 import PostForm from "@/modules/board/post-form";
-import { requireUser } from "@/lib/auth";
+import { requireUser } from "@suite/auth/auth";
 
 export default async function NewEventPage({
   searchParams,

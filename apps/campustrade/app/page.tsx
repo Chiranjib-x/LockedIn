@@ -11,7 +11,7 @@ import {
   Venus,
   type LucideIcon,
 } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@suite/auth/server";
 import { LogoMark } from "@suite/ui";
 
 // Marketing pillars — campus-only Marketplace, built-in Chat, and the

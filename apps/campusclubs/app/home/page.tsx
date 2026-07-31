@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { ArrowRight, CalendarDays, MapPin, PartyPopper, Search, Users } from "lucide-react";
-import { requireUser } from "@/lib/auth";
+import { requireUser } from "@suite/auth/auth";
 import { istNow, istTodayISO } from "@/modules/timetable/helpers";
 import { SkeletonSection } from "@suite/ui";
 import LeaderStrip from "@/modules/feed/leader-strip";

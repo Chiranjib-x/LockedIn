@@ -1,4 +1,4 @@
-import { requireUser } from "@/lib/auth";
+import { requireUser } from "@suite/auth/auth";
 import { redirect } from "next/navigation";
 import { BackLink } from "@suite/ui";
 import ListingForm from "@/modules/marketplace/listing-form";

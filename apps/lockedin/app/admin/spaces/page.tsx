@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { requireUser } from "@/lib/auth";
+import { requireUser } from "@suite/auth/auth";
 import { Card } from "@suite/ui";
 import FounderInvite from "@/modules/spaces/founder-invite";
 import MemberPicker, { type Student } from "@/modules/spaces/member-picker";

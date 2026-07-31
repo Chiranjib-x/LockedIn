@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@suite/auth/client";
 
 // Flip to true only AFTER enabling the Google provider in the Supabase
 // dashboard (Auth → Providers → Google, with a Client ID/Secret from Google

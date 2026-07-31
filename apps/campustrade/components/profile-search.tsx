@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@suite/auth/client";
 import { inputClass } from "@suite/ui";
 
 export type ProfileHit = {

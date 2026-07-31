@@ -2,7 +2,7 @@ import Link from "next/link";
 import { MapPin } from "lucide-react";
 import { notFound } from "next/navigation";
 import Confetti from "@/components/confetti";
-import { requireUser } from "@/lib/auth";
+import { requireUser } from "@suite/auth/auth";
 import { rupees } from "@/modules/marketplace/format";
 import { openChat } from "@/modules/chat/actions";
 import SaveButton from "@/components/save-button";

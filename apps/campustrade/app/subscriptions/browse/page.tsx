@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Tv } from "lucide-react";
-import { requireUser } from "@/lib/auth";
+import { requireUser } from "@suite/auth/auth";
 import { Card } from "@suite/ui";
 import { rupees } from "@/modules/marketplace/format";
 import { KarmaBadge } from "@/modules/karma/badge";

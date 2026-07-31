@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { updateSession } from "@/lib/supabase/middleware";
+import { updateSession } from "@suite/auth/middleware";
 
 export async function middleware(request: NextRequest) {
   // OAuth safety net: an auth provider redirect that lands on the site root

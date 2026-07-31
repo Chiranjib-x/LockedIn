@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@suite/auth/server";
 import { revalidatePath } from "next/cache";
 
 // FINDINGS F42. revalidatePath with "layout" is the point: the unread badge

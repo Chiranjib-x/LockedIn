@@ -12,7 +12,7 @@ import {
   Tv,
   type LucideIcon,
 } from "lucide-react";
-import { requireUser } from "@/lib/auth";
+import { requireUser } from "@suite/auth/auth";
 import { istNow, toIST } from "@/modules/timetable/helpers";
 import { Card } from "@suite/ui";
 import { BackLink } from "@suite/ui";

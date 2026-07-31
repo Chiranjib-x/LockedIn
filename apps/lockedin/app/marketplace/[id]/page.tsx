@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { requireUser } from "@/lib/auth";
+import { requireUser } from "@suite/auth/auth";
 import Gallery from "@/modules/marketplace/gallery";
 import { rupees } from "@/modules/marketplace/format";
 import { openChat } from "@/modules/chat/actions";

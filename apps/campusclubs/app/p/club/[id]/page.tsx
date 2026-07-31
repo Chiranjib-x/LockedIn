@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@suite/auth/server";
 import { CATEGORY_META } from "@/modules/communities/categories";
 
 // Public preview for a club page — same shape as app/p/listing/[id]/page.tsx and

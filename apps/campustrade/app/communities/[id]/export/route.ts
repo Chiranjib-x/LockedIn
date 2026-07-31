@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@suite/auth/server";
 
 type Row = { name: string | null; email: string; status: string; since: string };
 

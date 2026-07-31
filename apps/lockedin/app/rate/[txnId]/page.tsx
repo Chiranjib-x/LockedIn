@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { requireUser } from "@/lib/auth";
+import { requireUser } from "@suite/auth/auth";
 import RateForm from "@/modules/ratings/rate-form";
 
 const CONTEXT_LABEL: Record<string, string> = {

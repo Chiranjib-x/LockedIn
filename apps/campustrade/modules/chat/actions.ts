@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@suite/auth/server";
 import { redirect } from "next/navigation";
 
 // Start (or resume) a DM about a context, then open it. Blocks/bans enforced

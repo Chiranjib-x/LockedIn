@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@suite/auth/server";
 import Link from "next/link";
 import { login } from "@/app/auth/actions";
 import { inputClass } from "@suite/ui";

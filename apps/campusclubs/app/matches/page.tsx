@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { requireUser } from "@/lib/auth";
+import { requireUser } from "@suite/auth/auth";
 import { Card } from "@suite/ui";
 import { scoreMatch, lookingForCompatible, type Prefs } from "@/modules/matcher/score";
 import ConnectButton from "@/modules/matcher/connect-button";

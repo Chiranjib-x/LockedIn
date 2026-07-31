@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { requireUser } from "@/lib/auth";
+import { requireUser } from "@suite/auth/auth";
 import { Card } from "@suite/ui";
 import { BackLink } from "@suite/ui";
 import ListingCard from "@/modules/marketplace/listing-card";

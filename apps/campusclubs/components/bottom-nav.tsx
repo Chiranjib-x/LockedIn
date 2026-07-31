@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@suite/auth/server";
 import NavLink from "@/components/nav-link";
 
 // CampusClubs bottom tab bar: Home (command center) · Clubs (discover) · [+]

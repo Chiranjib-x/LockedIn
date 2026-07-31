@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Sparkles, ShoppingBag, Pin, Users, Footprints } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@suite/auth/server";
 
 // LIVELY L1 — what happened on campus without you.
 //

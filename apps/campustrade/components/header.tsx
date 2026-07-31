@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Bell, Search, ShieldCheck, Wrench } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@suite/auth/server";
 import ThemeToggle from "@/components/theme-toggle";
 import { LogoMark } from "@suite/ui";
 

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { requireUser } from "@/lib/auth";
+import { requireUser } from "@suite/auth/auth";
 import { Card } from "@suite/ui";
 import { rupees } from "@/modules/marketplace/format";
 import TypeBadge from "@/modules/board/badge";

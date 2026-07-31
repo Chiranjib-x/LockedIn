@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@suite/auth/server";
 import { Card, Section } from "@suite/ui";
 
 // Date.now() lives in these standalone helpers (not inline in the component

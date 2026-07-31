@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@suite/auth/client";
 
 // In the installed app, Google OAuth runs in a Chrome Custom Tab (Google blocks
 // embedded webviews) and redirects back via the com.lockedin.campus:// deep

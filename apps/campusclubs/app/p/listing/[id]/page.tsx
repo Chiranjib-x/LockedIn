@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@suite/auth/server";
 import { rupees } from "@/modules/marketplace/format";
 
 // Phase 22 public preview: NO requireUser — anyone with the link sees exactly

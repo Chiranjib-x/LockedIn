@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@suite/auth/client";
 
 // Sealed vouching (0027): a member generates a single-use invite link and
 // shares it out-of-band. Replaces the old search-profiles-by-name flow —

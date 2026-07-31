@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@suite/auth/server";
 import { redirect } from "next/navigation";
 
 // Auth errors are shown to the student verbatim, so an unusable message becomes

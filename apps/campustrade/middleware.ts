@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { updateSession } from "@/lib/supabase/middleware";
+import { updateSession } from "@suite/auth/middleware";
 
 // FINDINGS F20 / QUEUE A10: CampusTrade was forked from the mother by
 // subtraction, so it still SERVES routes it no longer owns at unlinked URLs.

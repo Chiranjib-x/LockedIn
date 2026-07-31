@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { requireUser } from "@/lib/auth";
+import { requireUser } from "@suite/auth/auth";
 import { Card } from "@suite/ui";
 import { ShowcaseForm, MerchantForm } from "@/modules/showcase/forms";
 import { ShowcaseAdminRow, MerchantAdminRow } from "@/modules/showcase/admin-client";

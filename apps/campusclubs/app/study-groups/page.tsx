@@ -1,5 +1,5 @@
 import { BookOpen, MapPin } from "lucide-react";
-import { requireUser } from "@/lib/auth";
+import { requireUser } from "@suite/auth/auth";
 import { Card } from "@suite/ui";
 import { EmptyState } from "@suite/ui";
 import { KarmaBadge } from "@/modules/karma/badge";

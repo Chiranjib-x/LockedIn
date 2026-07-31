@@ -1,4 +1,4 @@
-import { requireUser } from "@/lib/auth";
+import { requireUser } from "@suite/auth/auth";
 import { BackLink } from "@suite/ui";
 import RequestForm from "@/modules/requests/request-form";
 

@@ -20,7 +20,7 @@ import {
   Wrench,
   type LucideIcon,
 } from "lucide-react";
-import { requireUser } from "@/lib/auth";
+import { requireUser } from "@suite/auth/auth";
 import { istNow } from "@/modules/timetable/helpers";
 import { SkeletonSection } from "@suite/ui";
 import NowStrip from "@/modules/feed/now-strip";

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { CalendarDays, MapPin } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@suite/auth/server";
 import { Card, Section } from "@suite/ui";
 import { istTodayISO } from "@/modules/timetable/helpers";
 import TypeBadge from "@/modules/board/badge";

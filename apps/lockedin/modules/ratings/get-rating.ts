@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@suite/auth/server";
 
 // Average stars + count for a user, via the security-definer summary so it works
 // even though a ratee can't read their own rating rows (blind ratings).

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { requireUser } from "@/lib/auth";
+import { requireUser } from "@suite/auth/auth";
 import Thread from "@/modules/chat/thread";
 import VerifiedName from "@/components/verified-name";
 import { markRead } from "@/modules/chat/actions";

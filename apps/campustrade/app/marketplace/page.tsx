@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Search } from "lucide-react";
-import { requireUser } from "@/lib/auth";
+import { requireUser } from "@suite/auth/auth";
 import { EmptyState } from "@suite/ui";
 import FilterBar from "@/modules/marketplace/filter-bar";
 import ListingCard from "@/modules/marketplace/listing-card";

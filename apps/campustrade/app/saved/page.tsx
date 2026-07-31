@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Bookmark } from "lucide-react";
-import { requireUser } from "@/lib/auth";
+import { requireUser } from "@suite/auth/auth";
 import { Card, Section } from "@suite/ui";
 import { BackLink } from "@suite/ui";
 import { EmptyState } from "@suite/ui";

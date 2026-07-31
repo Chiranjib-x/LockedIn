@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@suite/auth/server";
 import { deleteAccount } from "@/app/auth/actions";
 import { SubmitButton } from "@suite/ui";
 import { inputClass } from "@suite/ui";

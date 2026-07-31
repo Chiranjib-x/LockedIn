@@ -2,7 +2,7 @@ import Link from "next/link";
 import { CalendarDays, MapPin } from "lucide-react";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@suite/auth/server";
 import TypeBadge from "@/modules/board/badge";
 
 // Phase 22 public preview for board posts — see app/p/listing/[id]/page.tsx.

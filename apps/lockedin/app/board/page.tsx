@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { MapPin, Pin } from "lucide-react";
-import { requireUser } from "@/lib/auth";
+import { requireUser } from "@suite/auth/auth";
 import { EmptyState } from "@suite/ui";
 import { Card } from "@suite/ui";
 import BoardFilter from "@/modules/board/board-filter";

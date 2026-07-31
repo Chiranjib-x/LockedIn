@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { CalendarDays, MapPin } from "lucide-react";
 import { notFound } from "next/navigation";
-import { requireUser } from "@/lib/auth";
+import { requireUser } from "@suite/auth/auth";
 import Gallery from "@/modules/marketplace/gallery";
 import TypeBadge from "@/modules/board/badge";
 import ResolveButton from "@/modules/board/resolve-button";

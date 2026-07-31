@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { Megaphone } from "lucide-react";
-import { requireUser } from "@/lib/auth";
+import { requireUser } from "@suite/auth/auth";
 import { Card, inputClass, SubmitButton, BackLink } from "@suite/ui";
 import { sendBroadcast } from "@/modules/broadcast/actions";
 

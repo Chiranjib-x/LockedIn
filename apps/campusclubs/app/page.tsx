@@ -8,7 +8,7 @@ import {
   ScanLine,
   type LucideIcon,
 } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@suite/auth/server";
 import { LogoMark } from "@suite/ui";
 
 // Marketing pillars — the four things that make CampusClubs worth switching

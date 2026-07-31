@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@suite/auth/server";
 import ChatTab from "@/modules/chat/chat-tab";
 import { unreadChatCount } from "@/modules/chat/unread";
 import NavLink from "@/components/nav-link";

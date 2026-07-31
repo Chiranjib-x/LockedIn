@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@suite/auth/server";
 import { revalidatePath } from "next/cache";
 
 // Link the caller's OWN ID card. The stored value is the exact barcode string,

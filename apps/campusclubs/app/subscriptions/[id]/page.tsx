@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { CalendarDays } from "lucide-react";
 import { notFound } from "next/navigation";
-import { requireUser } from "@/lib/auth";
+import { requireUser } from "@suite/auth/auth";
 import { rupees } from "@/modules/marketplace/format";
 import { AddPoolMember, MemberRow, SplitEvenlyButton } from "@/modules/subscriptions/client";
 import { DiscoverToggle, RequestJoin, JoinRequestsPanel } from "@/modules/subscriptions/discovery";

@@ -1,6 +1,6 @@
 import { type EmailOtpType } from "@supabase/supabase-js";
 import { type NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@suite/auth/server";
 
 // Handles the email-confirmation link. Requires the Supabase "Confirm signup"
 // email template to link to: {{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email

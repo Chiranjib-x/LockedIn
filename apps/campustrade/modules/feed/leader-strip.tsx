@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, CalendarClock, Inbox, IndianRupee, Users } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@suite/auth/server";
 import { istTodayISO } from "@/modules/timetable/helpers";
 
 type Led = {

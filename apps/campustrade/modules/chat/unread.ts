@@ -1,4 +1,4 @@
-import type { createClient } from "@/lib/supabase/server";
+import type { createClient } from "@suite/auth/server";
 
 // Count of conversations with a message newer than my last_read_at, not sent by
 // me. ponytail: two small queries + a map — fine at student-chat volumes; move

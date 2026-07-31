@@ -1,4 +1,4 @@
-import type { createClient } from "@/lib/supabase/server";
+import type { createClient } from "@suite/auth/server";
 
 // Reusable block filter. Per-user blocking isn't practical in RLS alone, so this
 // is query-level filtering layered on top: fetch the ids the current user has

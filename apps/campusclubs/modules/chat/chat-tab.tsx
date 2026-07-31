@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { MessageCircle } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@suite/auth/client";
 
 // Chats tab with a realtime unread badge. Server seeds the initial count; a
 // message subscription (RLS-filtered to my conversations) bumps it live. Zeroes

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, Users } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@suite/auth/server";
 import { catLabel } from "@/modules/communities/categories";
 
 type Club = {

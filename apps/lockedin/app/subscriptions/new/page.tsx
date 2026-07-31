@@ -1,4 +1,4 @@
-import { requireUser } from "@/lib/auth";
+import { requireUser } from "@suite/auth/auth";
 import { inputClass } from "@suite/ui";
 import { BackLink } from "@suite/ui";
 import { SubmitButton } from "@suite/ui";

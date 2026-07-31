@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@suite/auth/server";
 import { UpNextCard } from "@/modules/timetable/up-next-card";
 import { getNextClass, istNow, type TimetableEntry } from "@/modules/timetable/helpers";
 import { attendancePercent } from "@/modules/timetable/bunk-math";

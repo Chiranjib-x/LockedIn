@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { LogOut } from "lucide-react";
 import { logout } from "@/app/auth/actions";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@suite/auth/client";
 import { disablePush } from "@/lib/push/client";
 
 // Lives on the Profile page (moved out of the header in the visual refresh).

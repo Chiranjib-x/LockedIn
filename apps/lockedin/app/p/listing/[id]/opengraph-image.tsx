@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@suite/auth/server";
 import { rupees } from "@/modules/marketplace/format";
 
 export const size = { width: 1200, height: 630 };

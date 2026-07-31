@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@suite/auth/client";
 
 // Downscale to <=1280px longest side + re-encode JPEG — typically 3–5x smaller,
 // stretching the storage quota. Also strips EXIF (incl. GPS geotags) as a side

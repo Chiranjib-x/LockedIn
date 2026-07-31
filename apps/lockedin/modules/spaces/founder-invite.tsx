@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@suite/auth/client";
 
 // FINDINGS F7: the founder's bootstrap for an EMPTY space (0070). Deliberately
 // mints an invite rather than adding someone directly — the person still opts

@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@suite/auth/server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { istParse } from "@/modules/timetable/helpers";

@@ -26,6 +26,7 @@
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "web-push": "^3.6.7",
+    "@suite/auth": "*",
     "@suite/lib": "*",
     "@suite/ui": "*"
   },

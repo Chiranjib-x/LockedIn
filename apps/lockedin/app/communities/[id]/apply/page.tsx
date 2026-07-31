@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { requireUser } from "@/lib/auth";
+import { requireUser } from "@suite/auth/auth";
 import { BackLink } from "@suite/ui";
 import { inputClass } from "@suite/ui";
 import { SubmitButton } from "@suite/ui";

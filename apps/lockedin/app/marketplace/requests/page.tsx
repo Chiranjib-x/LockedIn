@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { HandHelping } from "lucide-react";
-import { requireUser } from "@/lib/auth";
+import { requireUser } from "@suite/auth/auth";
 import { BackLink } from "@suite/ui";
 import { EmptyState } from "@suite/ui";
 import RequestCard, { type RequestRow } from "@/modules/requests/request-card";

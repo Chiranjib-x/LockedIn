@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { SendHorizontal } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@suite/auth/client";
 
 type Msg = { id: string; sender_id: string; body: string; created_at: string };
 

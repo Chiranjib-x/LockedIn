@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { UserPlus, Users, Sparkles, CalendarDays, UserCheck, Megaphone } from "lucide-react";
-import { requireUser } from "@/lib/auth";
+import { requireUser } from "@suite/auth/auth";
 import { Card } from "@suite/ui";
 import { BackLink } from "@suite/ui";
 

@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@suite/auth/server";
 
 export function ago(iso: string) {
   const mins = (Date.now() - new Date(iso).getTime()) / 60000;

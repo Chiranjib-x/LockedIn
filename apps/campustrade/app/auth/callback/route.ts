@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@suite/auth/server";
 
 // Handles the redirect back from Supabase OAuth providers (Google, etc).
 // The college-domain gate (migration 0036 handle_new_user trigger) runs

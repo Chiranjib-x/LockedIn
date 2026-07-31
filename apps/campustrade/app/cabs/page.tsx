@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { CarTaxiFront } from "lucide-react";
-import { requireUser } from "@/lib/auth";
+import { requireUser } from "@suite/auth/auth";
 import { Card, inputClass } from "@suite/ui";
 import { EmptyState } from "@suite/ui";
 

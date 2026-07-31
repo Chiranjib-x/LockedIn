@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { requireUser } from "@/lib/auth";
+import { requireUser } from "@suite/auth/auth";
 import { Card } from "@suite/ui";
 import { BuildingForm, BuildingRow, type Building } from "@/modules/campus/admin-client";
 import CampusMapEditor, { type EditorBuilding } from "@/modules/campus/map-editor";
