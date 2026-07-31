@@ -74,7 +74,11 @@ export default async function CommunitiesPage({
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 px-4 py-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Communities</h1>
+        {/* A41 one-screen test: this page was titled "Communities" while the
+            home card, the landing page and the feature map all say "Clubs &
+            Teams". A student who taps "Clubs & Teams" and lands on
+            "Communities" has to work out they are the same thing. */}
+        <h1 className="text-2xl font-bold">Clubs &amp; Teams</h1>
         <Link
           href="/communities/new"
           className="press inline-flex min-h-11 items-center rounded-full bg-primary px-4 text-sm font-semibold text-on-primary hover:bg-primary-strong"

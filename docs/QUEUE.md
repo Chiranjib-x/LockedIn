@@ -304,11 +304,25 @@ would agree. "Improve X" is not an item. "X passes Y" is.
 - **Evidence:** ordering proven across separate transactions (one call == one request): call1 → `null`, call2 → `16:39:42.854Z`, call3 → `16:39:44.890Z` → **advances each visit**. An earlier probe inside a single transaction showed it NOT advancing — that was Postgres `now()` returning the transaction timestamp, i.e. the probe was wrong, not the function. `e2e/since-last-visit.spec.ts` asserts both directions: silent on an immediate re-visit, present after a listing is created, then silent again once that visit consumed the window. `npx playwright test` → **22 passed (4.1m)**; `node scripts/gate.mjs lockedin` → GATE PASS; probe rows left → 0.
 
 ### A41 · LIVELY L8 — the one-screen test on every main route
-- **State:** open
+- **State:** done 2026-07-31
 - **Why:** `docs/LIVELY.md` Phase 3. Intuitive means a new student knows what to do without reading. Nobody has walked the routes at 390px asking that question, so the failures are unknown rather than absent.
 - **Do:** open each of /home, /marketplace, /board, /communities, /events, /gate, /profile at 390×844 as a student with nothing (no listings, no circle, no clubs) and record, per route, what the first action is and whether it is obvious without reading. Produce the list. Fix only what is trivially fixable in the same pass; file the rest.
 - **Done when:** a table of all seven routes with a pass/fail and the first-action-if-any, pasted into the Evidence line.
-- **Evidence:**
+- **Evidence — walked at 390×844 as `rohit_menon@demo.invalid`, a student in no circle with no listings. "Actions" counts interactive elements ABOVE THE FOLD:**
+
+  | route | h1 | first action above the fold | actions | verdict |
+  |---|---|---|---|---|
+  | /home | Rohit | Search campus… | 1 | **weak** — one action, and it is a search box, which assumes you already know what you want |
+  | /marketplace | Marketplace | Requests | 15 | pass |
+  | /board | Campus board | ＋ Post | 5 | pass |
+  | /communities | Communities | ＋ Propose | 2 | **fail** — titled "Communities" while the rest of the app says "Clubs & Teams", and the only offered action is *propose a new one* |
+  | /events | Events | ＋ Post event | 1 | **fail** — the sole action is *create an event*, which is not what a new student wants to do |
+  | /gate | Gate pickups | ＋ My delivery | 5 | pass |
+  | /profile | Rohit Menon | Saved items & alerts | 6 | pass |
+
+- **Fixed in this pass (trivial only):** the `/communities` h1 now reads **"Clubs & Teams"** across all three forks, matching the home card, the landing page and the feature map. A student who taps "Clubs & Teams" and lands on a page titled "Communities" has to work out they are the same thing.
+- **Filed, not fixed:** (1) `/events` and `/communities` lead with a CREATE action for someone who has nothing — the first action should be to consume, not author; (2) `/home` shows only one interactive element above the fold. Both are layout decisions rather than one-line fixes; they belong with A42's naming work and a follow-up. Recorded in STATE `## Open items`.
+- **Verified:** `node scripts/gate.mjs {lockedin,campusclubs,campustrade}` → GATE PASS ×3; `npx playwright test` → 22 passed (4.8m).
 
 ### A42 · LIVELY L9 — check feature names against what a student would say
 - **State:** open
@@ -394,3 +408,4 @@ desperate-looking thing in the funnel) · **U9** monitoring before W+4 campus-wi
 2026-07-31 · A38 · done · 839a21b · one next-step suggestion after a first listing, gated on real per-user counts; spec asserts <=1
 2026-07-31 · A39 · done · 6e33897 · home grid 10 -> 7 cards, ranked by measured rows; Deals/StudyGroups/Crews demoted but one tap away
 2026-07-31 · A40 · done · dc28f4f · last_seen_at + since-you-were-last-here line; read-then-advance proven across transactions
+2026-07-31 · A41 · done · 9322532 · seven-route one-screen audit; /communities retitled Clubs & Teams; two layout failures filed
