@@ -267,6 +267,27 @@ would agree. "Improve X" is not an item. "X passes Y" is.
 
 ---
 
+### A37 · Reconcile the IST surface, then migrate it onto `packages/lib`
+- **State:** open
+- **Why:** A8 closed `use-refresh`, `packages/ui` and `packages/auth`, but deliberately left IST alone. `packages/lib/ist.ts` exports `istParse/istDateKey/istDayLabel`; `modules/timetable/helpers.ts` exports `toIST/istNow/istParse/istTodayISO/dateKey/formatTime/getFreeWindow/getNextClass`. Those are **divergent, not a superset** — a find-and-replace breaks the timetable. IST is also the single most repeated bug class in this repo (⚠×2, both directions), so this surface earns a reconciliation pass rather than a swap.
+- **Do:** diff the two modules function by function and write down, per export, whether the package or the local copy is authoritative. Make `packages/lib/ist.ts` the superset. Only then rewrite imports across the three forks, one app at a time, and delete the local copies.
+- **Done when:** `TZ=UTC npm run test:ist` and `TZ=Asia/Kolkata npm run test:ist` both pass with identical output, `node scripts/gate.mjs <app> --build` passes on all three forks, and no fork keeps a local `modules/timetable/helpers.ts` function that also lives in `packages/lib/ist.ts`.
+- **Evidence:**
+
+### A38 · LIVELY L7 — second-action nudge after a first post
+- **State:** open
+- **Why:** `docs/LIVELY.md` Phase 2. 124 of 143 students have never posted; the ones who do get a share prompt and a push ask, then nothing. The next action should follow from what they just did, not be a generic tour.
+- **Do:** on the just-posted listing page, after the share + push cards, suggest one concrete next step chosen from what the student lacks — no timetable yet, not in a circle, no clubs joined. One suggestion, never a list.
+- **Done when:** a student with a fresh listing sees exactly one suggestion, it reflects something they genuinely have not done, and it disappears once done. Gate PASS + a spec asserting the single-suggestion rule.
+- **Evidence:**
+
+### A39 · LIVELY L10 — cut the home feature grid down
+- **State:** open
+- **Why:** `docs/LIVELY.md` Phase 3. Ten equal cards is a menu, not a home screen; nothing signals what matters. Real usage is measurable — listings, pickups, trips, group orders, subscriptions all have row counts.
+- **Do:** measure actual usage per feature at VIT, then demote the three least-used from the flagship grid into a secondary "More" section. Do not delete routes.
+- **Done when:** the grid shows ≤7 cards, the demoted three are still reachable in one tap, and the ranking is justified by pasted row counts rather than taste.
+- **Evidence:**
+
 ## USER-GATED — `/loop` reports these, never attempts them
 
 Nothing here is a failure of the loop. These need you.
@@ -338,3 +359,4 @@ desperate-looking thing in the funnel) · **U9** monitoring before W+4 campus-wi
 - **Why:** the constraint "to contact them, one should know their unique username" is enforced in the UI only. Probed as a plain student: `select count(*) from profiles` returns every same-college row and `name ilike` partial-matches them, so names are searchable directly against PostgREST with the public anon key. `find_or_create_dm` then accepts any same-college uuid without checking that the caller knew the username or has any relationship — so cold-DM-by-name-search, the exact thing the rule forbids, works via the API. Not reachable by tapping around; needs devtools.
 - **Do:** add `p_username text default null` to `find_or_create_dm` and allow the DM only when a conversation already exists, OR caller and target share a community/space, OR the caller is genuinely party to the named context (**verified per type — `ctype`/`ctx` are caller-supplied and must not be trusted**), OR `lower(p_username)` equals the target's username. Thread the username through from `/search`'s People result, the one legitimate no-relationship path. Do **not** lock down the `profiles` SELECT policy — names render on listings, rosters, chats and karma badges everywhere, and restricting rows breaks display for no extra safety once the DM path is guarded.
 - **Done when:** an adversarial probe as a plain student — harvest a same-college uuid, call `find_or_create_dm` with no username and no shared context — is refused, pasted; and all six existing call sites (listing, request, trip, group-buy, subscription, post-claim) plus the community-roster and username-search paths still open a chat, pasted per path. Fork echo: the construct exists in lockedin/campusclubs/campustrade.
+2026-07-31 · A8 · done · 33d2bb0 · packages/auth surface: 345 imports rewritten, 12 local files deleted, build PASS on all five apps
