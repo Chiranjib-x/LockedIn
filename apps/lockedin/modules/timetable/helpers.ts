@@ -17,40 +17,23 @@ function toMinutes(t: string) {
   return h * 60 + m;
 }
 
-// Vercel functions run in UTC; students are IST. toIST shifts a Date so its
-// wall-clock getters (getHours/getDay/getDate…) read Asia/Kolkata on any
-// server timezone — a no-op on an IST machine. Read-only trick: never compare
-// a shifted Date to real timestamps or serialize it (toISOString is off by
-// the shift). For rendering real timestamps, pass timeZone: "Asia/Kolkata"
-// to toLocale* instead.
-export function toIST(d: Date) {
-  return new Date(d.getTime() + (d.getTimezoneOffset() + 330) * 60000);
-}
-export function istNow() {
-  return toIST(new Date());
-}
-
-// Parse a datetime-local form value ("YYYY-MM-DDTHH:MM") as IST wall-clock.
-// Without the explicit offset, new Date() reads it in SERVER time — UTC on
-// Vercel — shifting every user-entered time by +5:30 (write-side twin of the
-// render bug fixed 2026-07-15).
-export function istParse(local: string) {
-  return new Date(local + "+05:30");
-}
-
-// [start, end) of the current IST calendar day as real UTC instants, for
-// range filters on timestamptz columns.
-export function istTodayISO() {
-  const ist = istNow();
-  const start = Date.UTC(ist.getFullYear(), ist.getMonth(), ist.getDate()) - 330 * 60000;
-  return { start: new Date(start).toISOString(), end: new Date(start + 86400000).toISOString() };
-}
-
-// IST Y-M-D, not toISOString() (which is UTC and lands on the wrong day
-// between midnight and 5:30 AM IST) — pass an istNow()-shifted date.
-export function dateKey(d: Date) {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
+// The IST primitives used to live here, duplicated byte-for-byte across three
+// forks, while packages/lib/ist.ts held a rival copy with ZERO consumers. QUEUE
+// A37 merged them: @suite/lib is now the superset and owns every date/time
+// primitive; this file owns the timetable.
+//
+// They are re-exported because ~15 call sites per app already import them from
+// here, and rewriting those adds risk to the repo's most bug-prone surface for
+// no benefit. New code should import from "@suite/lib".
+export {
+  toIST,
+  istNow,
+  istParse,
+  istTodayISO,
+  dateKey,
+  istDateKey,
+  istDayLabel,
+} from "@suite/lib";
 
 export function formatTime(t: string) {
   const [h, m] = t.split(":").map(Number);
