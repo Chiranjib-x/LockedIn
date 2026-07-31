@@ -295,6 +295,29 @@ would agree. "Improve X" is not an item. "X passes Y" is.
 - **JUDGEMENT, because the bottom three by count would have been the wrong three:** Timetable reads 0 only because nobody has entered one yet — it is the ONLY card that pays off at n=1, needing no other student, and its empty state was just turned into an invitation. It stays. Deals reads 0 because no merchant content exists, so that card promises something the app cannot deliver — it goes. Demoted: Deals (empty by content), Study Groups (1), Crews (2). Grid reordered by real usage, so Clubs & Teams and Toolbox now lead instead of Board.
 - **Evidence:** grid is **7 cards** (was 10). Demoted three render as a compact secondary row, deliberately lighter than a flagship card; a spec asserted `a[href="/study-groups"]`, `a[href="/crews"]` and `a[href="/deals"]` each resolve to exactly 1 element on /home → **DEMOTED ROUTES REACHABLE: 3/3**. No route deleted. `node scripts/gate.mjs lockedin` → GATE PASS; `npx playwright test` → **21 passed (2.1m)**; verified visually at 390×844.
 
+### A40 · LIVELY L11 — give a student a reason to open it tomorrow
+- **State:** done 2026-07-31
+- **Why:** the measured bottleneck. 9 of 143 students have ever opened the app on a day after they signed up. Nothing on /home changes between visits unless another person acts, so a second open has no payoff. This is upstream of every other growth item — more reach into a 6% return rate makes things worse, per `docs/LAUNCH.md`'s own gate.
+- **Do:** add a single "since you were last here" line to /home, driven by real rows: new listings, new board posts, new members of a circle you are in, offers on your listings. Store last-seen on the profile and compare against it. Nothing invented, and it renders nothing on a first visit or when nothing changed.
+- **Done when:** a student who was away while rows were created sees a true count of what they missed; a student who just looked sees nothing. Gate PASS + a spec that seeds a row, revisits, and asserts the count moves.
+- **Done:** migration `0089_last_seen.sql` adds `profiles.last_seen_at` and `touch_last_seen()`, which returns the PREVIOUS visit and advances in one statement. That ordering IS the feature — write-then-read would compare against "now" every time and render empty forever while looking correct in review. Deliberately not `auth.users.last_sign_in_at`: that only moves on a fresh sign-in, so a student with a live session who returns daily never bumps it, and it is read-only to us. `modules/feed/since-last-visit.tsx` renders one line above everything else on /home; nothing on a first visit (prev is null), nothing when nothing changed. Space listings are excluded from the count — a members-only item must not be counted into everyone's "what's new". Column grants: both SELECT and UPDATE, since profiles is column-granted (the trap that broke gate_alerts in 0074).
+- **Evidence:** ordering proven across separate transactions (one call == one request): call1 → `null`, call2 → `16:39:42.854Z`, call3 → `16:39:44.890Z` → **advances each visit**. An earlier probe inside a single transaction showed it NOT advancing — that was Postgres `now()` returning the transaction timestamp, i.e. the probe was wrong, not the function. `e2e/since-last-visit.spec.ts` asserts both directions: silent on an immediate re-visit, present after a listing is created, then silent again once that visit consumed the window. `npx playwright test` → **22 passed (4.1m)**; `node scripts/gate.mjs lockedin` → GATE PASS; probe rows left → 0.
+
+### A41 · LIVELY L8 — the one-screen test on every main route
+- **State:** open
+- **Why:** `docs/LIVELY.md` Phase 3. Intuitive means a new student knows what to do without reading. Nobody has walked the routes at 390px asking that question, so the failures are unknown rather than absent.
+- **Do:** open each of /home, /marketplace, /board, /communities, /events, /gate, /profile at 390×844 as a student with nothing (no listings, no circle, no clubs) and record, per route, what the first action is and whether it is obvious without reading. Produce the list. Fix only what is trivially fixable in the same pass; file the rest.
+- **Done when:** a table of all seven routes with a pass/fail and the first-action-if-any, pasted into the Evidence line.
+- **Evidence:**
+
+### A42 · LIVELY L9 — check feature names against what a student would say
+- **State:** open
+- **Blocked by:** A41
+- **Why:** "Group-buys", "Crews", "Toolbox", "My Pools" are internal names. A name a student has to decode is a tap they do not make.
+- **Do:** for each grid card, write the internal name beside the phrase a VIT student would actually use. Change only the ones where the gap is real and the replacement is unambiguous — renaming for its own sake churns copy and breaks muscle memory for the 143 people already here.
+- **Done when:** the comparison table is in the Evidence line, and any rename is applied across all three forks together.
+- **Evidence:**
+
 ## USER-GATED — `/loop` reports these, never attempts them
 
 Nothing here is a failure of the loop. These need you.
@@ -370,3 +393,4 @@ desperate-looking thing in the funnel) · **U9** monitoring before W+4 campus-wi
 2026-07-31 · A37 · done · 8b9d42f · IST merged into @suite/lib; istDateKey vs dateKey documented as non-interchangeable; 9 unit tests pass under both TZs
 2026-07-31 · A38 · done · 839a21b · one next-step suggestion after a first listing, gated on real per-user counts; spec asserts <=1
 2026-07-31 · A39 · done · 6e33897 · home grid 10 -> 7 cards, ranked by measured rows; Deals/StudyGroups/Crews demoted but one tap away
+2026-07-31 · A40 · done · dc28f4f · last_seen_at + since-you-were-last-here line; read-then-advance proven across transactions

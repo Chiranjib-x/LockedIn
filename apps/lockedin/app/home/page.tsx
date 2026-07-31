@@ -27,6 +27,7 @@ import NowStrip from "@/modules/feed/now-strip";
 import LeaderStrip from "@/modules/feed/leader-strip";
 import ClubsStrip from "@/modules/feed/clubs-strip";
 import CampusPulse from "@/modules/feed/campus-pulse";
+import SinceLastVisit from "@/modules/feed/since-last-visit";
 import RecentChats from "@/modules/feed/recent-chats";
 import RenewalsSoon from "@/modules/feed/renewals-soon";
 import FreshListings from "@/modules/feed/fresh-listings";
@@ -248,6 +249,12 @@ export default async function HomePage() {
         <Search className="h-4 w-4" strokeWidth={2.2} />
         Search campus…
       </Link>
+
+      {/* LIVELY L11 — the first thing a returning student should see: what they
+          missed. Renders nothing on a first visit or a quiet week. */}
+      <Suspense fallback={null}>
+        <SinceLastVisit />
+      </Suspense>
 
       {/* LIVELY L1 — proof that other people are here, above the feature grid.
           Every row is real; it renders nothing rather than pad a quiet campus. */}
