@@ -9,6 +9,7 @@ import { getRating } from "@/modules/ratings/get-rating";
 import { KarmaBadge } from "@/modules/karma/badge";
 import ReportSheet from "@/modules/moderation/report-sheet";
 import ShareButton from "@/components/share-button";
+import PushOptIn from "@/components/push-opt-in";
 import SaveButton from "@/components/save-button";
 import VerifiedName from "@/components/verified-name";
 import { BuyerOffer, SellerOffers, type OfferRow } from "@/modules/marketplace/offer-panel";
@@ -105,6 +106,11 @@ export default async function ListingDetailPage({
           </span>
         </div>
       )}
+
+      {/* LIVELY L6 — the permission ask, at the only moment the seller gains from
+          it. Asking on arrival is why 4 of 143 students had push on; asking here
+          trades a notification for something they now actively want. */}
+      {justPosted && isMine && <PushOptIn context="listing" />}
 
       <Gallery images={listing.images ?? []} title={listing.title} />
 

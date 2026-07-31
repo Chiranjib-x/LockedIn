@@ -38,7 +38,7 @@ real, and there is plenty that is real and currently invisible.
 
 The data is in the database and nothing renders it.
 
-- [ ] **L1 · Campus activity strip on /home.** A live "happening now" list built
+- [x] **L1 · Campus activity strip on /home** *(done bc28533)*. A live "happening now" list built
       from real rows: someone joined a circle, a listing went up, a club was
       approved, a pickup was claimed. Names only where the actor is already
       public (a listing's seller), never for private surfaces.
@@ -66,7 +66,7 @@ The data is in the database and nothing renders it.
       with zero listings; disappears the moment they post.
 - [x] **L5 · Share on post** *(done — f1c4630)*. The public preview link is
       offered at the one moment a seller wants reach.
-- [ ] **L6 · Ask for push at the moment it pays.** 4 subscribers of 143 is why
+- [x] **L6 · Ask for push at the moment it pays** *(done 2026-07-31)*. Mounted on the just-posted listing page: "Get told the moment someone makes an offer." Original note: 4 subscribers of 143 is why
       nobody returns. Ask right after a first listing ("get told when someone
       offers"), not on arrival.
 - [ ] **L7 · Second-action nudge.** After a first post, suggest the next thing

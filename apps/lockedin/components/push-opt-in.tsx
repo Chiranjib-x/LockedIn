@@ -25,6 +25,10 @@ const CONTEXT_COPY: Record<string, string> = {
   chats: "Get pinged the moment someone replies — even with the app closed.",
   timetable: "Get a heads-up 30 minutes before a class you can’t afford to bunk.",
   gate: "Get pinged when someone needs a parcel run — and when yours is on its way.",
+  // LIVELY L6. Asked on the just-posted listing page, which is the one moment a
+  // seller has something to gain: they want to know the second someone bites.
+  // 4 of 143 students had push on, which is most of why nobody comes back.
+  listing: "Get told the moment someone makes an offer — even with the app closed.",
 };
 
 // Contextual permission ask (never on load): a dismissible card mounted on
