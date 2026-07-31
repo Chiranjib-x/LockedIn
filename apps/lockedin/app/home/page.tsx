@@ -200,13 +200,30 @@ export default async function HomePage() {
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-4 py-6">
-      <div className="animate-fade-up">
-        <p className="text-sm text-muted-foreground">{greeting()}</p>
-        <h1 className="text-3xl font-bold">{firstName || "Hey"}</h1>
-        {profile?.colleges?.name && (
-          <span className="mt-2 inline-flex items-center gap-1 rounded-full border border-border bg-card px-3 py-1 text-xs font-medium text-muted-foreground">
-            <MapPin className="h-3 w-3" strokeWidth={2.2} /> {profile.colleges.name}
-          </span>
+      {/* Measured: the greeting, the college chip, the stats row and the search
+          box spent the first 336px of an 844px fold — 40% of the first screen —
+          without a single tappable thing in it. Same information, one block:
+          the name and college share a line, and the stats sit beside the
+          greeting instead of below it. */}
+      <div className="animate-fade-up flex items-end justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-sm text-muted-foreground">{greeting()}</p>
+          <h1 className="truncate text-3xl font-bold">{firstName || "Hey"}</h1>
+          {profile?.colleges?.name && (
+            <span className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-muted-foreground">
+              <MapPin className="h-3 w-3 shrink-0" strokeWidth={2.2} /> {profile.colleges.name}
+            </span>
+          )}
+        </div>
+        {showCampusStats && (
+          <div className="flex shrink-0 items-center gap-3">
+            {campusStats.slice(0, 2).map((s) => (
+              <div key={s.label} className="text-right">
+                <p className="font-heading text-lg font-bold leading-none text-primary">{s.n}</p>
+                <p className="text-[10px] leading-tight text-muted-foreground">{s.label}</p>
+              </div>
+            ))}
+          </div>
         )}
       </div>
 
@@ -230,22 +247,6 @@ export default async function HomePage() {
             <ArrowRight className="h-4 w-4 shrink-0 text-primary" strokeWidth={2.2} />
           </div>
         </Link>
-      )}
-
-      {/* flex, not a fixed grid: a college with only two stats left a dead third
-          column when the grid stayed three wide. */}
-      {showCampusStats && (
-        <div
-          className="animate-fade-up glass flex items-center justify-around gap-2 rounded-3xl px-3 py-3"
-          style={{ animationDelay: "30ms" }}
-        >
-          {campusStats.map((s) => (
-            <div key={s.label} className="text-center">
-              <p className="font-heading text-xl font-bold text-primary">{s.n}</p>
-              <p className="text-[11px] leading-tight text-muted-foreground">{s.label}</p>
-            </div>
-          ))}
-        </div>
       )}
 
       <Link

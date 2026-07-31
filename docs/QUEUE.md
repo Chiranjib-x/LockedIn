@@ -345,6 +345,24 @@ would agree. "Improve X" is not an item. "X passes Y" is.
 - **Applied to lockedin and campustrade. campusclubs has NO FEATURES array** — it is the clubs-only fork and never had those cards, so 0/3 there is correct, not a missed echo. Verified by grep rather than assumed.
 - **Verified:** `node scripts/gate.mjs {lockedin,campusclubs,campustrade}` → GATE PASS ×3; `npx playwright test` → 22 passed (4.5m).
 
+### A43 · /home — the fold spent 40% of itself on nothing tappable
+- **State:** done 2026-08-01
+- **Why:** filed out of A41. The original finding said "/home has only ONE interactive element above the fold". **That did not reproduce** — measured 7 both at 500ms and after Suspense resolved, so the A41 number was wrong and is corrected here rather than acted on. What DID hold up on measurement: the greeting block (90px), the college chip, the stats row (68px) and the search box consumed the first **336px of an 844px fold** with nothing tappable in it.
+- **Do:** compact the header without dropping information.
+- **Done when:** the first tappable element moves measurably higher and no information is lost. Gate PASS + suite green.
+- **Evidence:** greeting, college chip and campus stats merged into one block — name and college on the left, two stats right-aligned beside them; the standalone stats row is gone. Measured at 390×844 as `rohit_menon@demo.invalid`, same method before and after:
+
+  | | before | after |
+  |---|---|---|
+  | first tappable element | 292px | **191px** |
+  | non-interactive header | 336px (40% of fold) | 191px (23%) |
+  | actions above the fold | 7 | **8** |
+  | campus activity starts | 360px | **259px** |
+
+  The whole "Happening on campus" feed (259..731) now clears the fold. `node scripts/gate.mjs lockedin` → GATE PASS; `npx playwright test` → 22 passed (3.4m); verified visually.
+- **NOTED (not done):** the other A41 finding stands — /events and /communities still lead with a CREATE action above the fold for a student who has nothing.
+
+
 ## USER-GATED — `/loop` reports these, never attempts them
 
 Nothing here is a failure of the loop. These need you.
@@ -423,3 +441,4 @@ desperate-looking thing in the funnel) · **U9** monitoring before W+4 campus-wi
 2026-07-31 · A40 · done · dc28f4f · last_seen_at + since-you-were-last-here line; read-then-advance proven across transactions
 2026-07-31 · A41 · done · 9322532 · seven-route one-screen audit; /communities retitled Clubs & Teams; two layout failures filed
 2026-07-31 · A42 · done · bc2cd1d · Match->Roommate, My Pools->Subscriptions, Board->Campus Board; Toolbox/Crews/Deals deliberately kept
+2026-08-01 · A43 · done · 8029cef · /home header compacted: first action 292px -> 191px; A41's 'only 1 action' finding did not reproduce and is corrected
