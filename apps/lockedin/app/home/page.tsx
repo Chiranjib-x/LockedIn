@@ -262,10 +262,21 @@ export default async function HomePage() {
             <div className="min-w-0 flex-1">
               <h2 className="font-heading font-bold">Marketplace</h2>
               <p className="text-sm text-muted-foreground">
-                {(listingCount ?? 0) > 0 ? (
+                {/* LIVELY L2. "8 things for sale" is the smallest true number in
+                    the database and it was the first thing a new student read.
+                    Below a real shelf, lead with the people instead — equally
+                    true, and it is the buyers that make listing here worth it.
+                    The stock count returns once it is a number worth showing. */}
+                {(listingCount ?? 0) >= 20 ? (
                   <>
                     <span className="font-semibold text-primary">{listingCount}</span> thing
                     {listingCount === 1 ? "" : "s"} for sale on campus right now
+                  </>
+                ) : (studentCount ?? 0) >= 10 ? (
+                  <>
+                    Buy, sell and rent with{" "}
+                    <span className="font-semibold text-primary">{studentCount}</span> verified
+                    students from your college
                   </>
                 ) : (
                   "Buy, sell, and rent — students from your college only."

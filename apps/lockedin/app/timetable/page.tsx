@@ -65,8 +65,19 @@ export default async function TimetablePage({
       <section className="flex flex-col gap-2">
         <h2 className="text-lg font-semibold">Today</h2>
         {!todayEntries.length ? (
-          <EmptyState icon={CalendarDays} tint="violet" title="No classes today">
-            <p className="text-sm text-muted-foreground">Enjoy it — or add your week below.</p>
+          // LIVELY L3: "No classes today" reads as "your timetable is set up and
+          // today is free" — but for almost everyone it means they have not added
+          // one yet, which is a completely different message. Tell them apart.
+          <EmptyState
+            icon={CalendarDays}
+            tint="violet"
+            title={allEntries.length === 0 ? "Add your timetable" : "No classes today"}
+          >
+            <p className="text-sm text-muted-foreground">
+              {allEntries.length === 0
+                ? "Add your week once and this tells you what's next, tracks attendance, and answers “can I skip today?”"
+                : "Enjoy it — or add your week below."}
+            </p>
           </EmptyState>
         ) : (
           todayEntries.map((e) => {

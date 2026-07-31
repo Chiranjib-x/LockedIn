@@ -43,11 +43,17 @@ The data is in the database and nothing renders it.
       approved, a pickup was claimed. Names only where the actor is already
       public (a listing's seller), never for private surfaces.
       *Done when:* /home shows ≥5 real events and the query is RLS-scoped.
-- [ ] **L2 · Lead with the biggest true number.** "8 things for sale" is the
+- [x] **L2 · Lead with the biggest true number** *(done 2026-07-31)*. Below 20
+      listings the Marketplace card reads "Buy, sell and rent with 143 verified
+      students from your college" instead of the stock count. Original note: "8 things for sale" is the
       smallest true number in the database and it is the first thing a new
       student reads. Replace the marketplace count with the strongest honest one
       (students, clubs, circle members) until supply catches up.
-- [ ] **L3 · Kill every dead empty state.** Audit each list route at n=0 and make
+- [x] **L3 · Empty states** *(partly done 2026-07-31)*. /timetable said "No classes
+      today", which reads as "your timetable is set up and today is free" when it
+      almost always means "you have not added one" — now two distinct messages.
+      /chats was already an invitation with a browse button and was left alone.
+      Original note: Audit each list route at n=0 and make
       it an invitation instead of a full stop. `/chats` says "No chats yet";
       `/timetable` says "No classes today". Both are correct and both read as
       broken.
