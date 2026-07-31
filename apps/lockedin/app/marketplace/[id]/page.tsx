@@ -10,6 +10,7 @@ import { KarmaBadge } from "@/modules/karma/badge";
 import ReportSheet from "@/modules/moderation/report-sheet";
 import ShareButton from "@/components/share-button";
 import PushOptIn from "@/components/push-opt-in";
+import NextStep from "@/modules/feed/next-step";
 import SaveButton from "@/components/save-button";
 import VerifiedName from "@/components/verified-name";
 import { BuyerOffer, SellerOffers, type OfferRow } from "@/modules/marketplace/offer-panel";
@@ -111,6 +112,10 @@ export default async function ListingDetailPage({
           it. Asking on arrival is why 4 of 143 students had push on; asking here
           trades a notification for something they now actively want. */}
       {justPosted && isMine && <PushOptIn context="listing" />}
+
+      {/* LIVELY L7 — one suggestion, not a tour, and only for something they have
+          genuinely not done. Renders nothing once there is nothing left. */}
+      {justPosted && isMine && <NextStep />}
 
       <Gallery images={listing.images ?? []} title={listing.title} />
 

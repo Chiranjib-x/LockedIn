@@ -279,11 +279,12 @@ would agree. "Improve X" is not an item. "X passes Y" is.
 - **Evidence:** `TZ=UTC npm run test:unit` → `tests 9, pass 9, fail 0`; `TZ=Asia/Kolkata npm run test:unit` → `tests 9, pass 9, fail 0` (identical). `node scripts/gate.mjs {lockedin,campusclubs,campustrade} --build` → **build PASS + GATE PASS ×3**. `grep '^export function (toIST|istNow|istParse|istTodayISO|dateKey)' apps/*/modules/timetable/helpers.ts` → 0 hits, all now from `@suite/lib`. `npx playwright test` → 20 passed (1.6m).
 
 ### A38 · LIVELY L7 — second-action nudge after a first post
-- **State:** open
+- **State:** done 2026-07-31
 - **Why:** `docs/LIVELY.md` Phase 2. 124 of 143 students have never posted; the ones who do get a share prompt and a push ask, then nothing. The next action should follow from what they just did, not be a generic tour.
 - **Do:** on the just-posted listing page, after the share + push cards, suggest one concrete next step chosen from what the student lacks — no timetable yet, not in a circle, no clubs joined. One suggestion, never a list.
 - **Done when:** a student with a fresh listing sees exactly one suggestion, it reflects something they genuinely have not done, and it disappears once done. Gate PASS + a spec asserting the single-suggestion rule.
-- **Evidence:**
+- **Done:** `modules/feed/next-step.tsx`, rendered on the just-posted listing under the share and push cards. Three candidates in a fixed order — join a circle, add a timetable, find a club — each gated on a real count of the viewer's OWN rows, so it can never suggest something already done. The first unmet one wins and the rest are not rendered; when nothing is unmet the component returns null. One suggestion is the design, not a limit: a list of things you could try is a tour, and a tour is what people close.
+- **Evidence:** `e2e/next-step.spec.ts` asserts the count (≤1) rather than the wording, so copy can change without weakening the guarantee, and separately asserts the dev account — which IS in a circle — is never shown "Ask to join your circle". `npx playwright test e2e/next-step.spec.ts` → 1 passed; full suite → **21 passed (1.7m)**; `node scripts/gate.mjs lockedin` → GATE PASS; probe listings remaining after the run → 0.
 
 ### A39 · LIVELY L10 — cut the home feature grid down
 - **State:** open
@@ -364,4 +365,5 @@ desperate-looking thing in the funnel) · **U9** monitoring before W+4 campus-wi
 - **Do:** add `p_username text default null` to `find_or_create_dm` and allow the DM only when a conversation already exists, OR caller and target share a community/space, OR the caller is genuinely party to the named context (**verified per type — `ctype`/`ctx` are caller-supplied and must not be trusted**), OR `lower(p_username)` equals the target's username. Thread the username through from `/search`'s People result, the one legitimate no-relationship path. Do **not** lock down the `profiles` SELECT policy — names render on listings, rosters, chats and karma badges everywhere, and restricting rows breaks display for no extra safety once the DM path is guarded.
 - **Done when:** an adversarial probe as a plain student — harvest a same-college uuid, call `find_or_create_dm` with no username and no shared context — is refused, pasted; and all six existing call sites (listing, request, trip, group-buy, subscription, post-claim) plus the community-roster and username-search paths still open a chat, pasted per path. Fork echo: the construct exists in lockedin/campusclubs/campustrade.
 2026-07-31 · A8 · done · 33d2bb0 · packages/auth surface: 345 imports rewritten, 12 local files deleted, build PASS on all five apps
-2026-07-31 · A37 · done · (pending) · IST merged into @suite/lib; istDateKey vs dateKey documented as non-interchangeable; 9 unit tests pass under both TZs
+2026-07-31 · A37 · done · 8b9d42f · IST merged into @suite/lib; istDateKey vs dateKey documented as non-interchangeable; 9 unit tests pass under both TZs
+2026-07-31 · A38 · done · 839a21b · one next-step suggestion after a first listing, gated on real per-user counts; spec asserts <=1
