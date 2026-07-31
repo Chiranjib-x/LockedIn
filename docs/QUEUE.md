@@ -287,11 +287,13 @@ would agree. "Improve X" is not an item. "X passes Y" is.
 - **Evidence:** `e2e/next-step.spec.ts` asserts the count (≤1) rather than the wording, so copy can change without weakening the guarantee, and separately asserts the dev account — which IS in a circle — is never shown "Ask to join your circle". `npx playwright test e2e/next-step.spec.ts` → 1 passed; full suite → **21 passed (1.7m)**; `node scripts/gate.mjs lockedin` → GATE PASS; probe listings remaining after the run → 0.
 
 ### A39 · LIVELY L10 — cut the home feature grid down
-- **State:** open
+- **State:** done 2026-07-31
 - **Why:** `docs/LIVELY.md` Phase 3. Ten equal cards is a menu, not a home screen; nothing signals what matters. Real usage is measurable — listings, pickups, trips, group orders, subscriptions all have row counts.
 - **Do:** measure actual usage per feature at VIT, then demote the three least-used from the flagship grid into a secondary "More" section. Do not delete routes.
 - **Done when:** the grid shows ≤7 cards, the demoted three are still reachable in one tap, and the ranking is justified by pasted row counts rather than taste.
-- **Evidence:**
+- **Measured at VIT 2026-07-31:** Clubs & Teams 77 · Toolbox 34 · Board 11 · Match 11 · Events 5 · My Pools 2 · Crews 2 · Study Groups 1 · Deals 0 · Timetable 0.
+- **JUDGEMENT, because the bottom three by count would have been the wrong three:** Timetable reads 0 only because nobody has entered one yet — it is the ONLY card that pays off at n=1, needing no other student, and its empty state was just turned into an invitation. It stays. Deals reads 0 because no merchant content exists, so that card promises something the app cannot deliver — it goes. Demoted: Deals (empty by content), Study Groups (1), Crews (2). Grid reordered by real usage, so Clubs & Teams and Toolbox now lead instead of Board.
+- **Evidence:** grid is **7 cards** (was 10). Demoted three render as a compact secondary row, deliberately lighter than a flagship card; a spec asserted `a[href="/study-groups"]`, `a[href="/crews"]` and `a[href="/deals"]` each resolve to exactly 1 element on /home → **DEMOTED ROUTES REACHABLE: 3/3**. No route deleted. `node scripts/gate.mjs lockedin` → GATE PASS; `npx playwright test` → **21 passed (2.1m)**; verified visually at 390×844.
 
 ## USER-GATED — `/loop` reports these, never attempts them
 
@@ -367,3 +369,4 @@ desperate-looking thing in the funnel) · **U9** monitoring before W+4 campus-wi
 2026-07-31 · A8 · done · 33d2bb0 · packages/auth surface: 345 imports rewritten, 12 local files deleted, build PASS on all five apps
 2026-07-31 · A37 · done · 8b9d42f · IST merged into @suite/lib; istDateKey vs dateKey documented as non-interchangeable; 9 unit tests pass under both TZs
 2026-07-31 · A38 · done · 839a21b · one next-step suggestion after a first listing, gated on real per-user counts; spec asserts <=1
+2026-07-31 · A39 · done · 6e33897 · home grid 10 -> 7 cards, ranked by measured rows; Deals/StudyGroups/Crews demoted but one tap away

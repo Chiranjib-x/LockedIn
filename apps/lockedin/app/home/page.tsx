@@ -42,19 +42,35 @@ import RequestJoin, { type JoinableSpace } from "@/modules/spaces/request-join";
 // is its own Suspense boundary + owns its error handling internally, so one
 // broken section streams in empty instead of blanking the page.
 
-// Every feature gets a flagship-style card (icon chip + title + blurb +
-// arrow) — same visual weight as Marketplace/Gate Runner, no smaller tiles.
+// QUEUE A39 / LIVELY L10. Ten equal cards is a menu, not a home screen — nothing
+// signals what matters. Ranked by REAL rows at VIT on 2026-07-31, not by taste:
+//
+//   Clubs & Teams 77 · Toolbox 34 · Board 11 · Match 11 · Events 5
+//   My Pools 2 · Crews 2 · Study Groups 1 · Deals 0 · Timetable 0
+//
+// Two of those zeros are not the same kind of zero, and taking the bottom three
+// literally would have been wrong:
+//   • Timetable is 0 because nobody has entered one yet — but it is the ONLY card
+//     that pays off at n=1, needing no other student. It stays.
+//   • Deals is 0 because no merchant content exists. That card promises something
+//     the app cannot currently deliver, so it goes below.
+// Demoted: Deals (empty by content), Study Groups (1), Crews (2). Nothing is
+// deleted — every route stays one tap away under "More".
 const FEATURES: { short: string; href: string; icon: LucideIcon; tint: string; blurb: string }[] = [
-  { short: "Board", href: "/board", icon: Pin, tint: "bg-tint-rose text-tint-rose-fg", blurb: "Lost & found and campus notices." },
-  { short: "Events", href: "/events", icon: PartyPopper, tint: "bg-tint-violet text-tint-violet-fg", blurb: "What's happening on campus." },
-  { short: "Match", href: "/matches", icon: Target, tint: "bg-tint-violet text-tint-violet-fg", blurb: "Find a compatible roommate." },
   { short: "Clubs & Teams", href: "/communities", icon: Users, tint: "bg-tint-blue text-tint-blue-fg", blurb: "Chapters, clubs, and student teams." },
-  { short: "Crews", href: "/crews", icon: Users2, tint: "bg-tint-rose text-tint-rose-fg", blurb: "Private groups for roommates & friends." },
   { short: "Toolbox", href: "/toolbox", icon: Wrench, tint: "bg-tint-amber text-tint-amber-fg", blurb: "Handy tools picked for students." },
-  { short: "Deals", href: "/deals", icon: Tag, tint: "bg-tint-green text-tint-green-fg", blurb: "Offers from campus merchants." },
+  { short: "Board", href: "/board", icon: Pin, tint: "bg-tint-rose text-tint-rose-fg", blurb: "Lost & found and campus notices." },
+  { short: "Match", href: "/matches", icon: Target, tint: "bg-tint-violet text-tint-violet-fg", blurb: "Find a compatible roommate." },
+  { short: "Events", href: "/events", icon: PartyPopper, tint: "bg-tint-violet text-tint-violet-fg", blurb: "What's happening on campus." },
   { short: "Timetable", href: "/timetable", icon: CalendarDays, tint: "bg-tint-violet text-tint-violet-fg", blurb: "Classes, attendance, bunk math." },
-  { short: "Study Groups", href: "/study-groups", icon: BookOpen, tint: "bg-tint-teal text-tint-teal-fg", blurb: "Find people studying your course." },
   { short: "My Pools", href: "/subscriptions", icon: Tv, tint: "bg-tint-teal text-tint-teal-fg", blurb: "Subscriptions you're sharing." },
+];
+
+// Demoted, not removed — one tap away, just not competing for the first screen.
+const MORE: { short: string; href: string; icon: LucideIcon }[] = [
+  { short: "Study Groups", href: "/study-groups", icon: BookOpen },
+  { short: "Crews", href: "/crews", icon: Users2 },
+  { short: "Deals", href: "/deals", icon: Tag },
 ];
 
 function greeting() {
@@ -453,6 +469,21 @@ export default async function HomePage() {
             </Link>
           );
         })}
+
+        {/* The three demoted by A39's usage measurement. Compact, still one tap,
+            and deliberately not the same visual weight as a flagship card. */}
+        <div className="animate-fade-up flex flex-wrap gap-2" style={{ animationDelay: "440ms" }}>
+          {MORE.map((m) => (
+            <Link
+              key={m.short}
+              href={m.href}
+              className="press inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-2xl border border-border bg-card px-3 text-sm font-medium hover:border-primary"
+            >
+              <m.icon className="h-4 w-4 shrink-0 text-primary" strokeWidth={2} />
+              {m.short}
+            </Link>
+          ))}
+        </div>
       </div>
 
       {/* Clubs & teams — high on the page so campus life isn't hidden. */}
