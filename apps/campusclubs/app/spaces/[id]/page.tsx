@@ -108,13 +108,20 @@ export default async function SpacePage({ params }: { params: Promise<{ id: stri
                 return (
                   <span
                     key={m.user_id}
+                    title={lead ? "Organises this space — ask them about joining or leaving" : undefined}
                     className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs ${
-                      lead ? "border-primary/40 bg-primary/10" : "border-border bg-muted"
+                      lead ? "border-accent/50 bg-accent/10" : "border-border bg-muted"
                     }`}
                   >
-                    {lead && <span title="Space lead">👑</span>}
                     {nm}
                     {m.user_id === user.id && <span className="text-muted-foreground">· you</span>}
+                    {/* Was a 👑. A crown on one member of a members-only space reads
+                        as rank rather than role, and everyone in the space sees it.
+                        The tinted chip already distinguishes them; this says what
+                        the tint MEANS, in a word that describes a job. */}
+                    {lead && (
+                      <span className="font-medium tracking-wide text-accent">· organiser</span>
+                    )}
                   </span>
                 );
               })}
