@@ -26,6 +26,7 @@ type Row = {
   is_featured: boolean;
   prize: string | null;
   contact: string | null;
+  logo_url: string | null;
   team_count: number;
   player_count: number;
 };
@@ -101,6 +102,11 @@ function Form({ t }: { t?: Row }) {
           <input name="contact" defaultValue={t?.contact ?? ""} placeholder="@chiranjib_x on Instagram" className={inputClass} />
         </label>
       </div>
+
+      <label className="flex flex-col gap-1 text-xs font-medium">
+        Game logo URL (optional — the publisher owns the artwork, so this is your call)
+        <input name="logo_url" defaultValue={t?.logo_url ?? ""} placeholder="https://…/valorant.png" className={inputClass} />
+      </label>
 
       <label className="flex flex-col gap-1 text-xs font-medium">
         Status

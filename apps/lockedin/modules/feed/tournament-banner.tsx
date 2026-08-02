@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Trophy, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import GameMark from "@/modules/tournaments/game-mark";
 import { createClient } from "@suite/auth/server";
 
 // The home banner for whatever competition is running.
@@ -23,6 +24,7 @@ type Featured = {
   starts_at: string | null;
   reg_closes_at: string | null;
   status: string;
+  logo_url: string | null;
   team_count: number;
   player_count: number;
   i_am_in: boolean;
@@ -61,9 +63,9 @@ export default async function TournamentBanner() {
     <Link href={`/tournaments/${t.id}`} className="animate-fade-up press">
       <div className="press-glow relative overflow-hidden rounded-3xl border border-primary/40 bg-gradient-to-br from-primary/15 via-accent/10 to-transparent p-4">
         <div className="flex items-center gap-4">
-          <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary text-on-primary">
-            <Trophy className="h-7 w-7" strokeWidth={2} />
-          </span>
+          {/* The game's own mark, not a generic trophy — a Valorant group
+              should recognise this card at a glance. */}
+          <GameMark game={t.game} logoUrl={t.logo_url} size={56} rounded={16} />
           <div className="min-w-0 flex-1">
             <p className="text-[11px] font-bold uppercase tracking-widest text-primary">
               {t.game}

@@ -4,6 +4,7 @@ import { requireUser } from "@suite/auth/auth";
 import { BackLink } from "@suite/ui";
 import ShareButton from "@/components/share-button";
 import Entry, { type TeamRow } from "@/modules/tournaments/entry";
+import GameMark from "@/modules/tournaments/game-mark";
 
 // A tournament, and the page people are sent to from the home banner.
 // Share points at /p/tournament/[id] — the version that opens without an
@@ -65,8 +66,13 @@ export default async function TournamentPage({
       </div>
 
       <div className="animate-fade-up rounded-3xl border border-primary/40 bg-gradient-to-br from-primary/15 via-accent/10 to-transparent p-5">
-        <p className="text-[11px] font-bold uppercase tracking-widest text-primary">{t.game}</p>
-        <h1 className="font-heading text-2xl font-bold">{t.title}</h1>
+        <div className="flex items-center gap-3">
+          <GameMark game={t.game} logoUrl={t.logo_url} size={52} rounded={14} />
+          <div className="min-w-0">
+            <p className="text-[11px] font-bold uppercase tracking-widest text-primary">{t.game}</p>
+            <h1 className="font-heading text-2xl font-bold">{t.title}</h1>
+          </div>
+        </div>
         {t.tagline && <p className="mt-1 text-sm text-muted-foreground">{t.tagline}</p>}
         <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
           <span className="inline-flex items-center gap-1">

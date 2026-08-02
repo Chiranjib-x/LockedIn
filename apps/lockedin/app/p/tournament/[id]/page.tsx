@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { createClient } from "@suite/auth/server";
+import GameMark from "@/modules/tournaments/game-mark";
 
 // The link that gets pasted into a WhatsApp group. No account needed, because
 // most people in that group do not have one — that is the entire point of
@@ -21,6 +22,7 @@ type Preview = {
   reg_closes_at: string | null;
   status: string;
   prize: string | null;
+  logo_url: string | null;
   team_count: number;
   player_count: number;
   college_name: string;
@@ -86,10 +88,15 @@ export default async function PublicTournament({
   return (
     <main className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center gap-4 px-6 py-10">
       <div className="animate-fade-up overflow-hidden rounded-3xl border border-primary/40 bg-gradient-to-br from-primary/15 via-accent/10 to-transparent p-5">
-        <p className="text-[11px] font-bold uppercase tracking-widest text-primary">
-          {p.game} · {p.college_name}
-        </p>
-        <h1 className="font-heading text-2xl font-bold">{p.title}</h1>
+        <div className="flex items-center gap-3">
+          <GameMark game={p.game} logoUrl={p.logo_url} size={52} rounded={14} />
+          <div className="min-w-0">
+            <p className="text-[11px] font-bold uppercase tracking-widest text-primary">
+              {p.game} · {p.college_name}
+            </p>
+            <h1 className="font-heading text-2xl font-bold">{p.title}</h1>
+          </div>
+        </div>
         {p.tagline && <p className="mt-1 text-sm text-muted-foreground">{p.tagline}</p>}
 
         <div className="mt-3 flex flex-col gap-1 text-sm">

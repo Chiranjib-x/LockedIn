@@ -36,6 +36,7 @@ export default async function OgImage({ params }: { params: Promise<{ id: string
     team_size: number;
     starts_at: string | null;
     prize: string | null;
+    logo_url: string | null;
     player_count: number;
     college_name: string;
   } | null = null;
@@ -88,6 +89,10 @@ export default async function OgImage({ params }: { params: Promise<{ id: string
 
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+            {t?.logo_url && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={t.logo_url} alt="" width={64} height={64} style={{ objectFit: "contain" }} />
+            )}
             <div
               style={{
                 display: "flex",

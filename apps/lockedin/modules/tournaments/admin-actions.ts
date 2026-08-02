@@ -42,6 +42,7 @@ export async function saveTournament(formData: FormData) {
     p_status: String(formData.get("status") ?? "draft"),
     p_prize: String(formData.get("prize") ?? "").trim() || null,
     p_contact: String(formData.get("contact") ?? "").trim() || null,
+    p_logo_url: String(formData.get("logo_url") ?? "").trim() || null,
   });
 
   revalidatePath("/admin/tournaments");
