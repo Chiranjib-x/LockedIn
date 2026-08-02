@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Footprints } from "lucide-react";
 import { requireUser } from "@suite/auth/auth";
 import { Card } from "@suite/ui";
-import { ClaimButton, RunnerActions, RequesterActions, HeadingToGate, RunnerOptIn, RunnerNote } from "@/modules/gate/client";
+import { ClaimButton, RunnerActions, RequesterActions, HeadingToGate, RunnerOptIn, RunnerNote, MessagePickup } from "@/modules/gate/client";
 import { EmptyState } from "@suite/ui";
 import PushOptIn from "@/components/push-opt-in";
 
@@ -143,6 +143,16 @@ export default async function GatePage() {
                     r.status === "claimed" && (
                       <RunnerActions id={r.id} droppedOff={r.delivered_claimed_at !== null} />
                     )
+                  )}
+                  {/* Both sides get this, from the claim until it is confirmed —
+                      the details that need sorting out are mostly the runner's
+                      questions, standing at a counter. */}
+                  {r.runner_id && (r.status === "claimed" || r.status === "delivered") && (
+                    <MessagePickup
+                      id={r.id}
+                      otherId={iAmRequester ? r.runner_id : r.requester_id}
+                      otherName={iAmRequester ? (r.runner?.name ?? null) : (r.requester?.name ?? null)}
+                    />
                   )}
                 </div>
               </Card>

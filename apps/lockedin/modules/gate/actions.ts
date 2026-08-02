@@ -4,6 +4,7 @@ import { createClient } from "@suite/auth/server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { istParse } from "@/modules/timetable/helpers";
+import { openChat } from "@/modules/chat/actions";
 
 async function ctx() {
   const supabase = await createClient();
@@ -126,4 +127,15 @@ export async function cancelPickup(id: string) {
     .eq("id", id)
     .eq("requester_id", user.id);
   revalidatePath("/gate");
+}
+
+// Chat between the two people on a pickup, once it is claimed.
+//
+// "Which counter?", "the big box not the small one", "I'm at the gate" — all of
+// that was happening outside the app, which is the thing GateRunner exists to
+// remove. 0093 added the 'pickup' branch to find_or_create_dm: symmetric, and
+// only while runner_id is set, so an unclaimed pickup is not a way to reach
+// whoever posted it. Probed both directions and four refusals.
+export async function messageAboutPickup(pickupId: string, otherId: string) {
+  await openChat(otherId, "pickup", pickupId);
 }

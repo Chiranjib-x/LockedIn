@@ -4,7 +4,7 @@ import { useState } from "react";
 import { inputClass } from "@suite/ui";
 import { UpiPay } from "@suite/ui";
 import { useRefresh } from "@suite/lib/use-refresh";
-import { claimPickup, unclaimPickup, confirmDelivered, cancelPickup, markDroppedOff, announceGateRun, setGateAlerts, setRunnerNote } from "./actions";
+import { claimPickup, unclaimPickup, confirmDelivered, cancelPickup, markDroppedOff, announceGateRun, setGateAlerts, setRunnerNote, messageAboutPickup } from "./actions";
 
 // Runner's one-line coordination note ("blue shirt, gate 2, 5 min").
 export function RunnerNote({ id, current }: { id: string; current: string | null }) {
@@ -235,4 +235,32 @@ export function RequesterActions({
     );
   }
   return null;
+}
+
+// Message the other party about a claimed pickup. Rendered for both sides, so
+// whoever needs to ask first can — the runner usually does, standing at a
+// counter looking at three identical boxes.
+export function MessagePickup({
+  id,
+  otherId,
+  otherName,
+}: {
+  id: string;
+  otherId: string;
+  otherName: string | null;
+}) {
+  const [busy, setBusy] = useState(false);
+  return (
+    <button
+      type="button"
+      disabled={busy}
+      onClick={async () => {
+        setBusy(true);
+        await messageAboutPickup(id, otherId);
+      }}
+      className="press inline-flex min-h-11 items-center gap-1.5 rounded-full border border-border bg-card px-4 text-sm font-medium hover:bg-muted disabled:opacity-50"
+    >
+      {busy ? "Opening…" : `💬 Message ${otherName ?? "them"}`}
+    </button>
+  );
 }

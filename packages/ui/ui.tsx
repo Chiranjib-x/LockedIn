@@ -59,7 +59,10 @@ export function Section({
         {action && (
           <Link
             href={action.href}
-            className="flex min-h-11 items-center text-sm font-medium text-primary hover:underline"
+            // min-w-11 as well as min-h-11: a short label like "See all"
+            // measured 42x44 and failed the tap-target gate — tall enough, two
+            // pixels too narrow. This is shared, so every Section action gets it.
+            className="flex min-h-11 min-w-11 items-center justify-end text-sm font-medium text-primary hover:underline"
           >
             {action.label}
           </Link>
