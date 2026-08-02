@@ -83,6 +83,8 @@ USER still owes Supabase Dashboard Google-provider setup (button live but errors
 - DECISION: brand cobalt for icons = #2251C7, derived from token oklch(0.48 0.19 264) in app/globals.css.
 
 ## Facts
+- ACCESS GRANTS (2026-08-02, migration 0094): `access_grants` allows *named* email addresses to sign up despite not matching a college email domain. Built because a non-VIT collaborator needed access and the two obvious routes were both wrong: adding gmail.com to `colleges` opens signup to the entire internet, and disabling `on_auth_user_created` for one INSERT leaves no record of why an off-domain account exists. A grant row names the college, who granted it, and why. Deleting a row does NOT revoke an existing account — it only blocks a future signup.
+- NEAR MISS (2026-08-02): the first draft of 0094 rebuilt `handle_new_user()` from **0001** and silently dropped everything **0037** added — username derivation, the de-dup loop, `verified_name`. That would have broken signup for every real student. Caught because a probe failed on `profiles.username` NOT NULL, not because the migration errored. **This is the third time (0077, 0082, now 0094): grepping a function name finds the FIRST definition, not the live one. Always `grep -rln <fn> supabase/migrations/` and rebuild from the LAST hit.**
 - Dev server: http://localhost:3001 (task bwafmsrj8) — PORT 3000 IS ANOTHER APP (user's IWAI portal, do not kill). Identity-check curl by <title>, not status code.
 - Prod: https://lockedin-swart-ten.vercel.app (Vercel project chiranjibs-projects-c31c03e0/lockedin).
 - Type check: npx tsc --noEmit. Build: npm run build. E2E: python + playwright sync API, 390x844 viewport.
