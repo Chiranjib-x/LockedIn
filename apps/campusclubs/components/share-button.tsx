@@ -12,9 +12,14 @@ export default function ShareButton({ path, title }: { path: string; title: stri
   // Both values are browser state read once — useSyncExternalStore keeps them
   // out of an effect and gives SSR an empty snapshot, so the button simply
   // doesn't render on the server (its previous behaviour too).
+  // The canonical site URL, NOT window.location.origin. The old domain is still
+  // attached and serving, so anyone who opened the app there was generating
+  // share links back to it — the link travels further than the visit does, and
+  // it should always carry the domain the product is called by. Falls back to
+  // the current origin only if the env var is somehow absent at build time.
   const url = useSyncExternalStore(
     noopSubscribe,
-    () => window.location.origin + path,
+    () => (process.env.NEXT_PUBLIC_SITE_URL || window.location.origin) + path,
     () => ""
   );
   const canNativeShare = useSyncExternalStore(
