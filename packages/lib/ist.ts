@@ -82,3 +82,18 @@ export function istDayLabel(iso: string, now: Date = new Date()) {
     timeZone: "Asia/Kolkata",
   });
 }
+
+// ── form round-trip ──────────────────────────────────────────────────────────
+
+// The inverse of istParse: turn a stored instant back into the "YYYY-MM-DDTHH:MM"
+// a <input type="datetime-local"> expects, showing IST wall-clock.
+//
+// Without this, an edit form on a UTC server renders 18:30 for a 00:00 IST start
+// and silently rewinds the time by 5:30 every time anyone re-saves — the same
+// bug as istParse, on the way out instead of the way in.
+export function istInputValue(iso: string | null | undefined) {
+  if (!iso) return "";
+  const d = toIST(new Date(iso)); // components now read as IST wall-clock
+  const p = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
+}

@@ -64,6 +64,9 @@ export default async function ModerationPage() {
         <Link href="/admin/broadcast" className="press inline-flex min-h-11 items-center rounded-full border border-border bg-card px-4 text-sm font-medium hover:bg-muted">
           📣 Broadcast
         </Link>
+        <Link href="/admin/tournaments" className="press inline-flex min-h-11 items-center rounded-full border border-border bg-card px-4 text-sm font-medium hover:bg-muted">
+          🏆 Tournaments
+        </Link>
       </nav>
 
       {!enriched.length ? (

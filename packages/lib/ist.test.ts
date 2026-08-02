@@ -4,7 +4,7 @@
 // regression that drops it would change the UTC instant and fail here.
 import test from "node:test";
 import assert from "node:assert/strict";
-import { istParse, istDateKey, istDayLabel } from "./ist.ts";
+import { istParse, istDateKey, istDayLabel, istInputValue } from "./ist.ts";
 
 test("istParse reads a datetime-local value as IST wall-clock", () => {
   // 10:00 IST == 04:30 UTC, same day.
@@ -28,4 +28,16 @@ test("istDayLabel says Today/Yesterday by IST day", () => {
   assert.equal(istDayLabel("2026-07-15T20:00:00Z", now), "Today");
   assert.equal(istDayLabel("2026-07-15T06:00:00Z", now), "Yesterday");
   assert.equal(istDayLabel("2026-07-10T06:00:00Z", now), "10 Jul");
+});
+
+// The round trip is the property that matters for an edit form: whatever a
+// moderator typed must come back out of the form unchanged, on any server tz.
+// A missing offset on either side shifts it by 5:30 per save.
+test("istInputValue round-trips istParse on any server timezone", () => {
+  for (const local of ["2026-09-12T18:30", "2026-01-01T00:00", "2026-12-31T23:59"]) {
+    assert.equal(istInputValue(istParse(local).toISOString()), local);
+  }
+  assert.equal(istInputValue(null), "");
+  // 18:30 UTC is 00:00 IST the NEXT day — the boundary that broke twice before.
+  assert.equal(istInputValue("2026-07-15T18:30:00.000Z"), "2026-07-16T00:00");
 });
