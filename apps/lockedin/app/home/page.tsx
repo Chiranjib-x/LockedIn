@@ -27,6 +27,7 @@ import NowStrip from "@/modules/feed/now-strip";
 import LeaderStrip from "@/modules/feed/leader-strip";
 import ClubsStrip from "@/modules/feed/clubs-strip";
 import CampusPulse from "@/modules/feed/campus-pulse";
+import TournamentBanner from "@/modules/feed/tournament-banner";
 import SinceLastVisit from "@/modules/feed/since-last-visit";
 import RecentChats from "@/modules/feed/recent-chats";
 import RenewalsSoon from "@/modules/feed/renewals-soon";
@@ -262,6 +263,13 @@ export default async function HomePage() {
           missed. Renders nothing on a first visit or a quiet week. */}
       <Suspense fallback={null}>
         <SinceLastVisit />
+      </Suspense>
+
+      {/* The banner sits above everything else on purpose: it is the one thing a
+          WhatsApp group is being invited to, and it renders nothing at all when
+          no tournament is featured. */}
+      <Suspense fallback={null}>
+        <TournamentBanner />
       </Suspense>
 
       {/* LIVELY L1 — proof that other people are here, above the feature grid.
