@@ -145,15 +145,15 @@ export default async function OgImage({ params }: { params: Promise<{ id: string
                   background: c.panel,
                   border: `2px solid ${c.accent}`,
                   color: c.text,
-                  fontSize: 27,
+                  fontSize: 25,
                   fontWeight: 700,
-                  padding: "10px 22px",
+                  padding: "10px 18px",
                   // A long prize wrapped these onto two lines and the row lost
                   // its shape. One line each, truncated.
                   whiteSpace: "nowrap",
                 }}
               >
-                {String(chip).length > 20 ? String(chip).slice(0, 19) + "…" : String(chip)}
+                {String(chip).length > 26 ? String(chip).slice(0, 25) + "…" : String(chip)}
               </div>
             ))}
           <div
