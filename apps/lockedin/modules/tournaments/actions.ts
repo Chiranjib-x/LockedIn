@@ -47,3 +47,16 @@ export async function leaveTeam(tournamentId: string, teamId: string) {
   revalidatePath("/home");
   return error ? error.message : null;
 }
+
+// Set or clear your own in-game name after joining. Guarded in the RPC (0095):
+// you must already be entered, it caps length, and it stops once the tournament
+// is over — probed: a non-entrant is refused.
+export async function setMyIgn(tournamentId: string, ign: string) {
+  const { supabase } = await ctx();
+  const { error } = await supabase.rpc("set_my_tournament_ign", {
+    p_tournament: tournamentId,
+    p_ign: ign,
+  });
+  revalidatePath(`/tournaments/${tournamentId}`);
+  return error ? error.message : null;
+}

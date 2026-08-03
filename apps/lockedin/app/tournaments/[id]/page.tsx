@@ -3,6 +3,7 @@ import { Trophy, CalendarDays, Users, Gift } from "lucide-react";
 import { requireUser } from "@suite/auth/auth";
 import { BackLink } from "@suite/ui";
 import ShareButton from "@/components/share-button";
+import MyIgn from "@/modules/tournaments/my-ign";
 import Entry, { type TeamRow } from "@/modules/tournaments/entry";
 import GameMark from "@/modules/tournaments/game-mark";
 
@@ -97,6 +98,16 @@ export default async function TournamentPage({
       </div>
 
       {t.details && <p className="whitespace-pre-wrap text-sm">{t.details}</p>}
+
+      {/* Only for someone already in. join_tournament_team() takes an ign, but
+          only at the instant you join — this is the way back to it. */}
+      {myTeam && (
+        <MyIgn
+          tournamentId={t.id}
+          current={myTeam.members.find((m) => m.user_id === user.id)?.ign ?? null}
+          label={t.game?.toLowerCase() === "valorant" ? "Riot ID" : "in-game name"}
+        />
+      )}
 
       <Entry
         tournamentId={t.id}
