@@ -27,6 +27,8 @@ type Row = {
   prize: string | null;
   contact: string | null;
   logo_url: string | null;
+  chat_url: string | null;
+  stream_url: string | null;
   team_count: number;
   player_count: number;
 };
@@ -106,6 +108,16 @@ function Form({ t }: { t?: Row }) {
       <label className="flex flex-col gap-1 text-xs font-medium">
         Game logo URL (optional — the publisher owns the artwork, so this is your call)
         <input name="logo_url" defaultValue={t?.logo_url ?? ""} placeholder="https://…/valorant.png" className={inputClass} />
+
+        <label className="text-sm font-medium">
+          Group chat invite <span className="font-normal text-muted-foreground">— shown only to people who entered</span>
+        </label>
+        <input name="chat_url" defaultValue={t?.chat_url ?? ""} placeholder="https://chat.whatsapp.com/…" className={inputClass} />
+
+        <label className="text-sm font-medium">
+          Live stream <span className="font-normal text-muted-foreground">— shown to everyone, including the share card</span>
+        </label>
+        <input name="stream_url" defaultValue={t?.stream_url ?? ""} placeholder="https://youtube.com/live/…" className={inputClass} />
       </label>
 
       <label className="flex flex-col gap-1 text-xs font-medium">

@@ -22,6 +22,7 @@ type Preview = {
   reg_closes_at: string | null;
   status: string;
   prize: string | null;
+  stream_url: string | null;
   logo_url: string | null;
   team_count: number;
   player_count: number;
@@ -109,6 +110,23 @@ export default async function PublicTournament({
             <span className="text-muted-foreground">Format</span>{" "}
             {p.team_size > 1 ? `Teams of ${p.team_size}` : "Solo"}
           </p>
+          {/* Public on purpose: advertising the broadcast is the whole reason
+              to have one, and this page is what gets pasted into group chats.
+              The group-chat invite is NOT here — 0096 keeps it out of the RPC. */}
+          {p.stream_url && (
+            <a
+              href={p.stream_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="press mb-2 flex min-h-11 items-center justify-center gap-2 rounded-full bg-[#FF0000] px-4 text-sm font-semibold text-white"
+            >
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-white" />
+              </span>
+              Watch live on YouTube
+            </a>
+          )}
           {p.prize && (
             <p>
               <span className="text-muted-foreground">Prize</span> {p.prize}

@@ -97,6 +97,37 @@ export default async function TournamentPage({
         )}
       </div>
 
+      {/* Watch live — everyone. Advertising the broadcast is the point of having
+          one, so this is not gated and it rides the public share card too. */}
+      {t.stream_url && (
+        <a
+          href={t.stream_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="press flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#FF0000] px-5 font-semibold text-white"
+        >
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-white" />
+          </span>
+          Watch live on YouTube
+        </a>
+      )}
+
+      {/* The group chat — ENTRANTS ONLY. A WhatsApp invite link is a bearer
+          token: anyone who can read it can join and forward it. 0096 keeps it out
+          of public_tournament_preview, and myTeam gates it here. */}
+      {t.chat_url && myTeam && (
+        <a
+          href={t.chat_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="press flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#25D366] px-5 font-semibold text-white"
+        >
+          💬 Join the match group chat
+        </a>
+      )}
+
       {t.details && <p className="whitespace-pre-wrap text-sm">{t.details}</p>}
 
       {/* Only for someone already in. join_tournament_team() takes an ign, but

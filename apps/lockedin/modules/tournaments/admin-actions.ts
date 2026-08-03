@@ -43,6 +43,10 @@ export async function saveTournament(formData: FormData) {
     p_prize: String(formData.get("prize") ?? "").trim() || null,
     p_contact: String(formData.get("contact") ?? "").trim() || null,
     p_logo_url: String(formData.get("logo_url") ?? "").trim() || null,
+    // Entrants only — a WhatsApp invite is a bearer token, so 0096 keeps it
+    // out of the public preview entirely.
+    p_chat_url: String(formData.get("chat_url") ?? "").trim() || null,
+    p_stream_url: String(formData.get("stream_url") ?? "").trim() || null,
   });
 
   revalidatePath("/admin/tournaments");
