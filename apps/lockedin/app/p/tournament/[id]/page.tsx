@@ -23,6 +23,8 @@ type Preview = {
   status: string;
   prize: string | null;
   stream_url: string | null;
+  winner_name: string | null;
+  winner_players: string[] | null;
   logo_url: string | null;
   team_count: number;
   player_count: number;
@@ -110,6 +112,17 @@ export default async function PublicTournament({
             <span className="text-muted-foreground">Format</span>{" "}
             {p.team_size > 1 ? `Teams of ${p.team_size}` : "Solo"}
           </p>
+          {/* The result, once there is one. Same URL as the entry page — every
+              share since 9pm now announces the champion instead. */}
+          {p.winner_name && (
+            <div className="mb-3 flex flex-col gap-1 rounded-2xl border border-accent/40 bg-accent/10 p-4 text-center">
+              <p className="text-xs font-bold uppercase tracking-widest text-accent">🏆 Champions</p>
+              <p className="text-2xl font-bold">{p.winner_name}</p>
+              {p.winner_players?.length ? (
+                <p className="text-xs text-muted-foreground">{p.winner_players.join(" · ")}</p>
+              ) : null}
+            </div>
+          )}
           {/* Public on purpose: advertising the broadcast is the whole reason
               to have one, and this page is what gets pasted into group chats.
               The group-chat invite is NOT here — 0096 keeps it out of the RPC. */}

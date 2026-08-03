@@ -38,6 +38,8 @@ export default async function OgImage({ params }: { params: Promise<{ id: string
     prize: string | null;
     logo_url: string | null;
     player_count: number;
+    winner_name: string | null;
+    winner_players: string[] | null;
     college_name: string;
   } | null = null;
   try {
@@ -111,15 +113,32 @@ export default async function OgImage({ params }: { params: Promise<{ id: string
             </div>
           </div>
 
-          <div style={{ display: "flex", fontSize: 86, fontWeight: 800, lineHeight: 1.05 }}>
-            {t
-              ? t.title.length > 42
-                ? t.title.slice(0, 39) + "…"
-                : t.title
-              : "Campus tournament"}
+          {/* Once there is a champion the card announces THEM. The link people
+              already pasted at 9pm keeps working and now carries the result. */}
+          {t?.winner_name && (
+            <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+              <div style={{ display: "flex", fontSize: 40 }}>🏆</div>
+              <div style={{ display: "flex", fontSize: 40, fontWeight: 800, color: c.accent, letterSpacing: 2 }}>
+                CHAMPIONS
+              </div>
+            </div>
+          )}
+          <div style={{ display: "flex", fontSize: t?.winner_name ? 74 : 86, fontWeight: 800, lineHeight: 1.05 }}>
+            {t?.winner_name
+              ? t.winner_name
+              : t
+                ? t.title.length > 42
+                  ? t.title.slice(0, 39) + "…"
+                  : t.title
+                : "Campus tournament"}
           </div>
 
-          {t?.tagline && (
+          {t?.winner_name && t.winner_players?.length ? (
+            <div style={{ display: "flex", fontSize: 27, color: c.dim, lineHeight: 1.3 }}>
+              {t.winner_players.slice(0, 5).join("  ·  ")}
+            </div>
+          ) : null}
+          {!t?.winner_name && t?.tagline && (
             <div style={{ display: "flex", fontSize: 32, color: c.dim, lineHeight: 1.3 }}>
               {t.tagline.length > 84 ? t.tagline.slice(0, 81) + "…" : t.tagline}
             </div>
