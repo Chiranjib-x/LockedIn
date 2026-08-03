@@ -404,6 +404,29 @@ desperate-looking thing in the funnel) · **U9** monitoring before W+4 campus-wi
 
 ---
 
+### U13 · Auth SMTP is broken — confirm-email is OFF as a stopgap
+- **State:** open — **urgent, and it silently regresses the "no fake identities" rule**
+- **Found:** 2026-08-03, reported by the user as "signup isn't working for everyone".
+- **What happened:** `POST /auth/v1/signup` returned **500 `Error sending confirmation email`**. Reproduced against the live GoTrue endpoint. It is NOT the app and NOT migration 0094 — the error fires *after* the database work succeeds, and a trigger rejection would have said "Signups are restricted to registered college email domains" instead. Supabase rolled the whole signup back each time, so there are **0 orphaned auth rows**.
+- **Blast radius:** last successful signup `2026-08-03 09:54 IST`; the failure was found at 10:46. **~50 minutes of dead signups** on the morning of the Valorant tournament, while the link was being shared.
+- **Stopgap applied by the user:** Supabase → Authentication → Providers → Email → **Confirm email = OFF**. Verified working immediately afterwards: signup 200, user created, auto-confirmed, session issued, and the trigger built a full profile (`@zz_signup_probe17857`, verified_name derived, college VIT Vellore). Probe account deleted, 0 rows left.
+- **Why this cannot stay off:** anyone can now sign up as `someone.else@vitstudent.ac.in` without owning it. The domain gate still limits this to classmates, but it contradicts DEPLOY.md item 2 and the STATE constraint (2026-07-13, verbatim) *"their should be a feature that stops people from faking their actual names, as we need to be able to get their actual info"*. It also silently undoes U4b, which was closed as done on 2026-07-27.
+- **Do:** (1) **Supabase → Logs → Auth** — read the actual SMTP rejection; it names the cause and settles the two hypotheses below without guessing. (2) Fix it in Resend. (3) Turn **Confirm email back ON**. (4) Re-run the probe to confirm signup still returns 200 with confirmation enabled.
+- **Two hypotheses, neither verified** (both need dashboards this agent has no access to):
+  - Resend's free tier is 100 emails/day. ~47 signups in two days plus a broadcast could have hit a cap.
+  - STATE records the Resend sender domain as `chiranjib.online`. Everything moved to `lockedincampus.online` on 2026-07-31; if the domain was changed or its DNS verification lapsed, sends fail immediately.
+- **Done when:** confirm-email is ON *and* a live signup probe returns 200 — both, in the same check. Either alone is meaningless: ON with broken SMTP is the outage again, 200 with it OFF is the current stopgap.
+- **Probe command:**
+  ```
+  node -e "const fs=require('fs');const e=fs.readFileSync('apps/lockedin/.env.local','utf8');
+  const url=e.match(/^NEXT_PUBLIC_SUPABASE_URL=(.*)$/m)[1].trim();
+  const key=e.match(/^NEXT_PUBLIC_SUPABASE_ANON_KEY=(.*)$/m)[1].trim();
+  fetch(url+'/auth/v1/signup',{method:'POST',headers:{apikey:key,'Content-Type':'application/json'},
+  body:JSON.stringify({email:'zz.probe'+Date.now()+'@vitstudent.ac.in',password:'testpass1234'})})
+  .then(r=>r.text().then(t=>console.log(r.status,t.slice(0,200))))"
+  ```
+  Delete the probe account afterwards: `delete from auth.users where email like 'zz.probe%'`.
+
 ## Loop log
 
 `/loop` appends one line per iteration. Newest last.
@@ -442,3 +465,4 @@ desperate-looking thing in the funnel) · **U9** monitoring before W+4 campus-wi
 2026-07-31 · A41 · done · 9322532 · seven-route one-screen audit; /communities retitled Clubs & Teams; two layout failures filed
 2026-07-31 · A42 · done · bc2cd1d · Match->Roommate, My Pools->Subscriptions, Board->Campus Board; Toolbox/Crews/Deals deliberately kept
 2026-08-01 · A43 · done · 8029cef · /home header compacted: first action 292px -> 191px; A41's 'only 1 action' finding did not reproduce and is corrected
+2026-08-03 · U13 · filed · — · auth SMTP 500 broke signup for ~50 min; confirm-email OFF as stopgap, must go back ON
